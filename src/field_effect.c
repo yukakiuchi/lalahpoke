@@ -2040,12 +2040,18 @@ static bool8 EscalatorWarpIn_End(struct Task *task)
 
 #define tState data[0]
 #define tMonId data[1]
+#define tWaterFallIsFromField data[2]
 
 bool8 FldEff_UseWaterfall(void)
 {
     u8 taskId;
     taskId = CreateTask(Task_UseWaterfall, 0xff);
     gTasks[taskId].tMonId = gFieldEffectArguments[0];
+
+    // ★ 追加：スクリプトからのショートカットフラグをセット
+    gTasks[taskId].tWaterFallIsFromField = VarGet(0x8007);
+    VarSet(0x8007, 0);
+
     Task_UseWaterfall(taskId);
     return FALSE;
 }
@@ -2059,7 +2065,14 @@ static bool8 WaterfallFieldEffect_Init(struct Task *task, struct ObjectEvent *ob
 {
     LockPlayerFieldControls();
     gPlayerAvatar.preventStep = TRUE;
-    task->tState++;
+    if (task->tWaterFallIsFromField == 1)
+    {
+        task->tState = 3; // 直接 WaterfallFieldEffect_RideUp へ
+    }
+    else
+    {
+        task->tState++;   // 通常通り WaterfallFieldEffect_ShowMon へ
+    }
     return FALSE;
 }
 
@@ -2121,6 +2134,11 @@ bool8 FldEff_UseDive(void)
     taskId = CreateTask(Task_UseDive, 0xff);
     gTasks[taskId].data[15] = gFieldEffectArguments[0];
     gTasks[taskId].data[14] = gFieldEffectArguments[1];
+
+    // ★ 0x8007の値を data[2] に入れる
+    gTasks[taskId].data[2] = VarGet(0x8007);
+    VarSet(0x8007, 0);
+
     Task_UseDive(taskId);
     return FALSE;
 }
@@ -2133,8 +2151,17 @@ void Task_UseDive(u8 taskId)
 static bool8 DiveFieldEffect_Init(struct Task *task)
 {
     gPlayerAvatar.preventStep = TRUE;
-    task->data[0]++;
-    return FALSE;
+// ★ data[2] が 1 なら、いきなりステート 2（ワープ）へ飛ばす
+    if (task->data[2] == 1)
+    {
+        task->data[0] = 2; 
+        return TRUE;
+    }
+    else
+    {
+        task->data[0]++; // 通常時は 0 -> 1（ShowMon）へ
+        return FALSE;
+    }
 }
 
 static bool8 DiveFieldEffect_ShowMon(struct Task *task)
@@ -3320,12 +3347,18 @@ static void SpriteCB_FieldMoveMonSlideOffscreen(struct Sprite *sprite)
 #define tState data[0]
 #define tDestX data[1]
 #define tDestY data[2]
+#define tSurfIsFromField data[3] //フィールドからの処理かどうか
 #define tMonId data[15]
 
 u8 FldEff_UseSurf(void)
 {
     u8 taskId = CreateTask(Task_SurfFieldEffect, 0xff);
     gTasks[taskId].tMonId = gFieldEffectArguments[0];
+
+    // ★スクリプトでセットした値（1ならフィールドから）を代入
+    gTasks[taskId].tSurfIsFromField = VarGet(0x8007);
+    VarSet(0x8007, 0); // 使い終わったら0に戻す
+
     Overworld_ClearSavedMusic();
     Overworld_ChangeMusicTo(IS_FRLG ? MUS_RG_SURF : MUS_SURF);
     return FALSE;
@@ -3354,7 +3387,16 @@ static void SurfFieldEffect_Init(struct Task *task)
     SetPlayerAvatarStateMask(PLAYER_AVATAR_FLAG_SURFING);
     PlayerGetDestCoords(&task->tDestX, &task->tDestY);
     MoveCoords(gObjectEvents[gPlayerAvatar.objectEventId].movementDirection, &task->tDestX, &task->tDestY);
-    task->tState++;
+
+    // フィールドからの処理なら
+    if (task->tSurfIsFromField == 1)
+    {
+        task->tState = 3; // 直接 SurfFieldEffect_JumpOnSurfBlob（水乗り）へ
+    }
+    else
+    {
+        task->tState++;   // 通常通りポーズ演出へ
+    }
 }
 
 static void SurfFieldEffect_FieldMovePose(struct Task *task)
