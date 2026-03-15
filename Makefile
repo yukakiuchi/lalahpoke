@@ -162,7 +162,7 @@ ifeq ($(RELEASE),1)
 		LTO := 1
 	endif
 endif
-ARMCC := $(PREFIX)gcc
+ARMCC := ccache $(PREFIX)gcc
 PATH_ARMCC := PATH="$(PATH)" $(ARMCC)
 CC1 := $(shell $(PATH_ARMCC) --print-prog-name=cc1) -quiet
 
@@ -586,6 +586,7 @@ endif
 $(ROM): $(ELF)
 	$(OBJCOPY) -O binary $< $@
 	$(FIX) $@ -p --silent
+	/Applications/mGBA.app/Contents/MacOS/mGBA $@
 
 emerald: all
 firered: all
