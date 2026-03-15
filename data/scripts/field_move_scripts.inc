@@ -1,24 +1,20 @@
-@ Interact with cuttable tree
+@1 ---------------- 1.いあいぎり -----------------------------
 EventScript_CutTree::
 	lockall
-	checkfieldmove FIELD_MOVE_CUT, TRUE
-	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CheckTreeCantCut
-	setfieldeffectargument 0, VAR_RESULT
-	bufferpartymonnick STR_VAR_1, VAR_RESULT
-	buffermovename STR_VAR_2, MOVE_CUT
 	msgbox Text_WantToCut, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, EventScript_CancelCut
-	msgbox Text_MonUsedFieldMove, MSGBOX_DEFAULT
-	closemessage
+    goto_if_set FLAG_BADGE01_GET, EventScript_CutTreeDown
+    msgbox Text_NoBadge01, MSGBOX_DEFAULT
+    releaseall
+    end
+
 EventScript_CutTreeCommon:
-	isfollowerfieldmoveuser VAR_0x8004
-	setfieldeffectargument 3, VAR_0x8004 @ skip pose if so
 	dofieldeffect FLDEFF_USE_CUT_ON_TREE
 	waitstate
 EventScript_CutTreeDown:: @ fallthrough
-	setflag FLAG_SAFE_FOLLOWER_MOVEMENT
-	call_if_eq VAR_0x8004, TRUE, EventScript_FollowerFieldMove
 	applymovement VAR_LAST_TALKED, Movement_CutTreeDown
+	closemessage
+	playse SE_M_CUT
 	waitmovement 0
 	removeobject VAR_LAST_TALKED
 	releaseall
@@ -43,6 +39,10 @@ EventScript_CancelCut::
 	releaseall
 	end
 
+Text_NoBadge01:
+    .string "Stone Badge required\p"
+    .string "Beat the 1st gym leader to get it!$"
+
 Text_WantToCut:
 	.string "This tree looks like it can be\n"
 	.string "CUT down!\p"
@@ -55,7 +55,7 @@ Text_CantCut:
 	.string "This tree looks like it can be\n"
 	.string "CUT down!$"
 
-@ Use rock smash from party menu
+@-------------------- 3.いわくだき ---------------------------
 EventScript_UseRockSmash::
 	lockall
 	goto EventScript_RockSmashCommon
@@ -63,32 +63,22 @@ EventScript_UseRockSmash::
 @ Interact with smashable rock
 EventScript_RockSmash::
 	lockall
-	checkfieldmove FIELD_MOVE_ROCK_SMASH, TRUE
-	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantSmashRock
-	setfieldeffectargument 0, VAR_RESULT
-	bufferpartymonnick STR_VAR_1, VAR_RESULT
-	buffermovename STR_VAR_2, MOVE_ROCK_SMASH
 	msgbox Text_WantToSmash, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, EventScript_CancelSmash
-	msgbox Text_MonUsedFieldMove, MSGBOX_DEFAULT
-	closemessage
+	goto_if_set FLAG_BADGE01_GET, EventScript_SmashRock
+	msgbox Text_NoBadge03, MSGBOX_DEFAULT
+    releaseall
+    end
 EventScript_RockSmashCommon:
-	@ check if follower should use the field move
-	isfollowerfieldmoveuser VAR_0x8004
-	setfieldeffectargument 3, VAR_0x8004 @ skip pose if so
 	dofieldeffect FLDEFF_USE_ROCK_SMASH
 	waitstate
 EventScript_SmashRock:: @ fallthrough
-	setflag FLAG_SAFE_FOLLOWER_MOVEMENT
-	call_if_eq VAR_0x8004, TRUE, EventScript_FollowerFieldMove
 	applymovement VAR_LAST_TALKED, Movement_SmashRock
+	closemessage
+	playse SE_M_ROCK_THROW
 	waitmovement 0
 	removeobject VAR_LAST_TALKED
 	specialvar VAR_RESULT, TryUpdateRusturfTunnelState
-	goto_if_eq VAR_RESULT, TRUE, EventScript_EndSmash
-	special RockSmashWildEncounter
-	goto_if_eq VAR_RESULT, FALSE, EventScript_EndSmash
-	waitstate
 	releaseall
 	end
 
@@ -163,10 +153,6 @@ EventScript_FollowerJumpWest:
 	waitmovement 0
 	return
 
-EventScript_EndSmash::
-	releaseall
-	end
-
 Movement_WalkUp:
 	walk_up
 	step_end
@@ -221,19 +207,20 @@ Text_CantSmash:
 	.string "It's a rugged rock, but a POKéMON\n"
 	.string "may be able to smash it.$"
 
+Text_NoBadge03:
+    .string "Dynamo Badge required\p"
+    .string "Beat the 3rd gym leader to get it!$"
+
+@ -------------------- 4.かいりき ---------------------------
 EventScript_StrengthBoulder::
 	lockall
 	goto_if_set FLAG_SYS_USE_STRENGTH, EventScript_CheckActivatedBoulder
-	checkfieldmove FIELD_MOVE_STRENGTH, TRUE
-	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantStrength
-	setfieldeffectargument 0, VAR_RESULT
 	msgbox Text_WantToStrength, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, EventScript_CancelStrength
-	closemessage
-	dofieldeffect FLDEFF_USE_STRENGTH
-	waitstate
-	goto EventScript_ActivateStrength
-	end
+	goto_if_set FLAG_BADGE01_GET, EventScript_ActivateStrength
+	msgbox Text_NoBadge04, MSGBOX_DEFAULT
+    releaseall
+    end
 
 EventScript_UseStrength::
 	lockall
@@ -263,14 +250,16 @@ EventScript_CancelStrength::
 	releaseall
 	end
 
+Text_NoBadge04:
+    .string "Heat Badge required\p"
+    .string "Beat the 4th gym leader to get it!$"
+
 Text_WantToStrength:
 	.string "It's a big boulder, but a POKéMON\n"
 	.string "may be able to push it aside.\p"
 	.string "Would you like to use STRENGTH?$"
 
 Text_MonUsedStrength:
-	.string "{STR_VAR_1} used STRENGTH!\p"
-	.string "{STR_VAR_1}'s STRENGTH made it\n"
 	.string "possible to move boulders around!$"
 
 Text_CantStrength:
@@ -281,55 +270,13 @@ Text_StrengthActivated:
 	.string "STRENGTH made it possible to move\n"
 	.string "boulders around.$"
 
-EventScript_UseWaterfall::
-	lockall
-	checkfieldmove FIELD_MOVE_WATERFALL
-	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantWaterfall
-	bufferpartymonnick STR_VAR_1, VAR_RESULT
-	setfieldeffectargument 0, VAR_RESULT
-	msgbox Text_WantToWaterfall, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, EventScript_EndWaterfall
-	msgbox Text_MonUsedWaterfall, MSGBOX_DEFAULT
-	hidefollowernpc
-	dofieldeffect FLDEFF_USE_WATERFALL
-	callnative FollowerNPC_WarpSetEnd
-	goto EventScript_EndWaterfall
-
-EventScript_CannotUseWaterfall::
-	lockall
-
-EventScript_CantWaterfall::
-	msgbox Text_CantWaterfall, MSGBOX_DEFAULT
-
-EventScript_EndWaterfall::
-	releaseall
-	end
-
-Text_CantWaterfall:
-	.string "A wall of water is crashing down with\n"
-	.string "a mighty roar.$"
-
-Text_WantToWaterfall:
-	.string "It's a large waterfall.\n"
-	.string "Would you like to use WATERFALL?$"
-
-Text_MonUsedWaterfall:
-	.string "{STR_VAR_1} used WATERFALL.$"
-
+@ --------------------- 7.ダイビング ----------------------------
 EventScript_UseDive::
 	lockall
-	checkfieldmove FIELD_MOVE_DIVE
-	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantDive
-	copyvar 0x8004 VAR_RESULT
-	bufferpartymonnick STR_VAR_1, VAR_RESULT
-	setfieldeffectargument 0, VAR_RESULT
-	setfieldeffectargument 1, 1
 	msgbox Text_WantToDive, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, EventScript_EndDive
-	msgbox Text_MonUsedDive, MSGBOX_DEFAULT
-	hidefollowernpc
-	setfieldeffectargument 0, VAR_0x8004
-	setfieldeffectargument 1, 1
+	goto_if_unset FLAG_BADGE01_GET, EventScript_NoBadge07
+	setvar 0x8007, 1 @臨時変数にフラグとして代入 フィールド上からかどうか
 	dofieldeffect FLDEFF_USE_DIVE
 	goto EventScript_EndDive
 	end
@@ -339,21 +286,25 @@ EventScript_CantDive::
 	releaseall
 	end
 
+EventScript_NoBadge07::
+	msgbox Text_NoBadge07, MSGBOX_DEFAULT
+	releaseall
+	end
+
 EventScript_EndDive::
 	releaseall
 	end
 
+Text_NoBadge07:
+    .string "Mind Badge required\p"
+    .string "Beat the 7th gym leader to get it!$"
+
 EventScript_UseDiveUnderwater::
 	lockall
-	checkfieldmove FIELD_MOVE_DIVE
-	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantSurface
-	bufferpartymonnick STR_VAR_1, VAR_RESULT
-	setfieldeffectargument 0, VAR_RESULT
-	setfieldeffectargument 1, 1
 	msgbox Text_WantToSurface, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, EventScript_NoSurface
-	msgbox Text_MonUsedDive, MSGBOX_DEFAULT
-	hidefollowernpc
+	goto_if_unset FLAG_BADGE01_GET, EventScript_NoBadge07
+	setvar 0x8007, 1 @臨時変数にフラグとして代入 フィールド上からかどうか
 	dofieldeffect FLDEFF_USE_DIVE
 	goto EventScript_EndSurface
 	end
@@ -370,6 +321,66 @@ EventScript_NoSurface::
 	releaseall
 	end
 
+Text_CantDive:
+	.string "The sea is deep here. A POKéMON\n"
+	.string "may be able to go underwater.$"
+
+Text_WantToDive:
+	.string "The sea is deep here.\n"
+	.string "Would you like to use DIVE?$"
+
+Text_MonUsedDive:
+	.string "{STR_VAR_1} used DIVE.$"
+
+Text_CantSurface:
+	.string "Light is filtering down from above.\n"
+	.string "A POKéMON may be able to surface.$"
+
+Text_WantToSurface:
+	.string "Light is filtering down from above.\n"
+	.string "Would you like to use DIVE?$"
+
+@ -------------------- 8.たきのぼり ----------------------------
+EventScript_UseWaterfall::
+	lockall
+	msgbox Text_WantToWaterfall, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, EventScript_EndWaterfall
+	goto_if_unset FLAG_BADGE01_GET, EventScript_CantWaterFall
+	setvar 0x8007, 1 @臨時フラグ フィールドかどうかとして使う
+	dofieldeffect FLDEFF_USE_WATERFALL
+	goto EventScript_EndWaterfall
+
+EventScript_CannotUseWaterfall::
+	lockall
+
+EventScript_CantWaterfall::
+	msgbox Text_CantWaterfall, MSGBOX_DEFAULT
+
+EventScript_EndWaterfall::
+	releaseall
+	end
+
+EventScript_CantWaterFall:
+	msgbox Text_NoBadge08, MSGBOX_DEFAULT
+	releaseall
+	end
+
+Text_NoBadge08:
+    .string "Rain Badge required\p"
+    .string "Beat the 8th gym leader to get it!$"
+
+Text_CantWaterfall:
+	.string "A wall of water is crashing down with\n"
+	.string "a mighty roar.$"
+
+Text_WantToWaterfall:
+	.string "It's a large waterfall.\n"
+	.string "Would you like to use WATERFALL?$"
+
+Text_MonUsedWaterfall:
+	.string "{STR_VAR_1} used WATERFALL.$"
+
+@ -------------------- パーティ画面からの特殊な技 ---------------------------
 EventScript_DigCommon:
 	isfollowerfieldmoveuser VAR_0x8004
 	setfieldeffectargument 3, VAR_0x8004 @ skip pose if true
@@ -398,25 +409,6 @@ EventScript_CutGrassCommon:
 EventScript_UseCutGrass::
 	lockall
 	goto EventScript_CutGrassCommon
-
-Text_CantDive:
-	.string "The sea is deep here. A POKéMON\n"
-	.string "may be able to go underwater.$"
-
-Text_WantToDive:
-	.string "The sea is deep here.\n"
-	.string "Would you like to use DIVE?$"
-
-Text_MonUsedDive:
-	.string "{STR_VAR_1} used DIVE.$"
-
-Text_CantSurface:
-	.string "Light is filtering down from above.\n"
-	.string "A POKéMON may be able to surface.$"
-
-Text_WantToSurface:
-	.string "Light is filtering down from above.\n"
-	.string "Would you like to use DIVE?$"
 
 EventScript_FailSweetScent::
 	msgbox Text_FailSweetScent, MSGBOX_SIGN
