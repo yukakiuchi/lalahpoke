@@ -219,7 +219,10 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_PKMNALREADYASLEEP2]                   = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} is already asleep!"),
     [STRINGID_PKMNWASPOISONED]                      = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX} was poisoned!"),
     [STRINGID_PKMNPOISONEDBY]                       = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX} was poisoned by {B_SCR_NAME_WITH_PREFIX2}'s {B_BUFF1}!"), //not in gen 5+, ability popup
+    [STRINGID_PKMNSTARTEDBLEEDING]                  = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX} started bleeding!"), // 出血し始めたというメッセージ
+    [STRINGID_PKMNBLEEDBYABILITY]                   = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX} started bleeding by {B_SCR_NAME_WITH_PREFIX2}'s {B_BUFF1}!"), // 特性効果による出血メッセージ
     [STRINGID_PKMNHURTBYPOISON]                     = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} was hurt by its poisoning!"),
+    [STRINGID_PKMNHURTBYBLEED]                      = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} was hurt by its bleeding!"), // 出血で傷ついてるというメッセージ(受け身)
     [STRINGID_PKMNALREADYPOISONED]                  = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX} is already poisoned!"),
     [STRINGID_PKMNBADLYPOISONED]                    = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX} was badly poisoned!"),
     [STRINGID_PKMNENERGYDRAINED]                    = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX} had its energy drained!"),
@@ -635,7 +638,7 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_TERRAINBECOMESELECTRIC]               = COMPOUND_STRING("An electric current ran across the battlefield!"),
     [STRINGID_TERRAINBECOMESPSYCHIC]                = COMPOUND_STRING("The battlefield got weird!"),
     [STRINGID_TARGETELECTRIFIED]                    = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX}'s moves have been electrified!"),
-    [STRINGID_MEGAEVOREACTING]                      = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX}'s {B_LAST_ITEM} is reacting to {B_ATK_TRAINER_NAME}'s Mega Ring!"), //actually displays the type of mega ring in inventory, but we didnt implement them :(
+    [STRINGID_MEGAEVOREACTING]                      = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX}'s Mega Stone is reacting to {B_ATK_TRAINER_NAME}'s Mega Ring!"), //actually displays the type of mega ring in inventory, but we didnt implement them :(
     [STRINGID_MEGAEVOEVOLVED]                       = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} has Mega Evolved into Mega {B_BUFF1}!"),
     [STRINGID_DRASTICALLY]                          = gText_drastically,
     [STRINGID_SEVERELY]                             = gText_severely,
@@ -877,6 +880,13 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_PKMNDISGUISEWASBUSTED]                = COMPOUND_STRING("{B_SCR_NAME_WITH_PREFIX}'s disguise was busted!"),
     [STRINGID_ZENMODETRIGGERED]                     = COMPOUND_STRING("{B_SCR_ABILITY} triggered!"),
     [STRINGID_ZENMODEENDED]                         = COMPOUND_STRING("{B_SCR_ABILITY} ended!"),
+    [STRINGID_PKMNDROPPEDITEM]                      = COMPOUND_STRING("{B_OPPONENT_MON1_NAME} dropped\nits {B_LAST_ITEM}!{WAIT_SE}\p"),                     // 野生バトルアイテムドロップ
+    [STRINGID_BAGISFULL]                            = COMPOUND_STRING("{B_OPPONENT_MON1_NAME} dropped\n{B_LAST_ITEM}!{WAIT_SE}\pBut your bag is full!\p"),  // 野生ドロップバッグいっぱい
+    [STRINGID_WEATHERHEALEDPOKE]                    = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX}’s HP was restored by the weather!"),                        // 天候回復メッセージ
+    [STRINGID_WEATHERDAMAGEDPOKE]                   = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} is hurt by the weather!"),                                  // 天候ダメージメッセージ
+    [STRINGID_FIELDINFLICTSPOKESTATUS]              = COMPOUND_STRING("The field inflicted {B_ATK_NAME_WITH_PREFIX}'s status!"),                            // 場による状態異常効果付与
+    [STRINGID_FIELDHEALEDPOKESTATUS]                = COMPOUND_STRING("The weather healed {B_ATK_NAME_WITH_PREFIX}'s status!"),                             // 天候による状態異常回復
+    [STRINGID_GRASSYTERRAINROOT]                    = COMPOUND_STRING("Grassy Terrain rooted {B_ATK_NAME_WITH_PREFIX}!"),                                   // グラスフィールドによる「ねをはる」効果付与
 };
 
 const u16 gTrainerUsedItemStringIds[] =
@@ -1164,6 +1174,12 @@ const u16 gGotPoisonedStringIds[] =
     [B_MSG_STATUSED_BY_ABILITY] = STRINGID_PKMNPOISONEDBY
 };
 
+const u16 gGotBleedingStringIds [] =
+{
+    [B_MSG_STATUSED]            = STRINGID_PKMNSTARTEDBLEEDING,
+    [B_MSG_STATUSED_BY_ABILITY] = STRINGID_PKMNBLEEDBYABILITY
+};
+
 const u16 gGotParalyzedStringIds[] =
 {
     [B_MSG_STATUSED]            = STRINGID_PKMNWASPARALYZED,
@@ -1361,7 +1377,7 @@ const u16 gRoomsStringIds[] =
 
 const u16 gStatusConditionsStringIds[] =
 {
-    STRINGID_PKMNWASPOISONED, STRINGID_PKMNBADLYPOISONED, STRINGID_PKMNWASBURNED, STRINGID_PKMNWASPARALYZED, STRINGID_PKMNFELLASLEEP, STRINGID_PKMNGOTFROSTBITE
+    STRINGID_PKMNWASPOISONED, STRINGID_PKMNBADLYPOISONED, STRINGID_PKMNWASBURNED, STRINGID_PKMNWASPARALYZED, STRINGID_PKMNFELLASLEEP, STRINGID_PKMNGOTFROSTBITE, STRINGID_PKMNSTARTEDBLEEDING
 };
 
 const u16 gDamageNonTypesStartStringIds[] =
@@ -1404,6 +1420,13 @@ const u16 gZenModeStringIds[] =
     [B_MSG_ZEN_MODE_ENDED] = STRINGID_ZENMODEENDED
 };
 
+// 野生バトルアイテムドロップ機能追加
+const u16 gItemDroppedStringIds[] =
+{
+    [B_MSG_ITEM_DROPPED] = STRINGID_PKMNDROPPEDITEM,
+    [B_MSG_BAG_IS_FULL] = STRINGID_BAGISFULL,
+};
+
 const u8 gText_PkmnIsEvolving[] = _("What?\n{STR_VAR_1} is evolving!");
 const u8 gText_CongratsPkmnEvolved[] = _("Congratulations! Your {STR_VAR_1}\nevolved into {STR_VAR_2}!{WAIT_SE}\p");
 const u8 gText_PkmnStoppedEvolving[] = _("Huh? {STR_VAR_1}\nstopped evolving!\p");
@@ -1430,6 +1453,7 @@ const u8 gText_SafariBalls[] = _("Safari Balls");
 const u8 gText_SafariBallLeft[] = _("Left: $");
 const u8 gText_Sleep[] = _("sleep");
 const u8 gText_Poison[] = _("poison");
+const u8 gTEXT_Bleed[] = _("bleed");
 const u8 gText_Burn[] = _("burn");
 const u8 gText_Paralysis[] = _("paralysis");
 const u8 gText_Ice[] = _("ice");
@@ -1450,6 +1474,7 @@ const u8 gText_Draw[] = _("{BACKGROUND TRANSPARENT}{ACCENT TRANSPARENT}Draw");
 static const u8 sText_SpaceIs[] = _(" is");
 static const u8 sText_ApostropheS[] = _("'s");
 const u8 gText_BattleTourney[] = _("BATTLE TOURNEY");
+
 
 const u8 *const gRoundsStringTable[DOME_ROUNDS_COUNT] =
 {

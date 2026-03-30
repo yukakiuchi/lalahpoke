@@ -2489,7 +2489,7 @@ bool8 ScrCmd_checktrainerflag(struct ScriptContext *ctx)
 
     Script_RequestEffects(SCREFF_V1);
 
-    ctx->comparisonResult = HasTrainerBeenFought(index);
+    ctx->comparisonResult = FALSE;
     return FALSE;
 }
 

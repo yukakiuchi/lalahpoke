@@ -262,8 +262,17 @@ LavaridgeTown_EventScript_DeclineEgg::
 	end
 
 LavaridgeTown_EventScript_TownSign::
-	msgbox LavaridgeTown_Text_TownSign, MSGBOX_SIGN
-	end
+	lockall
+givemon SPECIES_BLAZIKEN, 30, ITEM_CHARCOAL
+playfanfare MUS_OBTAIN_ITEM
+    msgbox Text_ReceivedPokemon, MSGBOX_DEFAULT
+    waitfanfare
+    releaseall
+    end
+
+Text_ReceivedPokemon:
+
+
 
 LavaridgeTown_EventScript_GymSign::
 	msgbox LavaridgeTown_Text_GymSign, MSGBOX_SIGN

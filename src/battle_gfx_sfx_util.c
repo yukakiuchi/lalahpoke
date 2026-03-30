@@ -469,9 +469,9 @@ void InitAndLaunchChosenStatusAnimation(enum BattlerId battler, bool32 isVolatil
             LaunchStatusAnimation(battler, B_ANIM_STATUS_FRZ);
         else if (status == STATUS1_FROSTBITE)
             LaunchStatusAnimation(battler, B_ANIM_STATUS_FRB);
-        else if (status == STATUS1_POISON || status & STATUS1_TOXIC_POISON)
+        else if (status == STATUS1_POISON || status & STATUS1_TOXIC_POISON) // 出血
             LaunchStatusAnimation(battler, B_ANIM_STATUS_PSN);
-        else if (status == STATUS1_BURN)
+        else if (status == STATUS1_BURN || status == STATUS1_BLEED)
             LaunchStatusAnimation(battler, B_ANIM_STATUS_BRN);
         else if (status & STATUS1_SLEEP)
             LaunchStatusAnimation(battler, B_ANIM_STATUS_SLP);

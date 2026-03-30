@@ -3353,6 +3353,16 @@ static u32 GetPoisonDamage(enum BattlerId battlerId)
     return damage;
 }
 
+// AI 出血
+static u32 GetBleedDamage(enum BattlerId battlerId)
+{
+    if (!(gBattleMons[battlerId].status1 & STATUS1_BLEED))
+        return 0;
+
+    u32 damage = gBattleMons[battlerId].maxHP / 16;
+    return (damage == 0) ? 1 : damage;
+}
+
 static bool32 DoesBattlerTakeSandstormDamage(enum BattlerId battlerId, enum Ability ability)
 {
     if (!(AI_GetWeather() & B_WEATHER_SANDSTORM))

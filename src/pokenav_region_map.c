@@ -220,10 +220,10 @@ static u32 HandleRegionMapInput(struct Pokenav_RegionMapMenu *state)
         state->callback = GetExitRegionMapMenuId;
         return POKENAV_MAP_FUNC_EXIT;
     case MAP_INPUT_R_BUTTON:
-        if (regionMap->mapSecType == MAPSECTYPE_CITY_CANFLY && FlagGet(OW_FLAG_POKE_RIDER)
+        if (FilterFlyDestination(regionMap) != WARP_ID_NONE
             // フラグ無視してポケナビのマップ上からどこにでも「そらをとぶ」ができるようにする場合
             // 上記のif文を下記のif文に修正する
-            // if (FilterFlyDestination(regionMap) != WARP_ID_NONE
+
         && Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType) == TRUE)
             return POKENAV_MAP_FUNC_FLY;
     }

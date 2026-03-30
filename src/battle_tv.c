@@ -136,6 +136,7 @@ static const u16 sSpecialBattleStrings[] =
     STRINGID_PKMNHURTBY,
     STRINGID_PKMNHURTBYBURN,
     STRINGID_PKMNHURTBYPOISON,
+    STRINGID_PKMNHURTBYBLEED,
     STRINGID_PKMNHURTBYSPIKES,
     STRINGID_BATTLERFAINTED,
     STRINGID_PKMNHITWITHRECOIL,
@@ -842,6 +843,7 @@ static void AddMovePoints(u8 caseId, u16 arg1, u8 arg2, u8 arg3)
             break;
         case MOVE_EFFECT_BURN:
         case MOVE_EFFECT_POISON:
+        case MOVE_EFFECT_BLEED: // 出血 たぶん重要じゃない
             baseFromEffect += 4;
             break;
         case MOVE_EFFECT_TOXIC:

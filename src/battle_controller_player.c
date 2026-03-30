@@ -921,7 +921,7 @@ void HandleInputChooseMove(enum BattlerId battler)
         gBattleStruct->descriptionSubmenu = TRUE;
         TryMoveSelectionDisplayMoveDescription(battler);
     }
-    else if (JOY_NEW(START_BUTTON))
+    else if (JOY_NEW(START_BUTTON | SELECT_BUTTON))
     {
         if (gBattleStruct->gimmick.usableGimmick[battler] != GIMMICK_NONE
             && !HasTrainerUsedGimmick(battler, gBattleStruct->gimmick.usableGimmick[battler])
@@ -929,6 +929,14 @@ void HandleInputChooseMove(enum BattlerId battler)
                  && GetUsableZMove(battler, moveInfo->moves[gMoveSelectionCursor[battler]]) == MOVE_NONE))
         {
             gBattleStruct->gimmick.playerSelect ^= 1;
+
+            // --- ここでボタンの種類を個別にメモ ---
+            if (JOY_NEW(SELECT_BUTTON))
+                gBattleStruct->gimmick.isSelectButton[battler] = TRUE;
+            else if (JOY_NEW(START_BUTTON))
+                gBattleStruct->gimmick.isSelectButton[battler] = FALSE;
+            // ------------------------------------
+
             ReloadMoveNames(battler);
             ChangeGimmickTriggerSprite(gBattleStruct->gimmick.triggerSpriteId, gBattleStruct->gimmick.playerSelect);
             PlaySE(SE_SELECT);

@@ -3730,6 +3730,7 @@ BattleScript_EffectWish::
 
 BattleScript_EffectIngrain::
 	attackcanceler
+	various BS_ATTACKER, VARIOUS_UPDATE_GRASSY_ROOT_FOR_INGRAIN @ グラスフィールド中の「ねをはる」を自分由来のものにする
 	trysetvolatile BS_ATTACKER, VOLATILE_ROOT, BattleScript_ButItFailed
 	attackanimation
 	waitanimation
@@ -4161,6 +4162,7 @@ BattleScript_LocalBattleWonReward::
 BattleScript_PayDayMoneyAndPickUpItems::
 	givepaydaymoney
 	pickup
+	givedroppeditems @ 野生バトルアイテムドロッ
 	end2
 
 BattleScript_RivalBattleLost::
@@ -5657,6 +5659,12 @@ BattleScript_PoisonHealActivates::
 	datahpupdate BS_ATTACKER, PASSIVE_HP_UPDATE
 	end2
 
+@ 出血ダメージ受けてるメッセージ
+BattleScript_BleedTurnDmg::
+	printstring STRINGID_PKMNHURTBYBLEED
+	waitmessage B_WAIT_TIME_LONG
+	goto BattleScript_DoStatusTurnDmg
+
 BattleScript_BurnTurnDmg::
 	printstring STRINGID_PKMNHURTBYBURN
 	waitmessage B_WAIT_TIME_LONG
@@ -5905,6 +5913,12 @@ BattleScript_FlameOrb::
 BattleScript_MoveEffectPoison::
 	statusanimation BS_EFFECT_BATTLER
 	printfromtable gGotPoisonedStringIds
+	waitmessage B_WAIT_TIME_LONG
+	goto BattleScript_UpdateEffectStatusIconRet
+
+BattleScript_MoveEffectBleed::
+	statusanimation BS_EFFECT_BATTLER
+	printfromtable gGotBleedingStringIds
 	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_UpdateEffectStatusIconRet
 
@@ -6434,6 +6448,82 @@ BattleScript_GrassySurgeActivates::
 	call BattleScript_ActivateTerrainEffects
 	return
 
+@ 地形効果演出スクリプト
+BattleScript_FieldEffects::
+    jumpifbyte CMP_NO_COMMON_BITS, gBattleCommunication + MULTISTRING_CHOOSER, B_MS_FIELD_EFFECT_HEAL, .tryDamage
+    call BattleScript_DoFieldEffectHeal
+.tryDamage:
+    jumpifbyte CMP_NO_COMMON_BITS, gBattleCommunication + MULTISTRING_CHOOSER, B_MS_FIELD_EFFECT_DAMAGE, .tryStatusRecover
+    call BattleScript_DoWFieldEffectDamage
+.tryStatusRecover:
+	jumpifbyte CMP_NO_COMMON_BITS, gBattleCommunication + MULTISTRING_CHOOSER, B_MS_FIELD_EFFECT_RECOVER_STATUS, .tryStatusInflict
+	call BattleScript_DoFieldEffectRecoverStatus
+.tryStatusInflict:
+	jumpifbyte CMP_NO_COMMON_BITS, gBattleCommunication + MULTISTRING_CHOOSER, B_MS_FIELD_EFFECT_INFLICT_STATUS, .endEffects
+	call BattleScript_DoFieldEffectInflictsStatus
+.endEffects:
+	end2
+
+@ 地形による回復演出処理
+BattleScript_DoFieldEffectHeal:
+	pause B_WAIT_TIME_SHORT
+	playanimation BS_ATTACKER, B_ANIM_SIMPLE_HEAL, NULL                    @キラキラ回復アニメーション
+	healthbarupdate BS_ATTACKER, PASSIVE_HP_UPDATE                         @HPバー更新
+	datahpupdate BS_ATTACKER, PASSIVE_HP_UPDATE                            @内部HP更新
+	printstring STRINGID_WEATHERHEALEDPOKE                                 @メッセージ表示
+	waitmessage B_WAIT_TIME_LONG                                           @表示待機
+	return
+
+@ 地形によるダメージ演出処理
+BattleScript_DoWFieldEffectDamage:
+	effectivenesssound                                                     @ダメージ効果音
+	hitanimation BS_ATTACKER                                               @ダメージ演出
+	healthbarupdate BS_ATTACKER, PASSIVE_HP_UPDATE                         @HPバー更新演出
+	datahpupdate BS_ATTACKER, PASSIVE_HP_UPDATE                            @HP内部処理実行
+	printstring STRINGID_WEATHERDAMAGEDPOKE                                @メッセージ表示
+	waitmessage B_WAIT_TIME_LONG                                           @表示待機
+	tryfaintmon BS_ATTACKER                                                @戦闘不能確認
+	checkteamslost BattleScript_DoTurnDmgEnd                               @戦闘不能で処理終了
+	tryactivateitem BS_ATTACKER, ACTIVATION_ON_HP_THRESHOLD                @道具効果発動
+	return
+
+@ 地形よる状態異常回復演出処理
+BattleScript_DoFieldEffectRecoverStatus:
+	playanimation BS_ATTACKER, B_ANIM_SAFARI_REACTION
+	playanimation BS_ATTACKER, B_ANIM_SIMPLE_HEAL
+	updatestatusicon BS_ATTACKER                                           @アイコン更新
+	printstring STRINGID_FIELDHEALEDPOKESTATUS                             @メッセージ表示
+	waitmessage B_WAIT_TIME_LONG                                           @表示終わるの待つ
+	return
+
+@ 地形よる状態異常付与演出処理
+BattleScript_DoFieldEffectInflictsStatus:
+	pause B_WAIT_TIME_SHORT
+	statusanimation BS_ATTACKER                                            @状態異常アニメーション
+	updatestatusicon BS_ATTACKER                                           @アイコン更新
+	printstring STRINGID_FIELDINFLICTSPOKESTATUS                           @メッセージ表示
+	waitmessage B_WAIT_TIME_LONG                                           @表示終わるの待つ
+	tryactivateitem BS_ATTACKER, ACTIVATION_ON_STATUS_CHANGE         @道具や技で回復する処理
+	return
+
+@ グラスフィールドによる「ねをはる」状態付与
+BattleScript_GrassyTerrainEffects::
+	pause B_WAIT_TIME_SHORT
+	@ --- 1. くさタイプ以外「ねをはる」の根っこ演出 ---
+    setword gCurrentMove, MOVE_INGRAIN, 
+    attackanimation
+    waitanimation
+
+    @ --- 2.「バインド」のつる演出 ---
+    playanimation BS_ATTACKER, B_ANIM_TURN_TRAP
+    waitanimation
+
+    @ --- 3. 演出パラメータリセット ---
+    setword gCurrentMove, MOVE_NONE
+    printstring STRINGID_GRASSYTERRAINROOT
+    waitmessage B_WAIT_TIME_LONG
+    end2
+
 BattleScript_PsychicSurgeActivates::
 	pause B_WAIT_TIME_SHORT
 	call BattleScript_AbilityPopUp
@@ -6604,10 +6694,12 @@ BattleScript_MoveUsedPsychicTerrainPrevents::
 	return
 
 BattleScript_GrassyTerrainHeals::
-	printstring STRINGID_GRASSYTERRAINHEALS
-	waitmessage B_WAIT_TIME_LONG
+	pause B_WAIT_TIME_SHORT
+	playanimation BS_ATTACKER, B_ANIM_WISH_HEAL
 	healthbarupdate BS_ATTACKER, PASSIVE_HP_UPDATE
 	datahpupdate BS_ATTACKER, PASSIVE_HP_UPDATE
+	printstring STRINGID_GRASSYTERRAINHEALS
+	waitmessage B_WAIT_TIME_LONG
 	end2
 
 BattleScript_AbilityNoSpecificStatLoss::
@@ -8269,3 +8361,10 @@ BattleScript_SilphScopeUnveiled::
 	waitmessage B_WAIT_TIME_LONG
 	end2
 
+@ 野生バトルアイテムドロッ
+BattleScript_ItemDropped::
+	printfromtable gItemDroppedStringIds
+	return
+
+End_Battle_From_Item_Drop::
+	end2

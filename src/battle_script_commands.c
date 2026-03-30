@@ -471,6 +471,7 @@ static void Cmd_jumpifplayerran(void);
 static void Cmd_hpthresholds(void);
 static void Cmd_hpthresholds2(void);
 static void Cmd_useitemonopponent(void);
+static void Cmd_various(void);
 static void Cmd_setprotectlike(void);
 static void Cmd_tryexplosion(void);
 static void Cmd_setatkhptozero(void);
@@ -701,6 +702,7 @@ void (*const gBattleScriptingCommandsTable[])(void) =
     [B_SCR_OP_HPTHRESHOLDS]                          = Cmd_hpthresholds,
     [B_SCR_OP_HPTHRESHOLDS2]                         = Cmd_hpthresholds2,
     [B_SCR_OP_USEITEMONOPPONENT]                     = Cmd_useitemonopponent,
+    [B_SCR_OP_VARIOUS]                               = Cmd_various,
     [B_SCR_OP_SETPROTECTLIKE]                        = Cmd_setprotectlike,
     [B_SCR_OP_TRYEXPLOSION]                          = Cmd_tryexplosion,
     [B_SCR_OP_SETATKHPTOZERO]                        = Cmd_setatkhptozero,
@@ -838,7 +840,6 @@ void (*const gBattleScriptingCommandsTable[])(void) =
     [B_SCR_OP_UNUSED_27]                             = Cmd_dummy,
     [B_SCR_OP_UNUSED_28]                             = Cmd_dummy,
     [B_SCR_OP_UNUSED_29]                             = Cmd_dummy,
-    [B_SCR_OP_UNUSED_30]                             = Cmd_dummy,
     [B_SCR_OP_CALLNATIVE]                            = Cmd_callnative,
 };
 
@@ -2317,6 +2318,10 @@ static void SetNonVolatileStatus(enum BattlerId effectBattler, enum MoveEffect e
         gBattleMons[effectBattler].status1 |= STATUS1_POISON;
         gBattlescriptCurrInstr = BattleScript_MoveEffectPoison;
         break;
+    case MOVE_EFFECT_BLEED:
+        gBattleMons[effectBattler].status1 |= STATUS1_BLEED;
+        gBattlescriptCurrInstr = BattleScript_MoveEffectBleed;
+        break;
     case MOVE_EFFECT_BURN:
         gBattleMons[effectBattler].status1 |= STATUS1_BURN;
         gBattlescriptCurrInstr = BattleScript_MoveEffectBurn;
@@ -2487,6 +2492,7 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
         break;
     case MOVE_EFFECT_SLEEP:
     case MOVE_EFFECT_POISON:
+    case MOVE_EFFECT_BLEED: // 出血
     case MOVE_EFFECT_BURN:
     case MOVE_EFFECT_FREEZE:
     case MOVE_EFFECT_PARALYSIS:
@@ -6982,6 +6988,128 @@ static void Cmd_useitemonopponent(void)
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
+// アイテムドロップした時のアニメーション
+static void Animation_got_item(u16 dropItem)
+{
+    u8 attacker = gBattlerAttacker;
+    u16 species = gBattleMons[attacker].species;
+    // 自分のスプライトの「住所」を取得
+    struct Sprite *sprite = &gSprites[gBattlerSpriteIds[attacker]];
+    
+    //相手モンスターのアイテムデータを抽出
+    struct BattlePokemon *opponentMon = &gBattleMons[1]; 
+    u16 commonItem = gSpeciesInfo[opponentMon->species].itemCommon;
+    u16 rareItem   = gSpeciesInfo[opponentMon->species].itemRare;
+
+    if (dropItem == rareItem)
+    {
+        // 効果音のみ
+        PlaySE(SE_SHINY);
+        // 1. 鳴き声再生 (種族ID, 左スピーカー再生, 通常鳴き声、死んだ時の鳴き声もある)
+        PlayCry_ByMode(species, -25, CRY_MODE_NORMAL);
+        // 2. 横ぴょんぴょんアニメーション実行
+        BattleAnimateBackSprite(sprite, species);
+    }
+    
+    if (dropItem == commonItem)
+    {
+        // 効果音のみ
+        PlaySE(SE_SHINY);
+    }
+
+}
+
+// dropItemガチャの処理
+// レアアイテムは20%
+// 通常アイテムは40%
+static u16 itemGacha(void)
+{
+    // gBattleMons[0].item
+    // ↑相手モンスターの現在の持ち物、いつか使うからここにメモする
+
+    // 相手の戦闘データの「住所」を特定して代入する
+    // 0=自分, 1=相手1匹目, 2=味方2匹目, 3=相手2匹目
+    struct BattlePokemon *opponentMon = &gBattleMons[1]; 
+
+    //相手モンスターのアイテムデータを抽出
+    u16 commonItem = gSpeciesInfo[opponentMon->species].itemCommon;
+    u16 rareItem   = gSpeciesInfo[opponentMon->species].itemRare;
+
+    // ガチャの準備
+    // 0~99までの数字をランダムで生成
+    u8 luckyNumber = Random() % 100;
+    u16 dropItem = ITEM_NONE;
+
+    // ドロップの確率を変えたい場合はここ中の数字を変更
+    switch (luckyNumber)
+    {
+        case 0 ... 19: // 0から19まで（20%）
+            dropItem = rareItem;
+            break;
+        case 20 ... 59: // 20から59まで（40%）
+            dropItem = commonItem;
+            break;
+        default: // 50から99まで（ハズレ）
+            dropItem = ITEM_NONE;
+            break;
+    }
+    return dropItem;
+}
+
+
+// 
+static void Cmd_various(void)
+{
+    u8 battler   = GetBattlerForBattleScript(gBattlescriptCurrInstr[1]);
+    u8 variousId = gBattlescriptCurrInstr[2];
+    switch (variousId)
+    {
+    case VARIOUS_GIVE_DROPPED_ITEMS:  // 野生バトルアイテムドロップ機能追加
+    {
+        // ガチャ開始
+        u16  dropItem = itemGacha();
+
+        if (IsDoubleBattle() || (gBattleTypeFlags & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_FIRST_BATTLE | BATTLE_TYPE_CATCH_TUTORIAL)))
+        {
+            // 終了処理
+            gBattlescriptCurrInstr = End_Battle_From_Item_Drop;
+            return;
+        }
+
+        if (dropItem)
+        {
+            if(AddBagItem(dropItem, 1))
+                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_ITEM_DROPPED;
+            else
+                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_BAG_IS_FULL;
+
+            BattleScriptPush(gBattlescriptCurrInstr + 3);
+            // dropItemの名前表示を代入しとく
+            gLastUsedItem = dropItem;
+
+            // 自分のモンスター喜ぶ
+            Animation_got_item(dropItem);
+
+            // メッセージ表示処理
+            gBattlescriptCurrInstr = BattleScript_ItemDropped;
+            return;
+        }
+
+        // 終了処理
+        gBattlescriptCurrInstr = End_Battle_From_Item_Drop;
+        return;
+    }
+    case VARIOUS_UPDATE_GRASSY_ROOT_FOR_INGRAIN:  // 
+        if (gBattleMons[battler].volatiles.grassyTerrainRoot)
+        {
+            gBattleMons[battler].volatiles.root = FALSE;
+            gBattleMons[battler].volatiles.grassyTerrainRoot = FALSE;
+        }
+        break;
+    }
+    gBattlescriptCurrInstr += 3;
+}
+
 bool32 CanUseLastResort(enum BattlerId battler)
 {
     u32 moveIndex;
@@ -7022,14 +7150,17 @@ static void RemoveAllWeather(void)
     gBattleWeather = 0;    // remove the weather
 }
 
+// 技やとくせいなどでフィールド効果消された時
 static void RemoveAllTerrains(void)
 {
+    // フィールド効果がある時
     switch (gFieldStatuses & STATUS_FIELD_TERRAIN_ANY)
     {
     case STATUS_FIELD_MISTY_TERRAIN:
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_END_MISTY;
         break;
     case STATUS_FIELD_GRASSY_TERRAIN:
+        ClearTerrainStatusEffects();
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_END_GRASSY;
         break;
     case STATUS_FIELD_ELECTRIC_TERRAIN:
@@ -8470,6 +8601,7 @@ static void Cmd_tryinfatuating(void)
     }
 }
 
+// スクリプト側でアイコン表示を更新する処理
 static void Cmd_updatestatusicon(void)
 {
     CMD_ARGS(u8 battler);
@@ -8490,6 +8622,20 @@ static void Cmd_updatestatusicon(void)
         }
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
+    // いつか使うかもしれない
+    // else if (cmd->battler == BS_ALL_BATTLERS) // 場の全員を対象にするマクロ
+    // {
+    //     for (battler = 0; battler < gBattlersCount; battler++) // ダブルバトルも考慮に入れてバトラーの数を確認
+    //     {
+    //         // 対象のバトラーが場にいて尚且つHPが0でない場合は対象にする
+    //         if (!(gAbsentBattlerFlags & (1u << battler)) && gBattleMons[battler].hp > 0)
+    //         {
+    //             BtlController_EmitStatusIconUpdate(battler, B_COMM_TO_CONTROLLER, gBattleMons[battler].status1);
+    //             MarkBattlerForControllerExec(battler);
+    //         }
+    //     }
+    //     gBattlescriptCurrInstr = cmd->nextInstr;
+    // }
     else if (cmd->battler == BS_ATTACKER_WITH_PARTNER)
     {
         battler = gBattlerAttacker;
@@ -10158,6 +10304,7 @@ static void Cmd_trysetsnatch(void)
     }
 }
 
+// 交代時の処理
 static void Cmd_switchoutabilities(void)
 {
     CMD_ARGS(u8 battler);
@@ -11070,6 +11217,8 @@ static void Cmd_givecaughtmon(void)
     case GIVECAUGHTMON_GIVE_AND_SHOW_MSG:
     {
         struct Pokemon *caughtMon = GetBattlerMon(GetCatchingBattler());
+        // ゲットしたポケモンの状態異常は全回復 仕様変更
+        HealStatusConditions(caughtMon, STATUS1_ANY, GetCatchingBattler());
         if (B_RESTORE_HELD_BATTLE_ITEMS >= GEN_9)
         {
             u16 lostItem = gBattleStruct->itemLost[B_SIDE_OPPONENT][gBattlerPartyIndexes[GetCatchingBattler()]].originalItem;

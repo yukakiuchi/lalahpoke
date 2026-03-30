@@ -683,6 +683,13 @@
 	.byte B_SCR_OP_USEITEMONOPPONENT
 	.endm
 
+	@ 野生バトルアイテムドロップ機能追加
+	.macro various battler:req, id:req
+	.byte B_SCR_OP_VARIOUS
+	.byte \battler
+	.byte \id
+	.endm
+
 	.macro setprotectlike
 	.byte B_SCR_OP_SETPROTECTLIKE
 	.endm
@@ -2252,3 +2259,8 @@
 	.byte \battler
 	.byte \switchedItems
 	.endm
+
+	@ 野生バトルアイテムドロップ機能追加
+ 	.macro givedroppeditems
+ 	various BS_FAINTED, VARIOUS_GIVE_DROPPED_ITEMS
+ 	.endm

@@ -700,6 +700,16 @@ enum StringID
     STRINGID_PKMNDISGUISEWASBUSTED,
     STRINGID_ZENMODETRIGGERED,
     STRINGID_ZENMODEENDED,
+    STRINGID_PKMNDROPPEDITEM,               // 野生バトルアイテムドロップメッセージ
+    STRINGID_BAGISFULL,                     // 野生バトルアイテムドロップ バッグいっぱいメッセージ
+    STRINGID_WEATHERHEALEDPOKE,             // 天候雨回復メッセージ
+    STRINGID_WEATHERDAMAGEDPOKE,            // 天候雨ダメージメッセージ
+    STRINGID_FIELDINFLICTSPOKESTATUS,       // 場による状態異常付与メッセージ
+    STRINGID_FIELDHEALEDPOKESTATUS,         // 天候による状態異常回復メッセージ
+    STRINGID_GRASSYTERRAINROOT,             // グラスフィールドによる「ねをはる」状態異常付与メッセージ
+    STRINGID_PKMNHURTBYBLEED,               // 出血で傷ついたというメッセージ
+    STRINGID_PKMNSTARTEDBLEEDING,           // 相手によって出血したというメッセージ
+    STRINGID_PKMNBLEEDBYABILITY,            // 相手の特性によって出血したというメッセージ
     STRINGID_COUNT
 };
 
@@ -1005,7 +1015,7 @@ enum NoEscapeStringID
 };
 
 // gGotPoisonedStringIds / gGotParalyzedStringIds / gFellAsleepStringIds
-// gGotBurnedStringIds / gGotFrozenStringIds / gAttractUsedStringIds
+// gGotBurnedStringIds / gGotFrozenStringIds / gAttractUsedStringIds / gGotBleedingStringIds
 enum GotStatusedStringID
 {
     B_MSG_STATUSED,
@@ -1185,5 +1195,11 @@ enum ZenModeStringID
     B_MSG_ZEN_MODE_TRIGGERED,
     B_MSG_ZEN_MODE_ENDED,
 };
+
+
+// 野生バトルアイテムドロップ機能追加
+#define B_MSG_ITEM_DROPPED   0
+#define B_MSG_BAG_IS_FULL    1
+
 
 #endif // GUARD_CONSTANTS_BATTLE_STRING_IDS_H

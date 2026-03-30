@@ -123,6 +123,7 @@ extern const u8 BattleScript_MoveUsedIsAsleep[];
 extern const u8 BattleScript_MoveUsedWokeUp[];
 extern const u8 BattleScript_MonWokeUpInUproar[];
 extern const u8 BattleScript_PoisonTurnDmg[];
+extern const u8 BattleScript_BleedTurnDmg[];
 extern const u8 BattleScript_BurnTurnDmg[];
 extern const u8 BattleScript_FrostbiteTurnDmg[];
 extern const u8 BattleScript_MoveUsedIsFrozen[];
@@ -149,6 +150,7 @@ extern const u8 BattleScript_TargetPoisonHealed[];
 extern const u8 BattleScript_MoveEffectSleep[];
 extern const u8 BattleScript_YawnMakesAsleepEnd2[];
 extern const u8 BattleScript_MoveEffectPoison[];
+extern const u8 BattleScript_MoveEffectBleed[];
 extern const u8 BattleScript_MoveEffectBurn[];
 extern const u8 BattleScript_MoveEffectFrostbite[];
 extern const u8 BattleScript_MoveEffectFreeze[];
@@ -309,6 +311,7 @@ extern const u8 BattleScript_EffectLifeDew[];
 extern const u8 BattleScript_AbilityRaisesDefenderStat[];
 extern const u8 BattleScript_PowderMoveNoEffect[];
 extern const u8 BattleScript_GrassyTerrainHeals[];
+extern const u8 BattleScript_GrassyTerrainEffects[];
 extern const u8 BattleScript_VCreateStatLoss[];
 extern const u8 BattleScript_SpikyShieldEffect[];
 extern const u8 BattleScript_KingsShieldEffect[];
@@ -517,6 +520,9 @@ extern const u8 BattleScript_BeforeSnoreMessage[];
 extern const u8 BattleScript_SkyDropTargetTooHeavy[];
 extern const u8 BattleScript_SkyDropFlyingType[];
 extern const u8 BattleScript_SkyDropNoTarget[];
+// 天候による追加効果処理
+extern const u8 BattleScript_FieldEffects[];
+extern const u8 BattleScript_FieldInflictsStatus[];
 
 // zmoves
 extern const u8 BattleScript_ZMoveActivateDamaging[];
@@ -801,5 +807,9 @@ extern const u8 BattleScript_GhostBallDodge[];
 extern const u8 BattleScript_GhostGetOutGetOut[];
 extern const u8 BattleScript_TooScaredToMove[];
 extern const u8 BattleScript_SilphScopeUnveiled[];
+
+// 野生バトルアイテムドロップ機能追加
+extern const u8 BattleScript_ItemDropped[];
+extern const u8 End_Battle_From_Item_Drop[];
 
 #endif // GUARD_BATTLE_SCRIPTS_H

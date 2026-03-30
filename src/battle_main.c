@@ -5549,6 +5549,7 @@ static void HandleEndTurn_MonFled(void)
     gBattleMainFunc = HandleEndTurn_FinishBattle;
 }
 
+// 戦闘終了時の処理
 static void HandleEndTurn_FinishBattle(void)
 {
     if (gCurrentActionFuncId == B_ACTION_TRY_FINISH || gCurrentActionFuncId == B_ACTION_FINISHED)
@@ -5619,6 +5620,27 @@ static void HandleEndTurn_FinishBattle(void)
         FadeOutMapMusic(5);
         if (B_TRAINERS_KNOCK_OFF_ITEMS == TRUE || B_RESTORE_HELD_BATTLE_ITEMS >= GEN_9)
             TryRestoreHeldItems();
+
+        // 戦闘終了後手持ちモンスターの状態異常とPPを回復
+        for (u32 i = 0; i < PARTY_SIZE; i++)
+        {
+            // ポケセンと同じ役割
+            // トレーナー戦に負けるとポケセン行けずその場で強制再戦になるから注意して
+            // HealPokemon(&gPlayerParty[i]);
+
+            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE)
+            {
+                // --- PP回復を追加 ---
+                MonRestorePP(&gPlayerParty[i]);
+
+                // --- 状態異常回復 ---
+                if (GetMonData(&gPlayerParty[i], MON_DATA_STATUS) != STATUS1_NONE)
+                {
+                    u32 healStatus = STATUS1_NONE;
+                    SetMonData(&gPlayerParty[i], MON_DATA_STATUS, &healStatus);
+                }
+            }
+        }
 
         for (u32 i = 0; i < PARTY_SIZE; i++)
         {

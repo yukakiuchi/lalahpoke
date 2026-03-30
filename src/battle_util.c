@@ -66,6 +66,7 @@ static bool32 IsPowderMoveBlocked(struct BattleContext *ctx);
 const u8 *AbsorbedByDrainHpAbility(enum BattlerId battlerDef);
 const u8 *AbsorbedByStatIncreaseAbility(enum BattlerId battlerDef, enum Ability abilityDef, enum Stat statId, u32 statAmount);
 const u8 *AbsorbedByFlashFire(enum BattlerId battlerDef);
+void ClearTerrainStatusEffects(void);
 
 ARM_FUNC NOINLINE static uq4_12_t PercentToUQ4_12(u32 percent);
 ARM_FUNC NOINLINE static uq4_12_t PercentToUQ4_12_Floored(u32 percent);
@@ -2146,6 +2147,7 @@ bool32 TryChangeBattleWeather(enum BattlerId battler, u32 battleWeatherId, enum 
     return TRUE;
 }
 
+// 地形効果上書き処理
 bool32 TryChangeBattleTerrain(enum BattlerId battler, u32 statusFlag)
 {
     if (gBattleStruct->isSkyBattle)
@@ -2153,6 +2155,8 @@ bool32 TryChangeBattleTerrain(enum BattlerId battler, u32 statusFlag)
 
     if (!(gFieldStatuses & statusFlag))
     {
+        // 上書きする前に現在のフィールドによる状態異常付与を解除
+        ClearTerrainStatusEffects();
         gFieldStatuses &= ~STATUS_FIELD_TERRAIN_ANY;
         gFieldStatuses |= statusFlag;
         for (enum BattlerId i = 0; i < gBattlersCount; i++)
@@ -2169,6 +2173,38 @@ bool32 TryChangeBattleTerrain(enum BattlerId battler, u32 statusFlag)
     }
 
     return FALSE;
+}
+
+// 地形による状態効果を解除
+void ClearTerrainStatusEffects(void)
+{
+    u32 i;
+    // グラスフィールドの「ねをはる」効果を解除
+    for (i = 0; i < gBattlersCount; i++)
+    {
+        if (gBattleMons[i].volatiles.grassyTerrainRoot)
+        {
+            gBattleMons[i].volatiles.root = FALSE;
+            gBattleMons[i].volatiles.grassyTerrainRoot = FALSE;
+            BtlController_EmitSetMonData(i, B_COMM_TO_CONTROLLER, REQUEST_STATUS_BATTLE, 0, 
+                                     sizeof(gBattleMons[i].volatiles), &gBattleMons[i].volatiles);
+            MarkBattlerForControllerExec(i);
+        }
+    }
+}
+
+// グラスフィールド時、自分由来の「ねをはる」に上書きをする
+void ClearGrassyRootForOverwrite(void)
+{
+    u32 battler = gBattlerAttacker;
+    
+    // グラスフィールド由来の「ねをはる」が張られている場合のみ、
+    // 一時的にrootフラグを落として、直後のtrysetvolatileを「成功」ルートへ導く
+    if (gBattleMons[battler].volatiles.grassyTerrainRoot)
+    {
+        gBattleMons[battler].volatiles.root = FALSE;
+        gBattleMons[battler].volatiles.grassyTerrainRoot = FALSE;
+    }
 }
 
 static void ForewarnChooseMove(enum BattlerId battler)
@@ -5377,6 +5413,14 @@ bool32 CanSetNonVolatileStatus(enum BattlerId battlerAtk, enum BattlerId battler
             battleScript = BattleScript_ImmunityProtected;
         }
         break;
+    case MOVE_EFFECT_BLEED: // 出血
+        if (gBattleMons[battlerDef].status1 & STATUS1_BLEED)
+        {
+            // 既に「出血」なら「既に状態異常だ」というメッセージを出す
+            battleScript = BattleScript_AlreadyPoisoned; 
+        }
+        // ※出血を無効化するタイプ（岩や鋼など）を設定したい場合はここに else if を追加します
+        break;
     case MOVE_EFFECT_PARALYSIS:
         if (gBattleMons[battlerDef].status1 & STATUS1_PARALYSIS)
         {
@@ -6602,6 +6646,8 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct BattleContext *ctx)
         modifier = uq4_12_multiply(modifier, UQ_4_12(GetConfig(B_SPORT_DMG_REDUCTION) >= GEN_5 ? 0.33 : 0.5));
     if (IsFieldWaterSportAffected(ctx->moveType))
         modifier = uq4_12_multiply(modifier, UQ_4_12(GetConfig(B_SPORT_DMG_REDUCTION) >= GEN_5 ? 0.33 : 0.5));
+    if (gFieldStatuses & STATUS_FIELD_GRASSY_TERRAIN && moveType == TYPE_FIRE)
+        modifier = uq4_12_multiply(modifier, UQ_4_12(1.2));
 
     // attacker's abilities
     switch (ctx->abilityAtk)
@@ -7384,6 +7430,7 @@ static inline uq4_12_t GetSameTypeAttackBonusModifier(struct BattleContext *ctx)
     return (ctx->abilityAtk == ABILITY_ADAPTABILITY) ? UQ_4_12(2.0) : UQ_4_12(1.5);
 }
 
+// 天候によるダメージ倍率の変更処理
 // Utility Umbrella holders take normal damage from what would be rain- and sun-weakened attacks.
 static uq4_12_t GetWeatherDamageModifier(struct BattleContext *ctx)
 {
@@ -7398,13 +7445,17 @@ static uq4_12_t GetWeatherDamageModifier(struct BattleContext *ctx)
     {
         if (ctx->moveType != TYPE_FIRE && ctx->moveType != TYPE_WATER)
             return UQ_4_12(1.0);
-        return (ctx->moveType == TYPE_FIRE) ? UQ_4_12(0.5) : UQ_4_12(1.5);
+        return (ctx->moveType == TYPE_FIRE) ? UQ_4_12(0.75) : UQ_4_12(1.5);
     }
     if (ctx->weather & B_WEATHER_SUN)
     {
         if (ctx->moveType != TYPE_FIRE && ctx->moveType != TYPE_WATER)
             return UQ_4_12(1.0);
-        return (ctx->moveType == TYPE_WATER) ? UQ_4_12(0.5) : UQ_4_12(1.5);
+        return (ctx->moveType == TYPE_WATER) ? UQ_4_12(0.75) : UQ_4_12(1.5);
+    }
+    if (ctx->weather & B_WEATHER_SANDSTORM)
+    {
+        return (ctx->moveType == TYPE_GROUND) ? UQ_4_12(1.5) : UQ_4_12(1.0);
     }
     return UQ_4_12(1.0);
 }
@@ -8573,6 +8624,7 @@ bool32 DoesSpeciesUseHoldItemToChangeForm(u16 species, u16 heldItemId)
     return FALSE;
 }
 
+// メガ進化できるかどうか
 bool32 CanMegaEvolve(enum BattlerId battler)
 {
     enum HoldEffect holdEffect = GetBattlerHoldEffectIgnoreNegation(battler);
@@ -8684,7 +8736,7 @@ bool32 IsBattlerMegaEvolved(enum BattlerId battler)
 }
 
 bool32 IsBattlerPrimalReverted(enum BattlerId battler)
-{
+{   return FALSE;
     // While Transform does copy stats and visuals, it shouldn't be counted as true Primal Revesion.
     if (gBattleMons[battler].volatiles.transformed)
         return FALSE;
@@ -8714,6 +8766,42 @@ u32 GetBattleFormChangeTargetSpecies(enum BattlerId battler, enum FormChanges me
 
     if (formChanges == NULL)
         return species;
+
+    // --- メガシンカ SELECTボタンによる分岐の汎用ロジック ---
+    if(IsOnPlayerSide(battler))
+    {
+        // 外部から指定されたたくさんフォルムチェンジの方法の中で
+        // ここはフォルムチェンジのメソッドだからチェリムやポワルンのような「天候で姿が変わるポケモン」が来ると困る
+        // 下記の進化方法が必要なポケモンをこの処理の中に入れる
+        if (method == FORM_CHANGE_BATTLE_MEGA_EVOLUTION_ITEM ||
+            method == FORM_CHANGE_BATTLE_MEGA_EVOLUTION_MOVE ||
+            method == FORM_CHANGE_BATTLE_PRIMAL_REVERSION    ||
+            method == FORM_CHANGE_BATTLE_ULTRA_BURST)
+        {
+            int variantCount = 0;
+            u32 firstTarget = SPECIES_NONE;
+            u32 i;
+
+            for (i = 0; formChanges[i].method != FORM_CHANGE_TERMINATOR; i++)
+            {
+                // 対象ポケモンの進化条件がここで指定した条件と一致するならば
+                if (formChanges[i].method == method)
+                {
+                    variantCount++;
+                    // 進化先のポケモン情報を反映させる
+                    if (variantCount == 1) firstTarget = formChanges[i].targetSpecies;
+
+                    // SELECTが押されていて、2番目の進化先がある場合
+                    if (gBattleStruct->gimmick.isSelectButton[battler] && variantCount == 2)
+                        return formChanges[i].targetSpecies;
+                }
+            }
+            
+            // 1番目（あるいは唯一）の進化先を返す
+            if (firstTarget != SPECIES_NONE)
+                return firstTarget;
+        }
+    }
 
     struct FormChangeContext ctx =
     {
@@ -9289,6 +9377,7 @@ void TryRestoreHeldItems(void)
 
             // Check if the lost item should be restored
             if ((lostItem != ITEM_NONE || returnNPCItems) && GetItemPocket(lostItem) != POCKET_BERRIES)
+            if (lostItem != ITEM_NONE || returnNPCItems)
                 SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &lostItem);
         }
     }
@@ -10384,6 +10473,7 @@ bool32 CanMoveSkipAccuracyCalc(enum BattlerId battlerAtk, enum BattlerId battler
     return effect;
 }
 
+// バトル時の命中率と回避率の処理(メソッド名が紛らわしいけどどっちの処理もしてる)
 u32 GetTotalAccuracy(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, enum Ability atkAbility, enum Ability defAbility, enum HoldEffect atkHoldEffect, enum HoldEffect defHoldEffect)
 {
     u32 calc, moveAcc;
@@ -10513,8 +10603,71 @@ u32 GetTotalAccuracy(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum 
     if (B_AFFECTION_MECHANICS == TRUE && GetBattlerAffectionHearts(battlerDef) == AFFECTION_FIVE_HEARTS)
         calc = (calc * 90) / 100;
 
-    if (HasWeatherEffect() && gBattleWeather & B_WEATHER_FOG)
-        calc = (calc * 60) / 100; // modified by 3/5
+    // フィールドや天候による命中率の変化
+
+    // ----- 晴れ -----
+    if (HasWeatherEffect() && (gBattleWeather & B_WEATHER_SUN))
+    {
+        // ほのおタイプへの命中が80%になる
+        if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_FIRE))
+            calc = (calc * 80) / 100;
+    }
+
+    // -----  雨  -----
+    if (HasWeatherEffect() && (gBattleWeather & B_WEATHER_RAIN))
+    {
+        // 水タイプへの攻撃が80%になる
+        if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_WATER))
+            calc = (calc * 80) / 100;
+    }
+
+    // -----  砂  -----
+    if (HasWeatherEffect() && (gBattleWeather & B_WEATHER_SANDSTORM))
+    {
+        // 攻撃側がじめんタイプなら命中率ダウンの効果を受けない
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_GROUND))
+        {
+            if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GROUND))
+                calc = (calc * 70) / 100; // じめんタイプへの攻撃は命中率70%になる
+            else
+                calc = (calc * 80) / 100; // じめんタイプ以外のタイプへの攻撃は80%になる
+        }
+    }
+
+    // -----  雪  ------
+    if (HasWeatherEffect() && gBattleWeather & B_WEATHER_SNOW)
+    {
+        if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_ICE))
+            calc = (calc * 80) / 100;     //こおりタイプへの攻撃は命中率80%になる
+    }
+
+    // -----  霧  ------
+    if (HasWeatherEffect() && (gBattleWeather & B_WEATHER_FOG))
+    {   
+        // 1. 虫タイプ命中下がらない
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_BUG))
+        {
+            // 2. あく・ひこうタイプ命中率80%になる
+            if (IS_BATTLER_OF_TYPE(battlerAtk, TYPE_DARK) || IS_BATTLER_OF_TYPE(battlerAtk, TYPE_FLYING))
+                calc = (calc * 80) / 100;
+            // 3. それ以外は命中率60%になる
+            else
+                calc = (calc * 60) / 100;
+        }
+    }
+
+    // グラスフィールドの時
+    if (gFieldStatuses & STATUS_FIELD_GRASSY_TERRAIN)
+    {
+        // くさタイプは命中率ダウン効果を受けない
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_GRASS))
+        {
+            if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GRASS))
+                calc = (calc * 70) / 100; // 草タイプへの攻撃は命中率70%になる
+            else if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_BUG))
+                calc = (calc * 80) / 100; // 虫タイプへの攻撃は命中率80%になる
+        }
+    }
 
     return calc;
 }

@@ -86,6 +86,47 @@ static bool32 HandleEndTurnVarious(enum BattlerId battler)
     return effect;
 }
 
+static void ApplyFieldEffectsHpUpdate(u8 battler, s32 hpFraction, u8 *flags)
+{
+    u32 maxHP = GetNonDynamaxMaxHP(battler);
+
+    // 回復処理
+    if (hpFraction > 0 && !IsBattlerAtMaxHp(battler) && !gBattleMons[battler].volatiles.healBlock)
+    {
+        u32 healAmount = (maxHP * hpFraction) / 16;
+        SetHealAmount(battler, healAmount);
+        *flags |= B_MS_FIELD_EFFECT_HEAL;
+    }
+    // ダメージ処理
+    else if (hpFraction < 0 && !IsAbilityAndRecord(battler, (u32)gBattleMons[battler].ability, ABILITY_MAGIC_GUARD))
+    {
+        u32 damageAmount = (maxHP * (-hpFraction)) / 16;
+        SetPassiveDamageAmount(battler, damageAmount);
+        *flags |= B_MS_FIELD_EFFECT_DAMAGE;
+    }
+
+}
+
+// フィールド効果の演出とデータ同期をまとめて行う共通関数
+static bool32 ExecuteFieldEffectEvents(u8 battler, u8 flags)
+{
+    if (flags == 0)
+        return FALSE;
+
+    gBattlerAttacker = battler;
+    gBattleCommunication[MULTISTRING_CHOOSER] = flags;
+    
+    // コントローラー側（画面表示）にステータス変更を通知
+    BtlController_EmitSetMonData(battler, B_COMM_TO_CONTROLLER, REQUEST_STATUS_BATTLE, 0,
+                                 sizeof(gBattleMons[battler].status1), &gBattleMons[battler].status1);
+    MarkBattlerForControllerExec(battler);
+    
+    // 共通のバトルスクリプトを実行
+    BattleScriptExecute(BattleScript_FieldEffects);
+    
+    return TRUE;
+}
+
 static bool32 HandleEndTurnWeather(enum BattlerId battler)
 {
     gBattleStruct->eventState.endTurn++;
@@ -121,11 +162,41 @@ static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
     case BATTLE_WEATHER_RAIN:
     case BATTLE_WEATHER_RAIN_PRIMAL:
     case BATTLE_WEATHER_RAIN_DOWNPOUR:
-        if (ability == ABILITY_DRY_SKIN || ability == ABILITY_RAIN_DISH)
+        // if (ability == ABILITY_DRY_SKIN || ability == ABILITY_RAIN_DISH)
+        //     {
+        //         if (AbilityBattleEffects(ABILITYEFFECT_ENDTURN, battler, ability, MOVE_NONE, TRUE))
+        //         effect = TRUE;
+        //     }
+
+        // 天候雨時の効果処理
         {
-            if (AbilityBattleEffects(ABILITYEFFECT_ENDTURN, battler, ability, MOVE_NONE, TRUE))
+            // ----- 1. HP増減値の計算と処理 (1/16単位) -----
+            s32 hpFraction      = 0;
+            u8 fieldEffectFlags = 0;
+            u8 isWaterType      = IS_BATTLER_OF_TYPE(battler, TYPE_WATER);
+            if (ability == ABILITY_RAIN_DISH || ability == ABILITY_DRY_SKIN) hpFraction += 2; // 特性で    　HP1/8回復
+            if (IS_BATTLER_OF_TYPE(battler, TYPE_GRASS))                     hpFraction += 2; // くさタイプ 　HP1/8回復
+            if (IS_BATTLER_OF_TYPE(battler, TYPE_FIRE) && !isWaterType)      hpFraction -= 2; // ほのおタイプ　HP1/8ダメージ
+            ApplyFieldEffectsHpUpdate(battler, hpFraction, &fieldEffectFlags);
+
+            // ----- 2. 状態異常回復の判定 -----
+            if (IS_BATTLER_OF_TYPE(battler, TYPE_WATER) && (gBattleMons[battler].status1 & STATUS1_ANY) && (Random() % 100 < 30))
+            {
+                gBattleMons[battler].status1 = STATUS1_NONE;
+                fieldEffectFlags |= B_MS_FIELD_EFFECT_RECOVER_STATUS;
+            }
+            // 全員共通の60%の確率で氷状態解除
+            else if (gBattleMons[battler].status1 & STATUS1_FREEZE && (Random() % 100 < 60))
+            {
+                gBattleMons[battler].status1 &= ~STATUS1_FREEZE;
+                fieldEffectFlags |= B_MS_FIELD_EFFECT_RECOVER_STATUS;
+            }
+
+            // ----- 3. 演出実行処理 -----
+            if (ExecuteFieldEffectEvents(battler, fieldEffectFlags))
                 effect = TRUE;
         }
+
         break;
     case BATTLE_WEATHER_SUN:
     case BATTLE_WEATHER_SUN_PRIMAL:
@@ -134,6 +205,37 @@ static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
             if (AbilityBattleEffects(ABILITYEFFECT_ENDTURN, battler, ability, MOVE_NONE, TRUE))
                 effect = TRUE;
         }
+
+        // 天候晴れ時の効果処理
+        {
+            // ----- 1. HP増減値の計算と処理 (1/16単位) -----
+            s32 hpFraction = 0;
+            u8 fieldEffectFlags = 0;
+            u8 isFireType = IS_BATTLER_OF_TYPE(battler, TYPE_FIRE);
+            if (IS_BATTLER_OF_TYPE(battler, TYPE_GRASS))               hpFraction += 1;  // くさタイプ 　HP1/16回復
+            if (IS_BATTLER_OF_TYPE(battler, TYPE_DARK) && !isFireType) hpFraction -= 2;  // あくタイプ 　HP1/8ダメージ
+            if (IS_BATTLER_OF_TYPE(battler, TYPE_ICE)  && !isFireType) hpFraction -= 2;  // こおりタイプ HP1/8ダメージ
+            if (ability == ABILITY_DRY_SKIN)                           hpFraction -= 2;  // 乾燥肌特性   HP1/8ダメージ
+            if (ability == ABILITY_SOLAR_POWER)                        hpFraction -= 2;  // サンパワー   HP1/8ダメージ
+            ApplyFieldEffectsHpUpdate(battler, hpFraction, &fieldEffectFlags);
+            
+            // ----- 2. 状態異常処理 -----
+            if (IS_BATTLER_OF_TYPE(battler, TYPE_FIRE) && (gBattleMons[battler].status1 & STATUS1_ANY) && (Random() % 100 < 30))
+            {
+                gBattleMons[battler].status1 = STATUS1_NONE;
+                fieldEffectFlags |= B_MS_FIELD_EFFECT_RECOVER_STATUS;
+            }
+            if (gBattleMons[battler].status1 & STATUS1_FREEZE)
+            {
+                gBattleMons[battler].status1 &= ~STATUS1_FREEZE;
+                fieldEffectFlags |= B_MS_FIELD_EFFECT_RECOVER_STATUS;
+            }
+
+            // ----- 3. 演出実行処理 -----
+            if (ExecuteFieldEffectEvents(battler, fieldEffectFlags))
+                effect = TRUE;
+        }
+
         break;
     case BATTLE_WEATHER_SANDSTORM:
         if (ability != ABILITY_SAND_VEIL
@@ -174,6 +276,26 @@ static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
                 BattleScriptExecute(BattleScript_DamagingWeather);
                 effect = TRUE;
             }
+        }
+        else if (currBattleWeather == BATTLE_WEATHER_SNOW)
+        // 天候雪の時の効果処理
+        {
+            // ----- 1. HP増減値の計算と処理 (1/16単位) -----
+            s32 hpFraction = 0;
+            u8 fieldEffectFlags = 0;
+            if (IS_BATTLER_OF_TYPE(battler, TYPE_ICE)) hpFraction += 2;
+            ApplyFieldEffectsHpUpdate(battler, hpFraction, &fieldEffectFlags);
+
+            // 全ポケモン20%確率で氷結状態付与 こおりとほのおタイプ以外
+            if (!IS_BATTLER_ANY_TYPE(battler, TYPE_FIRE) && CanBeFrozen(battler, battler, ability) && (Random() % 100 < 20))
+            {
+                gBattleMons[battler].status1 |= STATUS1_FREEZE;
+                fieldEffectFlags |= B_MS_FIELD_EFFECT_INFLICT_STATUS;
+            }
+
+            // 4. スクリプト実行
+            if (ExecuteFieldEffectEvents(battler, fieldEffectFlags))
+                effect = TRUE;
         }
         break;
     }
@@ -291,6 +413,8 @@ static bool32 HandleEndTurnFirstEventBlock(enum BattlerId battler)
 {
     bool32 effect = FALSE;
     enum BattleSide side;
+    enum Ability ability = GetBattlerAbility(battler);
+    enum HoldEffect holdEffect = GetBattlerHoldEffect(battler);
 
     if (!IsBattlerAlive(battler))
     {
@@ -351,15 +475,66 @@ static bool32 HandleEndTurnFirstEventBlock(enum BattlerId battler)
         gBattleStruct->eventState.endTurnBlock++;
         break;
     case FIRST_EVENT_BLOCK_GRASSY_TERRAIN_HEAL:
-        if (gFieldStatuses & STATUS_FIELD_GRASSY_TERRAIN
-         && !IsBattlerAtMaxHp(battler)
-         && !gBattleMons[battler].volatiles.healBlock
-         && !IsSemiInvulnerable(battler, CHECK_ALL)
-         && IsBattlerGrounded(battler, GetBattlerAbility(battler), GetBattlerHoldEffect(battler)))
+    {
+        u8 fieldEffectFlags = 0;
+        s32 hpFraction = 0;
+
+        // 接地している草タイプのみ対象
+        if (IsGrassyTerrainAffected(battler, ability, holdEffect, gFieldStatuses)
+         && IS_BATTLER_ANY_TYPE(battler, TYPE_GRASS))
         {
-            SetHealAmount(battler, GetNonDynamaxMaxHP(battler) / 16);
-            BattleScriptExecute(BattleScript_GrassyTerrainHeals);
+            // 1. HP回復 (1/8回復)
+            hpFraction = 2; 
+
+            // 2. 状態異常回復 (30%の確率)
+            if ((gBattleMons[battler].status1 & STATUS1_ANY) && (Random() % 100 < 30))
+            {
+                gBattleMons[battler].status1 = STATUS1_NONE;
+                fieldEffectFlags |= B_MS_FIELD_EFFECT_RECOVER_STATUS;
+            }
+        }
+
+        // 3. 計算とフラグセット
+        ApplyFieldEffectsHpUpdate(battler, hpFraction, &fieldEffectFlags);
+
+        // 4. 演出と同期を一括実行
+        if (ExecuteFieldEffectEvents(battler, fieldEffectFlags))
             effect = TRUE;
+    }
+    gBattleStruct->eventState.endTurnBlock++;
+    break;
+    case FIRST_EVENT_BLOCK_GRASSY_TERRAIN_ROOT:
+        // グラスフィールドでねをはるを付与
+        if (IsGrassyTerrainAffected(battler, ability, holdEffect, gFieldStatuses)
+            && !IS_BATTLER_ANY_TYPE(battler, TYPE_GRASS)
+            && !gBattleMons[battler].volatiles.root)
+            {
+                // 強制的に「ねをはる」効果をつけれらる(回復 + バインド)
+                gBattleMons[battler].volatiles.root = TRUE;
+                gBattleMons[battler].volatiles.grassyTerrainRoot = TRUE;
+                // コントローラーへの同期
+                BtlController_EmitSetMonData(battler, B_COMM_TO_CONTROLLER, REQUEST_STATUS_BATTLE, 0,
+                                             sizeof(gBattleMons[battler].volatiles),
+                                             &gBattleMons[battler].volatiles);
+                MarkBattlerForControllerExec(battler);
+                BattleScriptExecute(BattleScript_GrassyTerrainEffects); // 演出用スクリプト
+                effect = TRUE;
+            }
+    gBattleStruct->eventState.endTurnBlock++;
+    break;
+    case FIRST_EVENT_BLOCK_ELECTRIC_TERRAIN_PARALYZE:
+        
+        u8 fieldEffectFlags = 0;
+        // エレキフィールドでまひ状態異常付与
+        if (IsElectricTerrainAffected(battler, ability, holdEffect, gFieldStatuses))                                                    
+        {
+            if (CanBeParalyzed(battler, battler, ability) && !IS_BATTLER_ANY_TYPE(battler, TYPE_GROUND) && (Random() % 100 < 20))
+            {
+                gBattleMons[battler].status1 |= STATUS1_PARALYSIS;
+                fieldEffectFlags = B_MS_FIELD_EFFECT_INFLICT_STATUS;
+                if (ExecuteFieldEffectEvents(battler, fieldEffectFlags))
+                    effect = TRUE;
+            }
         }
         gBattleStruct->eventState.endTurnBlock++;
         break;
@@ -505,6 +680,30 @@ static bool32 HandleEndTurnPoison(enum BattlerId battler)
             BattleScriptExecute(BattleScript_PoisonTurnDmg);
             effect = TRUE;
         }
+    }
+
+    return effect;
+}
+
+// 出血ダメージなど基礎
+static bool32 HandleEndTurnBleed(enum BattlerId battler)
+{
+    bool32 effect = FALSE;
+    // 出血は「マジックガード」以外では防げない仕様（あるいは特定の特性で防ぐ）
+    enum Ability ability = GetBattlerAbility(battler);
+
+    gBattleStruct->eventState.endTurnBattler++;
+
+    if ((gBattleMons[battler].status1 & STATUS1_BLEED)
+     && IsBattlerAlive(battler)
+     && !IsAbilityAndRecord(battler, ability, ABILITY_MAGIC_GUARD))
+    {
+        // 1/16 固定ダメージ
+        SetPassiveDamageAmount(battler, GetNonDynamaxMaxHP(battler) / 2);
+        
+        // 演出用のスクリプト
+        BattleScriptExecute(BattleScript_BleedTurnDmg);
+        effect = TRUE;
     }
 
     return effect;
@@ -1173,13 +1372,18 @@ static bool32 HandleEndTurnMagicRoom(enum BattlerId battler)
     return effect;
 }
 
+// 地形効果の継続ターン終了
 static bool32 EndTurnTerrain(u32 terrainFlag, u32 stringTableId)
 {
+    // 継続ターン終了時
     if (gFieldTimers.terrainTimer > 0 && --gFieldTimers.terrainTimer == 0)
     {
         gFieldStatuses &= ~terrainFlag;
+        ClearTerrainStatusEffects();    // 地形による状態異常付与を解除
         TryToRevertMimicryAndFlags();
         gBattleCommunication[MULTISTRING_CHOOSER] = stringTableId;
+
+        // ここでアニメーションなどの処理を実行
         BattleScriptExecute(BattleScript_TerrainEnds);
         return TRUE;
     }
@@ -1459,6 +1663,7 @@ static bool32 (*const sEndTurnEffectHandlers[])(enum BattlerId battler) =
     [ENDTURN_INGRAIN] = HandleEndTurnIngrain,
     [ENDTURN_LEECH_SEED] = HandleEndTurnLeechSeed,
     [ENDTURN_POISON] = HandleEndTurnPoison,
+    [ENDTURN_BLEED] = HandleEndTurnBleed,  // 出血処理追加
     [ENDTURN_BURN] = HandleEndTurnBurn,
     [ENDTURN_FROSTBITE] = HandleEndTurnFrostbite,
     [ENDTURN_NIGHTMARE] = HandleEndTurnNightmare,
