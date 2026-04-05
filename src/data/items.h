@@ -9969,7 +9969,7 @@ const struct ItemInfo gItemsInfo[] =
         .price = 200,
     #endif
         .holdEffect = HOLD_EFFECT_SHELL_BELL,
-        .holdEffectParam = 8,
+        .holdEffectParam = 4, // 与えたダメージのHP1/4を回復させるようにする
         .description = COMPOUND_STRING(
             "A hold item that\n"
             "restores HP upon\n"
@@ -11095,7 +11095,7 @@ const struct ItemInfo gItemsInfo[] =
         .price = (I_BERRY_PRICE >= GEN_8) ? 80 : 20,
     #if I_SITRUS_BERRY_HEAL >= GEN_4
         .holdEffect = HOLD_EFFECT_RESTORE_PCT_HP,
-        .holdEffectParam = 25,
+        .holdEffectParam = 50, // HPの50%回復させるようにする
         .description = COMPOUND_STRING(
             "A hold item that\n"
             "restores the user's\n"
