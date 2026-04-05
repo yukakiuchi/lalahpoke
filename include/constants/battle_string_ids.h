@@ -700,6 +700,8 @@ enum StringID
     STRINGID_PKMNDISGUISEWASBUSTED,
     STRINGID_ZENMODETRIGGERED,
     STRINGID_ZENMODEENDED,
+    STRINGID_PKMNDROPPEDITEM,               // 野生バトルアイテムドロップメッセージ
+    STRINGID_BAGISFULL,                     // 野生バトルアイテムドロップ バッグいっぱいメッセージ
     STRINGID_COUNT
 };
 
@@ -1185,5 +1187,10 @@ enum ZenModeStringID
     B_MSG_ZEN_MODE_TRIGGERED,
     B_MSG_ZEN_MODE_ENDED,
 };
+
+// 野生バトルアイテムドロップ機能追加
+#define B_MSG_ITEM_DROPPED   0
+#define B_MSG_BAG_IS_FULL    1
+
 
 #endif // GUARD_CONSTANTS_BATTLE_STRING_IDS_H
