@@ -4172,6 +4172,7 @@ BattleScript_LocalBattleWonReward::
 BattleScript_PayDayMoneyAndPickUpItems::
 	givepaydaymoney
 	pickup
+	givedroppeditems @ 野生バトルアイテムドロップ
 	end2
 
 BattleScript_RivalBattleLost::
@@ -8287,4 +8288,12 @@ BattleScript_SilphScopeUnveiled::
 	pause B_WAIT_TIME_SHORT
 	printstring STRINGID_GHOSTWASMAROWAK
 	waitmessage B_WAIT_TIME_LONG
+	end2
+
+@ 野生バトルアイテムドロップ
+BattleScript_ItemDropped::
+	printfromtable gItemDroppedStringIds // メッセージ表示
+	return
+
+End_Battle_From_Item_Drop::
 	end2
