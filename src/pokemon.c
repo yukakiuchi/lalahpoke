@@ -1313,7 +1313,9 @@ void CreateMon(struct Pokemon *mon, u16 species, u8 level, u32 personality, stru
 void CreateMonWithIVs(struct Pokemon *mon, u16 species, u8 level, u32 personality, struct OriginalTrainerId trainerId, u8 fixedIV)
 {
     CreateMon(mon, species, level, personality, trainerId);
-    SetBoxMonIVs(&mon->box, fixedIV);
+    // 作成されたポケモンの個体値を全ステータス最大にする
+    // 第二引数をfixedIVからMAX_PER_STAT_IVSに変える
+    SetBoxMonIVs(&mon->box, MAX_PER_STAT_IVS);
     CalculateMonStats(mon);
 }
 
