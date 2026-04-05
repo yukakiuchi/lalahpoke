@@ -220,8 +220,11 @@ static u32 HandleRegionMapInput(struct Pokenav_RegionMapMenu *state)
         state->callback = GetExitRegionMapMenuId;
         return POKENAV_MAP_FUNC_EXIT;
     case MAP_INPUT_R_BUTTON:
-        if (regionMap->mapSecType == MAPSECTYPE_CITY_CANFLY && FlagGet(OW_FLAG_POKE_RIDER)
-        && Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType) == TRUE)
+        return POKENAV_MAP_FUNC_FLY; // 条件をチェックせず強制そらをとべるようにする
+        if (regionMap->mapSecType == MAPSECTYPE_CITY_CANFLY
+            && FlagGet(OW_FLAG_POKE_RIDER)
+            && FilterFlyDestination(regionMap) != WARP_ID_NONE
+            && Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType) == TRUE)
             return POKENAV_MAP_FUNC_FLY;
     }
 
@@ -302,6 +305,7 @@ static bool32 GetCurrentLoopedTaskActive(void)
 
 static bool8 ShouldOpenRegionMapZoomed(void)
 {
+    return FALSE; // マップ開いた時に勝手にズームにさせない。強制FALSE
     if (GetZoomDisabled())
         return FALSE;
 
@@ -771,6 +775,13 @@ static void SetCityZoomTextInvisibility(bool32 invisible)
 void UpdateRegionMapHelpBarText(void)
 {
     struct RegionMap* regionMap = GetSubstructPtr(POKENAV_SUBSTRUCT_REGION_MAP);
+
+    if (IsRegionMapZoomed())
+        PrintHelpBarText(HELPBAR_MAP_ZOOMED_IN_CANFLY);
+    else
+        PrintHelpBarText(HELPBAR_MAP_ZOOMED_OUT_CANFLY);
+    return;
+    // 下記が既存の処理だけどチェックは通さないようにここでreturnで止めておく
 
     if (regionMap->mapSecType == MAPSECTYPE_CITY_CANFLY && FlagGet(OW_FLAG_POKE_RIDER)
         && Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType) == TRUE)
