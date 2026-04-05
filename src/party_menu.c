@@ -6759,6 +6759,35 @@ void ItemUseCB_FormChange_ConsumedOnUse(u8 taskId, TaskFunc task)
         RemoveBagItem(gSpecialVar_ItemId, 1);
 }
 
+// 色違いキャンディーの実装
+// ポケモン色違いにしたり戻したりできる
+void ItemUseCB_ShinyCandy(u8 taskId, TaskFunc task)
+{
+    struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
+    bool32 nextShinyState = GetMonData(mon, MON_DATA_IS_SHINY) ? FALSE : TRUE;
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);                // 鳴き声再生するのに使う 
+
+    SetMonData(mon, MON_DATA_IS_SHINY, &nextShinyState);            // 実際のデータ変更処理
+    RemoveBagItem(gSpecialVar_ItemId, 1);                           // アイテム消費
+    GetMonNickname(mon, gStringVar1);                               // メッセージ表示
+
+    if (nextShinyState == TRUE)
+    {
+        PlaySE(SE_SHINY);
+        PlayCry_Normal(species, 0);
+        StringExpandPlaceholders(gStringVar4, gText_UsedShinyCandy); // 光り輝いた！
+    }
+    else
+    {
+        PlaySE(SE_M_MINIMIZE);
+        PlayCry_Normal(species, 0);
+        StringExpandPlaceholders(gStringVar4, gText_RestoredBodyColor); // 色が戻った!
+    }
+    DisplayPartyMenuMessage(gStringVar4, TRUE);
+    ScheduleBgCopyTilemapToVram(2);
+    gTasks[taskId].func = task;
+}
+
 void ItemUseCB_RotomCatalog(u8 taskId, TaskFunc task)
 {
     PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);

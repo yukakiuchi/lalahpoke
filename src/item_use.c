@@ -1460,6 +1460,13 @@ void ItemUseOutOfBattle_FormChange_ConsumedOnUse(u8 taskId)
     SetUpItemUseCallback(taskId);
 }
 
+// ポケモンの色を変更するアイテム処理 (色違い)
+void ItemUseOutOfBattle_ShinyCandy(u8 taskId)
+{
+    gItemUseCB = ItemUseCB_ShinyCandy; 
+    SetUpItemUseCallback(taskId);
+}
+
 void ItemUseOutOfBattle_RotomCatalog(u8 taskId)
 {
     gItemUseCB = ItemUseCB_RotomCatalog;

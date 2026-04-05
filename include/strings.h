@@ -344,6 +344,8 @@ extern const u8 gText_SpDef[];
 extern const u8 gText_Speed[];
 extern const u8 gText_Dash[];
 extern const u8 gText_Plus[];
+extern const u8 gText_UsedShinyCandy[];    // ひかる飴を使った時のメッセージ
+extern const u8 gText_RestoredBodyColor[]; // ひかる飴をで通常色に戻った時のメッセージ
 
 //Pokédex text
 extern const u8 gText_CryOf[];
