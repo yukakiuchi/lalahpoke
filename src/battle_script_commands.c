@@ -11070,6 +11070,8 @@ static void Cmd_givecaughtmon(void)
     case GIVECAUGHTMON_GIVE_AND_SHOW_MSG:
     {
         struct Pokemon *caughtMon = GetBattlerMon(GetCatchingBattler());
+        // ゲットしたポケモンの状態異常は全回復 仕様変更
+        HealStatusConditions(caughtMon, STATUS1_ANY, GetCatchingBattler());
         if (B_RESTORE_HELD_BATTLE_ITEMS >= GEN_9)
         {
             u16 lostItem = gBattleStruct->itemLost[B_SIDE_OPPONENT][gBattlerPartyIndexes[GetCatchingBattler()]].originalItem;

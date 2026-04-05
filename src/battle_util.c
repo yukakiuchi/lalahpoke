@@ -9284,6 +9284,10 @@ void TryRestoreHeldItems(void)
         {
             u16 lostItem = gBattleStruct->itemLost[B_SIDE_PLAYER][i].originalItem;
 
+            if (lostItem != ITEM_NONE || returnNPCItems)
+                SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &lostItem); // 使ったきのみ強制戦闘後戻すようにする
+            continue; // 元の処理は通さないようにする
+
             // Check if the lost item is a berry and the mon is not holding it
             if (GetItemPocket(lostItem) == POCKET_BERRIES && GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM) != lostItem)
                 lostItem = ITEM_NONE;
