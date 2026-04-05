@@ -517,6 +517,9 @@ extern const u8 BattleScript_BeforeSnoreMessage[];
 extern const u8 BattleScript_SkyDropTargetTooHeavy[];
 extern const u8 BattleScript_SkyDropFlyingType[];
 extern const u8 BattleScript_SkyDropNoTarget[];
+// 追加機能
+extern const u8 BattleScript_ItemDropped[];                      // 野生バトルアイテムドロップ機能追加
+extern const u8 End_Battle_From_Item_Drop[];                     // アイテムドロップ機能 ダブルスやトレーナー戦は何もせずに処理を終了
 
 // zmoves
 extern const u8 BattleScript_ZMoveActivateDamaging[];

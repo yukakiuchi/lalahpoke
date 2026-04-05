@@ -471,6 +471,7 @@ static void Cmd_jumpifplayerran(void);
 static void Cmd_hpthresholds(void);
 static void Cmd_hpthresholds2(void);
 static void Cmd_useitemonopponent(void);
+static void Cmd_various(void);
 static void Cmd_setprotectlike(void);
 static void Cmd_tryexplosion(void);
 static void Cmd_setatkhptozero(void);
@@ -701,6 +702,7 @@ void (*const gBattleScriptingCommandsTable[])(void) =
     [B_SCR_OP_HPTHRESHOLDS]                          = Cmd_hpthresholds,
     [B_SCR_OP_HPTHRESHOLDS2]                         = Cmd_hpthresholds2,
     [B_SCR_OP_USEITEMONOPPONENT]                     = Cmd_useitemonopponent,
+    [B_SCR_OP_VARIOUS]                               = Cmd_various,
     [B_SCR_OP_SETPROTECTLIKE]                        = Cmd_setprotectlike,
     [B_SCR_OP_TRYEXPLOSION]                          = Cmd_tryexplosion,
     [B_SCR_OP_SETATKHPTOZERO]                        = Cmd_setatkhptozero,
@@ -6980,6 +6982,119 @@ static void Cmd_useitemonopponent(void)
     gBattlerInMenuId = gBattlerAttacker;
     PokemonUseItemEffects(GetBattlerMon(gBattlerAttacker), gLastUsedItem, gBattlerPartyIndexes[gBattlerAttacker], 0, TRUE);
     gBattlescriptCurrInstr = cmd->nextInstr;
+}
+
+// アイテムドロップした時のアニメーション
+static void Animation_got_item(u16 dropItem)
+{
+    u8 attacker = gBattlerAttacker;
+    u16 species = gBattleMons[attacker].species;
+    // 自分のスプライトの「住所」を取得
+    struct Sprite *sprite = &gSprites[gBattlerSpriteIds[attacker]];
+    
+    //相手モンスターのアイテムデータを抽出
+    struct BattlePokemon *opponentMon = &gBattleMons[1]; 
+    u16 commonItem = gSpeciesInfo[opponentMon->species].itemCommon;
+    u16 rareItem   = gSpeciesInfo[opponentMon->species].itemRare;
+
+    if (dropItem == rareItem)
+    {
+        PlaySE(SE_SHINY);
+        PlayCry_ByMode(species, -25, CRY_MODE_NORMAL); // 鳴き声再生 (種族ID, 左スピーカー再生, 通常鳴き声、死んだ時の鳴き声もある)
+        BattleAnimateBackSprite(sprite, species);      // そのポケモンに合った勝利の喜びのアニメーションを実行
+    }
+    
+    if (dropItem == commonItem)
+    {
+        PlaySE(SE_SHINY); // 効果音のみ
+    }
+
+}
+
+// dropItemガチャの処理
+// レアアイテムは10%
+// 通常アイテムは40%
+static u16 itemGacha(void)
+{
+    // gBattleMons[0].item
+    // ↑相手モンスターの現在の持ち物、いつか使うからここにメモする
+
+    // 相手の戦闘データの「住所」を特定して代入する
+    // 0=自分, 1=相手1匹目, 2=味方2匹目, 3=相手2匹目
+    struct BattlePokemon *opponentMon = &gBattleMons[1]; 
+
+    //相手モンスターのアイテムデータを抽出
+    u16 commonItem = gSpeciesInfo[opponentMon->species].itemCommon;
+    u16 rareItem   = gSpeciesInfo[opponentMon->species].itemRare;
+
+    // ガチャの準備
+    // 0~99までの数字をランダムで生成
+    u8 luckyNumber = Random() % 100;
+    u16 dropItem = ITEM_NONE;
+
+    // ドロップの確率を変えたい場合はここ中の数字を変更
+    switch (luckyNumber)
+    {
+        case 0 ... 9: // 0から9まで（20%）
+            dropItem = rareItem;
+            break;
+        case 10 ... 49: // 10から49まで（40%）
+            dropItem = commonItem;
+            break;
+        default: // 50から99まで（ハズレ）
+            dropItem = ITEM_NONE;
+            break;
+    }
+    return dropItem;
+}
+
+
+// 何でも屋さんのコマンド
+static void Cmd_various(void)
+{
+    u8 battler   = GetBattlerForBattleScript(gBattlescriptCurrInstr[1]);
+    u8 variousId = gBattlescriptCurrInstr[2];
+    switch (variousId)
+    {
+    case VARIOUS_GIVE_DROPPED_ITEMS:  // 野生バトルアイテムドロップ機能追加
+    {
+        // ガチャ開始
+        u16  dropItem = itemGacha();
+
+        if (IsDoubleBattle() || (gBattleTypeFlags & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_FIRST_BATTLE | BATTLE_TYPE_CATCH_TUTORIAL)))
+        {
+            // 終了処理
+            gBattlescriptCurrInstr = End_Battle_From_Item_Drop;
+            return;
+        }
+
+        if (dropItem)
+        {
+            if(AddBagItem(dropItem, 1))
+                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_ITEM_DROPPED;
+            else
+                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_BAG_IS_FULL;
+
+            BattleScriptPush(gBattlescriptCurrInstr + 3);
+            gLastUsedItem = dropItem;                                 // dropItemの名前表示を代入しとく
+            Animation_got_item(dropItem);                             // 自分のモンスター喜ぶ
+            gBattlescriptCurrInstr = BattleScript_ItemDropped;        // メッセージ表示処理
+            return;
+        }
+
+        // 終了処理
+        gBattlescriptCurrInstr = End_Battle_From_Item_Drop;
+        return;
+    }
+    case VARIOUS_UPDATE_GRASSY_ROOT_FOR_INGRAIN:                      // グラスフィールド時に「ねをはる」を使う直前の処理
+        if (gBattleMons[battler].volatiles.grassyTerrainRoot)         // 一回フラグ落とさないと状態異常重なってるってシステムが判断しちゃう
+        {
+            gBattleMons[battler].volatiles.root = FALSE;              // グラスフィールド時のrootはここをTRUEにしてる(本体)
+            gBattleMons[battler].volatiles.grassyTerrainRoot = FALSE; // グラスフィールド時のrootはここをTRUEにしてる(ただのグラスフィールド用のフラグ)
+        }
+        break;
+    }
+    gBattlescriptCurrInstr += 3;
 }
 
 bool32 CanUseLastResort(enum BattlerId battler)
