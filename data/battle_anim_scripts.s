@@ -31749,9 +31749,8 @@ gBattleAnimGeneral_StrongWinds::
 
 gBattleAnimGeneral_PrimalReversion::
 	createvisualtask AnimTask_PrimalReversion, 0x5
-	jumpargeq 0x0, ITEM_RED_ORB, General_PrimalReversion_Omega
-	jumpargeq 0x0, ITEM_BLUE_ORB, General_PrimalReversion_Alpha
-	goto gBattleAnimGeneral_MegaEvolution
+	jumpargeq 0x0, 955, General_PrimalReversion_Omega
+    goto General_PrimalReversion_Alpha
 General_PrimalReversion_Alpha:
 	loadspritegfx ANIM_TAG_ALPHA_STONE
 	loadspritegfx ANIM_TAG_MEGA_PARTICLES
