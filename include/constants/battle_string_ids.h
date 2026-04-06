@@ -708,6 +708,11 @@ enum StringID
     STRINGID_PKMNBLEEDBYABILITY,            // 相手の特性によって出血したというメッセージ
     STRINGID_CANNOTBEHEALED,                // 出血or回復封じされてるから回復できなかったというメッセージ
     STRINGID_PKMNBLEEDSTOPPED,              // 出血止まったというメッセージ
+    STRINGID_WEATHERHEALEDPOKE,             // 場によるポケモンのHP回復
+    STRINGID_WEATHERDAMAGEDPOKE,            // 場によるポケモンのHPダメージメッセージ
+    STRINGID_FIELDINFLICTSPOKESTATUS,       // 場による状態異常の付与
+    STRINGID_FIELDHEALEDPOKESTATUS,         // 場による状態異常の回復
+    STRINGID_GRASSYTERRAINROOT,             // グラスフィールドによる「ねをはる」状態付与
     STRINGID_COUNT
 };
 

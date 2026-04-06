@@ -840,7 +840,6 @@ void (*const gBattleScriptingCommandsTable[])(void) =
     [B_SCR_OP_UNUSED_27]                             = Cmd_dummy,
     [B_SCR_OP_UNUSED_28]                             = Cmd_dummy,
     [B_SCR_OP_UNUSED_29]                             = Cmd_dummy,
-    [B_SCR_OP_UNUSED_30]                             = Cmd_dummy,
     [B_SCR_OP_CALLNATIVE]                            = Cmd_callnative,
 };
 
@@ -3276,6 +3275,7 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
     case MOVE_EFFECT_RAIN:
     case MOVE_EFFECT_SANDSTORM:
     case MOVE_EFFECT_HAIL:
+    case MOVE_EFFECT_FOG: // きりの効果
     {
         u8 weather = 0, msg = 0;
         switch (moveEffect)
@@ -3303,6 +3303,10 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
                 weather = BATTLE_WEATHER_HAIL;
                 msg = B_MSG_STARTED_HAIL;
             }
+            break;
+        case MOVE_EFFECT_FOG: // 霧技を使った時天候とメッセージをセットする
+            weather = BATTLE_WEATHER_FOG;
+            msg     = B_MSG_STARTED_FOG;
             break;
         default:
             break;
@@ -7147,14 +7151,17 @@ static void RemoveAllWeather(void)
     gBattleWeather = 0;    // remove the weather
 }
 
+// 技やとくせいなどでフィールド効果消された時
 static void RemoveAllTerrains(void)
 {
+    // フィールド効果がある時
     switch (gFieldStatuses & STATUS_FIELD_TERRAIN_ANY)
     {
     case STATUS_FIELD_MISTY_TERRAIN:
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_END_MISTY;
         break;
     case STATUS_FIELD_GRASSY_TERRAIN:
+        ClearTerrainStatusEffects();
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_END_GRASSY;
         break;
     case STATUS_FIELD_ELECTRIC_TERRAIN:
@@ -8595,6 +8602,7 @@ static void Cmd_tryinfatuating(void)
     }
 }
 
+// スクリプト側でアイコン表示を更新する処理
 static void Cmd_updatestatusicon(void)
 {
     CMD_ARGS(u8 battler);
@@ -8615,6 +8623,20 @@ static void Cmd_updatestatusicon(void)
         }
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
+    // いつか使うかもしれない
+    // else if (cmd->battler == BS_ALL_BATTLERS) // 場の全員を対象にするマクロ
+    // {
+    //     for (battler = 0; battler < gBattlersCount; battler++) // ダブルバトルも考慮に入れてバトラーの数を確認
+    //     {
+    //         // 対象のバトラーが場にいて尚且つHPが0でない場合は対象にする
+    //         if (!(gAbsentBattlerFlags & (1u << battler)) && gBattleMons[battler].hp > 0)
+    //         {
+    //             BtlController_EmitStatusIconUpdate(battler, B_COMM_TO_CONTROLLER, gBattleMons[battler].status1);
+    //             MarkBattlerForControllerExec(battler);
+    //         }
+    //     }
+    //     gBattlescriptCurrInstr = cmd->nextInstr;
+    // }
     else if (cmd->battler == BS_ATTACKER_WITH_PARTNER)
     {
         battler = gBattlerAttacker;

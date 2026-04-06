@@ -15036,7 +15036,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_MISTY_TERRAIN] =
     {
-        .name = COMPOUND_STRING("Misty Terrain"),
+        .name = COMPOUND_STRING("Fairy Terrain"),
         .description = COMPOUND_STRING(
             "Covers the ground with mist\n"
             "for 5 turns. Blocks status."),
@@ -15057,6 +15057,32 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .contestComboStarterId = COMBO_STARTER_MISTY_TERRAIN,
         .contestComboMoves = {0},
         .battleAnimScript = gBattleAnimMove_MistyTerrain,
+    },
+
+    [MOVE_MISTY_FOG] =
+    {
+        .name = COMPOUND_STRING("Misty Fog"),
+        .description = COMPOUND_STRING(
+            "Creates a deep mist that\n"
+            "obscures the battlefield."),
+        .effect = EFFECT_WEATHER,
+        .power = 0,
+        .type = TYPE_BUG,
+        .accuracy = 0,
+        .pp = 10,
+        .target = TARGET_FIELD,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_STATUS,
+        .zMove = { .effect = Z_EFFECT_SPDEF_UP_1 },
+        .ignoresProtect = TRUE,
+        .mirrorMoveBanned = TRUE,
+        .skyBattleBanned = TRUE,
+        .argument = { .weatherType =  BATTLE_WEATHER_FOG },
+        .contestEffect = CONTEST_EFFECT_BETTER_WHEN_AUDIENCE_EXCITED,
+        .contestCategory = CONTEST_CATEGORY_BEAUTY,
+        .contestComboStarterId = COMBO_STARTER_MISTY_TERRAIN,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_Haze,
     },
 
     [MOVE_ELECTRIFY] =
@@ -16534,13 +16560,13 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_PSYCHIC_TERRAIN] =
     {
-        .name = COMPOUND_STRING("Psychic Terrain"),
+        .name = COMPOUND_STRING("Dark Terrain"),
         .description = COMPOUND_STRING(
             "The ground turns weird for\n"
             "5 turns. Blocks priority."),
         .effect = EFFECT_PSYCHIC_TERRAIN,
         .power = 0,
-        .type = TYPE_PSYCHIC,
+        .type = TYPE_DARK,
         .accuracy = 0,
         .pp = 10,
         .target = TARGET_FIELD,
@@ -22220,7 +22246,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .category = DAMAGE_CATEGORY_PHYSICAL,
         .battleAnimScript = gBattleAnimMove_MaxStarfall,
         .additionalEffects = ADDITIONAL_EFFECTS({
-            .moveEffect = MOVE_EFFECT_MISTY_TERRAIN,
+        .moveEffect = MOVE_EFFECT_MISTY_TERRAIN,
         }),
     },
 

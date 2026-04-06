@@ -520,6 +520,9 @@ extern const u8 BattleScript_SkyDropNoTarget[];
 // 追加機能
 extern const u8 BattleScript_ItemDropped[];                      // 野生バトルアイテムドロップ機能追加
 extern const u8 End_Battle_From_Item_Drop[];                     // アイテムドロップ機能 ダブルスやトレーナー戦は何もせずに処理を終了
+extern const u8 BattleScript_FieldEffects[];                     // 天候による追加効果処理
+extern const u8 BattleScript_FieldInflictsStatus[];              // 天候による状態異常追加処理
+extern const u8 BattleScript_GrassyTerrainEffects[];             // グラスフィールドの特殊演出処理
 extern const u8 BattleScript_BleedTurnDmg[];                     // 出血によるダメージ処理
 extern const u8 BattleScript_BleedStopped[];                     // 出血止まったっていうメッセージ表示処理
 extern const u8 BattleScript_MoveEffectBleed[];                  // 出血を付与したときに処理
