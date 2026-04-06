@@ -65,7 +65,11 @@ enum FirstEventBlock
     FIRST_EVENT_BLOCK_GMAX_MOVE_RESIDUAL, // Needs to be split
     FIRST_EVENT_BLOCK_SEA_OF_FIRE_DAMAGE,
     FIRST_EVENT_BLOCK_THRASH, // Thrash isn't handled here in vanilla but for now it is that best place for it.
-    FIRST_EVENT_BLOCK_GRASSY_TERRAIN_HEAL,
+    FIRST_EVENT_BLOCK_MISTY_TERRAIN_EFFECTES,       // フェアリーフィールドHP・状態異常回復効果処理
+    FIRST_EVENT_BLOCK_PSYCHIC_TERRAIN_EFFECTS,      // ダークフィールドHP・ねむり状態異常効果処理
+    FIRST_EVENT_BLOCK_GRASSY_TERRAIN_HEAL,          // グラスフィールド回復効果処理
+    FIRST_EVENT_BLOCK_GRASSY_TERRAIN_ROOT,          // グラスフィールドでねをはる効果付与
+    FIRST_EVENT_BLOCK_ELECTRIC_TERRAIN_PARALYZE,    // エレキフィールドでまひ状態異常付与
     FIRST_EVENT_BLOCK_ABILITIES,
     FIRST_EVENT_BLOCK_HEAL_ITEMS,
 };
