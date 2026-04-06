@@ -8593,6 +8593,7 @@ bool32 DoesSpeciesUseHoldItemToChangeForm(u16 species, u16 heldItemId)
     return FALSE;
 }
 
+// メガ進化できるかどうか
 bool32 CanMegaEvolve(enum BattlerId battler)
 {
     enum HoldEffect holdEffect = GetBattlerHoldEffectIgnoreNegation(battler);
@@ -8705,6 +8706,7 @@ bool32 IsBattlerMegaEvolved(enum BattlerId battler)
 
 bool32 IsBattlerPrimalReverted(enum BattlerId battler)
 {
+    return FALSE; // ゲンシカイキ強制でできるようする。以下のチェックは行わない
     // While Transform does copy stats and visuals, it shouldn't be counted as true Primal Revesion.
     if (gBattleMons[battler].volatiles.transformed)
         return FALSE;
@@ -8734,6 +8736,42 @@ u32 GetBattleFormChangeTargetSpecies(enum BattlerId battler, enum FormChanges me
 
     if (formChanges == NULL)
         return species;
+
+    // --- メガシンカ SELECTボタンによる分岐の汎用ロジック ---
+    if(IsOnPlayerSide(battler))
+    {
+        // 外部から指定されたたくさんフォルムチェンジの方法の中で
+        // ここはフォルムチェンジのメソッドだからチェリムやポワルンのような「天候で姿が変わるポケモン」が来ると困る
+        // 下記の進化方法が必要なポケモンをこの処理の中に入れる
+        if (method == FORM_CHANGE_BATTLE_MEGA_EVOLUTION_ITEM ||
+            method == FORM_CHANGE_BATTLE_MEGA_EVOLUTION_MOVE ||
+            method == FORM_CHANGE_BATTLE_PRIMAL_REVERSION    ||
+            method == FORM_CHANGE_BATTLE_ULTRA_BURST)
+        {
+            int variantCount = 0;
+            u32 firstTarget = SPECIES_NONE;
+            u32 i;
+
+            for (i = 0; formChanges[i].method != FORM_CHANGE_TERMINATOR; i++)
+            {
+                // 対象ポケモンの進化条件がここで指定した条件と一致するならば
+                if (formChanges[i].method == method)
+                {
+                    variantCount++;
+                    // 進化先のポケモン情報を反映させる
+                    if (variantCount == 1) firstTarget = formChanges[i].targetSpecies;
+
+                    // SELECTが押されていて、2番目の進化先がある場合
+                    if (gBattleStruct->gimmick.isSelectButton[battler] && variantCount == 2)
+                        return formChanges[i].targetSpecies;
+                }
+            }
+            
+            // 1番目（あるいは唯一）の進化先を返す
+            if (firstTarget != SPECIES_NONE)
+                return firstTarget;
+        }
+    }
 
     struct FormChangeContext ctx =
     {

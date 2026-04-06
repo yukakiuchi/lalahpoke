@@ -30,6 +30,13 @@ RustboroCity_Gym_EventScript_GiveRockTomb::
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	setflag FLAG_RECEIVED_TM_ROCK_TOMB
 	msgbox RustboroCity_Gym_Text_ExplainRockTomb, MSGBOX_DEFAULT
+	goto RustboroCity_Gym_GiveMegaRing
+
+RustboroCity_Gym_GiveMegaRing::
+	msgbox RustboroCity_Gym_Text_TakeThisMegaRing, MSGBOX_DEFAULT
+	giveitem ITEM_MEGA_RING
+	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
+	msgbox RustboroCity_Gym_Text_ExplainMegaRing, MSGBOX_DEFAULT
 	release
 	end
 
@@ -214,8 +221,27 @@ RustboroCity_Gym_Text_ExplainRockTomb:
 	.string "rocks, it also lowers SPEED.\p"
 	.string "If you use a TM, it instantly teaches\n"
 	.string "the move to a POKéMON.\p"
-	.string "Remember, a TM can be used only once,\n"
-	.string "so think before you use it.$"
+	.string "Don't hesitate to use it,\n"
+	.string "because TMs can be used \p"
+	.string "as many times as you want!\n"
+	.string "it's so good, right?$"
+
+RustboroCity_Gym_Text_TakeThisMegaRing:
+	.string "Finally, please take this\n"
+	.string "special gift from me.\p"
+	.string "I want you to have it!$"
+
+RustboroCity_Gym_Text_ExplainMegaRing:
+	.string "That is a MEGA RING.\p"
+	.string "It allows POKéMON to break through\n"
+	.string "the limits of their EVOLUTION!\p"
+	.string "If a POKéMON is capable of it,\n"
+	.string "they can MEGA EVOLVE during battle.\p"
+	.string "MEGA EVOLUTION is not limited to\n"
+	.string "just one POKéMON per battle.\p"
+	.string "Any POKéMON can MEGA EVOLVE\n"
+	.string "as many times as you want!\l"
+	.string "Please, try it out with your team!$"
 
 RustboroCity_Gym_Text_RoxannePostBattle:
 	.string "Since you are so strong, you should\n"
