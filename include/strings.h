@@ -307,6 +307,8 @@ extern const u8 gText_SpDef3[];
 extern const u8 gText_PkmnBaseVar2StatIncreased[];
 extern const u8 gText_MovesPPIncreased[];
 extern const u8 gText_PPWasRestored[];
+extern const u8 gText_HealingIsDenied[];  // 回復封じによる回復ができないメッセージ
+extern const u8 gText_PkmnIsBleeding[];   // 出血による回復ができないメッセージ
 extern const u8 gText_WontHaveEffect[];
 extern const u8 gText_PkmnSnappedOutOfConfusion[];
 extern const u8 gText_PkmnFriendlyBaseVar2Fell[];

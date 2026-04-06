@@ -949,6 +949,7 @@ extern const u8 gBattleAnimStatus_Freeze[];
 extern const u8 gBattleAnimStatus_Curse[];
 extern const u8 gBattleAnimStatus_Nightmare[];
 extern const u8 gBattleAnimStatus_Frostbite[];
+extern const u8 gBattleAnimStatus_Bleed[]; // 出血アニメーション登録
 
 // general animations
 extern const u8 gBattleAnimGeneral_StatsChange[];
