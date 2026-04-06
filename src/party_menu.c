@@ -4764,7 +4764,8 @@ void ItemUseCB_BattleScript(u8 taskId, TaskFunc task)
     {
         gPartyMenuUseExitCallback = FALSE;
         PlaySE(SE_SELECT);
-        DisplayPartyMenuMessage(gText_WontHaveEffect, TRUE);
+        // DisplayPartyMenuMessage(gText_WontHaveEffect, TRUE);
+        DisplayPartyMenuMessage(gStringVar4, TRUE); // パラメーターをメッセージ側に渡してメッセージの分岐を認識させる
         ScheduleBgCopyTilemapToVram(2);
         gTasks[taskId].func = task;
     }
@@ -5367,7 +5368,8 @@ static void TryUseItemOnMove(u8 taskId)
         {
             gPartyMenuUseExitCallback = FALSE;
             PlaySE(SE_SELECT);
-            DisplayPartyMenuMessage(gText_WontHaveEffect, TRUE);
+            // DisplayPartyMenuMessage(gText_WontHaveEffect, TRUE);
+            DisplayPartyMenuMessage(gStringVar4, TRUE);
             ScheduleBgCopyTilemapToVram(2);
             gTasks[taskId].func = Task_ClosePartyMenuAfterText;
         }

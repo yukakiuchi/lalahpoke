@@ -274,7 +274,9 @@ static bool32 HandleEndTurnWish(enum BattlerId battler)
             wishHeal = GetNonDynamaxMaxHP(battler) / 2;
 
         SetHealAmount(battler, wishHeal);
-        if (gBattleMons[battler].volatiles.healBlock)
+        if (gBattleMons[battler].volatiles.bleed)
+            BattleScriptExecute(BattleScript_WishButBleedCannotBeHealed); // ねがいごと技の時出血で回復できないというメッセージを表示させる
+        else if (gBattleMons[battler].volatiles.healBlock)
             BattleScriptExecute(BattleScript_WishButHealBlocked);
         else if (gBattleMons[battler].hp == gBattleMons[battler].maxHP)
             BattleScriptExecute(BattleScript_WishButFullHp);
@@ -398,7 +400,7 @@ static bool32 HandleEndTurnAquaRing(enum BattlerId battler)
     gBattleStruct->eventState.endTurnBattler++;
 
     if (gBattleMons[battler].volatiles.aquaRing
-     && !gBattleMons[battler].volatiles.healBlock
+     && !IsHealDisabledByStatus(battler)
      && !IsBattlerAtMaxHp(battler)
      && IsBattlerAlive(battler))
     {
@@ -417,7 +419,7 @@ static bool32 HandleEndTurnIngrain(enum BattlerId battler)
     gBattleStruct->eventState.endTurnBattler++;
 
     if (gBattleMons[battler].volatiles.root
-     && !gBattleMons[battler].volatiles.healBlock
+     && !IsHealDisabledByStatus(battler)
      && !IsBattlerAtMaxHp(battler)
      && IsBattlerAlive(battler))
     {
@@ -452,8 +454,9 @@ static bool32 HandleEndTurnLeechSeed(enum BattlerId battler)
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_LEECH_SEED_OOZE;
             BattleScriptExecute(BattleScript_LeechSeedTurnDrainLiquidOoze);
         }
-        else if (gBattleMons[gBattlerTarget].volatiles.healBlock)
+        else if (IsHealDisabledByStatus(gBattlerTarget))
         {
+            SetPassiveDamageAmount(gBattlerAttacker, drainAmount);
             BattleScriptExecute(BattleScript_LeechSeedTurnDrainHealBlock);
         }
         else
@@ -833,6 +836,37 @@ static bool32 HandleEndTurnHealBlock(enum BattlerId battler)
         BattleScriptExecute(BattleScript_BufferEndTurn);
         PREPARE_MOVE_BUFFER(gBattleTextBuff1, MOVE_HEAL_BLOCK);
         effect = TRUE;
+    }
+
+    return effect;
+}
+
+// サブステータスのターン終了時の出血処理
+// 毎ターンHP1/8ダメージ
+static bool32 HandleEndTurnBleed(enum BattlerId battler)
+{
+    bool32 effect = FALSE;
+    enum Ability ability = GetBattlerAbility(battler);
+    gBattleStruct->eventState.endTurnBattler++;
+
+    if (gBattleMons[battler].volatiles.bleed && IsBattlerAlive(battler))
+    {
+        if (!IsAbilityAndRecord(battler, ability, ABILITY_MAGIC_GUARD))
+        {
+            SetPassiveDamageAmount(battler, GetNonDynamaxMaxHP(battler) / 8);
+            BattleScriptExecute(BattleScript_BleedTurnDmg);
+            effect = TRUE;
+        }
+
+        if (gBattleMons[battler].volatiles.bleedTimer > 0)
+        {
+            if (--gBattleMons[battler].volatiles.bleedTimer == 0)
+            {
+                gBattleMons[battler].volatiles.bleed = FALSE;
+                BattleScriptExecute(BattleScript_BleedStopped);
+                effect = TRUE;
+            }
+        }
     }
 
     return effect;
@@ -1459,6 +1493,7 @@ static bool32 (*const sEndTurnEffectHandlers[])(enum BattlerId battler) =
     [ENDTURN_INGRAIN] = HandleEndTurnIngrain,
     [ENDTURN_LEECH_SEED] = HandleEndTurnLeechSeed,
     [ENDTURN_POISON] = HandleEndTurnPoison,
+    [ENDTURN_BLEED] = HandleEndTurnBleed,  // 出血処理追加
     [ENDTURN_BURN] = HandleEndTurnBurn,
     [ENDTURN_FROSTBITE] = HandleEndTurnFrostbite,
     [ENDTURN_NIGHTMARE] = HandleEndTurnNightmare,

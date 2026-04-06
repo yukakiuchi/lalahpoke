@@ -291,7 +291,9 @@ enum VolatileFlags
     F(VOLATILE_OCTOLOCKED_BY,               octolockedBy,                  (enum BattlerId, MAX_BITS(MAX_BATTLERS_COUNT))) \
     F(VOLATILE_PARADOX_BOOSTED_STAT,        paradoxBoostedStat,            (enum Stat, NUM_STATS - 1)) \
     F(VOLATILE_UNABLE_TO_USE_MOVE,          unableToUseMove,               (u32, 1)) \
-    F(VOLATILE_ACTIVATE_DANCER,             activateDancer,                (u32, 1))
+    F(VOLATILE_ACTIVATE_DANCER,             activateDancer,                (u32, 1)) \
+    F(VOLATILE_BLEED,                       bleed,                         (u32, 1)) \
+    F(VOLATILE_BLEED_TIMER,                 bleedTimer,                    (u32, B_BLEED_TIMER))
 
 
 /* Use within a macro to get the maximum allowed value for a volatile. Requires _typeMaxValue as input. */
@@ -599,6 +601,8 @@ enum __attribute__((packed)) MoveEffect
     MOVE_EFFECT_STEAL_STATS,
     MOVE_EFFECT_BEAT_UP_MESSAGE, // Handles the message printing for gen2,3 and 4
 
+    // 追加の技効果
+    MOVE_EFFECT_BLEED, // 出血状態異常付与
     NUM_MOVE_EFFECTS
 };
 

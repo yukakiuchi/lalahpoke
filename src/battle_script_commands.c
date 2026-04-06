@@ -3051,12 +3051,22 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
         else if (!gBattleMons[gEffectBattler].volatiles.healBlock)
         {
             gBattleMons[gEffectBattler].volatiles.healBlock = TRUE;
-            gBattleMons[gEffectBattler].volatiles.healBlockTimer = 2;
+            gBattleMons[gEffectBattler].volatiles.healBlockTimer = 5;
             BattleScriptPush(battleScript);
             gBattlescriptCurrInstr = BattleScript_EffectPsychicNoise;
         }
         break;
     }
+    case MOVE_EFFECT_BLEED: // 出血状態付与
+        // メッセージ表示の設定
+        gBattlescriptCurrInstr = (gBattleMons[effectBattler].volatiles.bleed) 
+                                 ? BattleScript_MoveEffectBleedContinue  // すでに出血中
+                                 : BattleScript_MoveEffectBleed;         // 初めて
+        // 2. 状態をセット（または上書き）
+        gBattleMons[gEffectBattler].volatiles.bleed = TRUE;
+        gBattleMons[gEffectBattler].volatiles.bleedTimer = B_BLEED_TIMER;
+        BattleScriptPush(battleScript);
+        break;
     case MOVE_EFFECT_TERA_BLAST:
         if (GetActiveGimmick(gEffectBattler) == GIMMICK_TERA
             && GetBattlerTeraType(gEffectBattler) == TYPE_STELLAR
@@ -10273,6 +10283,7 @@ static void Cmd_trysetsnatch(void)
     }
 }
 
+// 交代時の処理
 static void Cmd_switchoutabilities(void)
 {
     CMD_ARGS(u8 battler);
@@ -12042,6 +12053,12 @@ void BS_ItemRestoreHP(void)
         }
         if (hp + healAmount > maxHP)
             healAmount = maxHP - hp;
+
+        // 戦闘中出血時にアイテムを使っても回復量は0にする(かいふくくすりの場合は状態異常のみ回復)
+        if (battler < MAX_BATTLERS_COUNT && IsHealDisabledByStatus(gBattlerAttacker))
+        {
+            healAmount = 0;
+        }
 
         gBattleScripting.battler = battler;
         PREPARE_SPECIES_BUFFER(gBattleTextBuff1, GetMonData(&party[gBattleStruct->itemPartyIndex[gBattlerAttacker]], MON_DATA_SPECIES));

@@ -1251,6 +1251,7 @@ static bool32 SelectedMonHasVolatile(enum Item itemId)
     return FALSE;
 }
 
+// アイテム利用不可処理
 // Returns whether an item can be used in battle and sets the fail text.
 bool32 CannotUseItemsInBattle(enum Item itemId, struct Pokemon *mon)
 {
@@ -1339,6 +1340,8 @@ bool32 CannotUseItemsInBattle(enum Item itemId, struct Pokemon *mon)
     case EFFECT_ITEM_RESTORE_HP:
         if (hp == 0 || hp == GetMonData(mon, MON_DATA_MAX_HP))
             cannotUse = TRUE;
+        else if (battlerTarget < MAX_POSITION_COUNT && IsHealDisabledByStatus(battlerTarget)) // 出血や回復封じ中はHP回復アイテム利用不可
+            cannotUse = TRUE;
         break;
     case EFFECT_ITEM_CURE_STATUS:
         if (!((GetMonData(mon, MON_DATA_STATUS) & GetItemStatus1Mask(itemId))
@@ -1349,6 +1352,8 @@ bool32 CannotUseItemsInBattle(enum Item itemId, struct Pokemon *mon)
         if ((hp == 0 || hp == GetMonData(mon, MON_DATA_MAX_HP))
             && !((GetMonData(mon, MON_DATA_STATUS) & GetItemStatus1Mask(itemId))
             || SelectedMonHasVolatile(itemId)))
+            cannotUse = TRUE;
+        else if (battlerTarget < MAX_POSITION_COUNT && IsHealDisabledByStatus(battlerTarget)) // 出血や回復封じ中はHP回復アイテム利用不可
             cannotUse = TRUE;
         break;
     case EFFECT_ITEM_REVIVE:
@@ -1371,6 +1376,21 @@ bool32 CannotUseItemsInBattle(enum Item itemId, struct Pokemon *mon)
             cannotUse = TRUE;
         }
         break;
+    }
+
+    if (cannotUse && battlerTarget < MAX_POSITION_COUNT) 
+    {
+        u8 usage = (itemId < ITEMS_COUNT) ? gItemsInfo[itemId].battleUsage : 0;
+        GetMonNickname(mon, gStringVar1);
+        // HP回復アイテム、またはHP回復＋状態異常回復アイテムの場合のみ、
+        // 出血や回復封じの専用メッセージを表示する
+        if (usage == EFFECT_ITEM_RESTORE_HP || usage == EFFECT_ITEM_HEAL_AND_CURE_STATUS)
+        {
+            if (gBattleMons[battlerTarget].volatiles.bleed)
+                failStr = gText_PkmnIsBleeding;
+            else if (gBattleMons[battlerTarget].volatiles.healBlock)
+                failStr = gText_HealingIsDenied;
+        }
     }
 
     if (failStr != NULL)

@@ -30967,6 +30967,13 @@ gBattleAnimStatus_Poison::
 	blend_color_cycle selector=F_PAL_ATTACKER, delay=2, num_blends=2, initial_blend_y=0, target_blend_y=12, color=RGB(30, 0, 31)
 	end
 
+@ 出血アニメーション処理 出血のパレット(色)を指定
+gBattleAnimStatus_Bleed::
+	loopsewithpan SE_M_TOXIC, SOUND_PAN_TARGET, 13, 6
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_ATTACKER, 1, 0, 18, 2
+	blend_color_cycle selector=F_PAL_ATTACKER, delay=2, num_blends=2, initial_blend_y=0, target_blend_y=12, color=RGB(22, 0, 0)
+	end
+
 gBattleAnimStatus_Confusion::
 	loadspritegfx ANIM_TAG_DUCK
 	call ConfusionEffect

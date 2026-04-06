@@ -2165,9 +2165,18 @@ static void SetHealScript(s32 healAmount)
     }
     else if (!IsBattlerAtMaxHp(gBattlerAttacker) || GetConfig(B_ABSORB_MESSAGE) < GEN_5)
     {
-        SetHealAmount(gBattlerAttacker, healAmount);
-        gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_ABSORB;
-        BattleScriptCall(BattleScript_EffectAbsorb);
+        if (IsHealDisabledByStatus(gBattlerAttacker))
+        {
+            // 出血や回復封じ状態ではドレイン技の回復処理はスキップされる
+            // ここでは回復できなかったっていうメッセージ表示のみ
+            BattleScriptCall(BattleScript_AbsorbNoEffect);
+        }
+        else
+        {
+            SetHealAmount(gBattlerAttacker, healAmount);
+            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_ABSORB;
+            BattleScriptCall(BattleScript_EffectAbsorb);
+        }
     }
 }
 

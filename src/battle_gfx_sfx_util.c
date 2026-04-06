@@ -460,6 +460,7 @@ static void SpriteCB_TrainerSlideVertical(struct Sprite *sprite)
 
 #undef sSpeedX
 
+// 状態異常のアニメーション設定
 void InitAndLaunchChosenStatusAnimation(enum BattlerId battler, bool32 isVolatile, u32 status)
 {
     gBattleSpritesDataPtr->healthBoxesData[battler].statusAnimActive = 1;
@@ -490,6 +491,8 @@ void InitAndLaunchChosenStatusAnimation(enum BattlerId battler, bool32 isVolatil
             LaunchStatusAnimation(battler, B_ANIM_STATUS_CURSED);
         else if (status == VOLATILE_NIGHTMARE)
             LaunchStatusAnimation(battler, B_ANIM_STATUS_NIGHTMARE);
+        else if (status == VOLATILE_BLEED)
+            LaunchStatusAnimation(battler, B_ANIM_STATUS_BLD); // 出血のアニメーション
         else // no animation
             gBattleSpritesDataPtr->healthBoxesData[battler].statusAnimActive = 0;
     }

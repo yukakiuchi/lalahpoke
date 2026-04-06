@@ -2354,6 +2354,12 @@ BattleScript_EffectAbsorb::
 BattleScript_EffectAbsorbRet:
 	return
 
+@ 出血や回復封じの時はドレイン攻撃の回復は無効化される
+BattleScript_AbsorbNoEffect::
+	printstring STRINGID_CANNOTBEHEALED
+	waitmessage B_WAIT_TIME_LONG
+	return
+
 BattleScript_Explosion::
 	tryexplosion
 	setatkhptozero
@@ -3116,6 +3122,20 @@ BattleScript_NightmareWorked::
 	printstring STRINGID_PKMNFELLINTONIGHTMARE
 	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_MoveEnd
+
+@ 出血付与された時の処理
+BattleScript_MoveEffectBleed::
+	volatileanimation BS_TARGET, VOLATILE_BLEED
+	printstring STRINGID_PKMNSTARTEDBLEEDING
+	waitmessage B_WAIT_TIME_LONG
+	end2
+
+@ 出血再度付与された時の処理
+BattleScript_MoveEffectBleedContinue::
+	volatileanimation BS_TARGET, VOLATILE_BLEED
+	printstring STRINGID_PKMBLEEDINGCONTINUING
+    waitmessage B_WAIT_TIME_LONG
+	end2
 
 BattleScript_EffectMinimize::
 	attackcanceler
@@ -4585,9 +4605,16 @@ BattleScript_LeechSeedTurnDrainLiquidOoze::
 	jumpifability BS_TARGET, ABILITY_MAGIC_GUARD, BattleScript_LeechSeedTurnDrainHealBlockEnd2
 	goto BattleScript_LeechSeedTurnDrainGainHp
 
+@ やどりぎたねの終了メソッド切り分けた
+BattleScript_LeechSeedTurnDrainHealBlockEnd2:
+	end2
+
 BattleScript_LeechSeedTurnDrainHealBlock::
 	call BattleScript_LeechSeedTurnDrain
-BattleScript_LeechSeedTurnDrainHealBlockEnd2:
+	printstring STRINGID_PKMNSAPPEDBYLEECHSEED @ ここから独自の演出吸われた側のメッセージ表示
+	waitmessage B_WAIT_TIME_LONG
+	printstring STRINGID_CANNOTBEHEALED        @ 回復できないよというメッセージ
+	waitmessage B_WAIT_TIME_LONG
 	end2
 
 BattleScript_LeechSeedTurnDrainRecovery::
@@ -5208,6 +5235,21 @@ BattleScript_WishButHealBlocked::
 	waitmessage B_WAIT_TIME_LONG
 	end2
 
+@ ねがいごとで出血によって回復できなかった時の処理
+BattleScript_WishButBleedCannotBeHealed::
+	printstring STRINGID_PKMNWISHCAMETRUE
+	waitmessage B_WAIT_TIME_LONG
+	pause B_WAIT_TIME_SHORT
+	printstring STRINGID_CANNOTBEHEALED
+	waitmessage B_WAIT_TIME_LONG
+	end2
+
+@ 出血で回復できなかったメッセージ表示
+BattleScript_BleedCannotBeHealed::
+	printstring STRINGID_CANNOTBEHEALED
+	waitmessage B_WAIT_TIME_LONG
+	end2
+
 BattleScript_IngrainTurnHeal::
 	playanimation BS_ATTACKER, B_ANIM_INGRAIN_HEAL
 	printstring STRINGID_PKMNABSORBEDNUTRIENTS
@@ -5656,6 +5698,19 @@ BattleScript_PoisonHealActivates::
 	statusanimation BS_ATTACKER
 	healthbarupdate BS_ATTACKER, PASSIVE_HP_UPDATE
 	datahpupdate BS_ATTACKER, PASSIVE_HP_UPDATE
+	end2
+
+@ 出血ダメージ受けてるメッセージ
+BattleScript_BleedTurnDmg::
+	volatileanimation BS_ATTACKER, VOLATILE_BLEED
+	printstring STRINGID_PKMNHURTBYBLEED
+	waitmessage B_WAIT_TIME_LONG
+	goto BattleScript_DoStatusTurnDmg
+
+@ 出血止まったと表示させる
+BattleScript_BleedStopped::
+ 	printstring STRINGID_PKMNBLEEDSTOPPED
+	waitmessage B_WAIT_TIME_LONG
 	end2
 
 BattleScript_BurnTurnDmg::

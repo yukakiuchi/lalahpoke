@@ -382,7 +382,7 @@ static enum ItemEffect TrySetEnigmaBerry(enum BattlerId battlerDef, enum Battler
      && !DoesSubstituteBlockMove(battlerAtk, battlerDef, gCurrentMove)
      && ((IsBattlerTurnDamaged(battlerDef, EXCLUDING_SUBSTITUTES) && gBattleStruct->moveResultFlags[battlerDef] & MOVE_RESULT_SUPER_EFFECTIVE) || gBattleScripting.overrideBerryRequirements)
      && !(gBattleScripting.overrideBerryRequirements && gBattleMons[battlerDef].hp == gBattleMons[battlerDef].maxHP)
-     && !(B_HEAL_BLOCKING >= GEN_5 && gBattleMons[battlerDef].volatiles.healBlock))
+     && !(B_HEAL_BLOCKING >= GEN_5 && IsHealDisabledByStatus(battlerDef)))
     {
         s32 healAmount = gBattleMons[battlerDef].maxHP * 25 / 100;
         if (GetBattlerAbility(battlerDef) == ABILITY_RIPEN)
@@ -529,7 +529,7 @@ static enum ItemEffect TryShellBell(enum BattlerId battlerAtk)
      && IsBattlerAlive(battlerAtk)
      && GetMoveEffect(gCurrentMove) != EFFECT_PAIN_SPLIT
      && !IsFutureSightAttackerInParty(battlerAtk, gBattlerTarget, gCurrentMove)
-     && !(B_HEAL_BLOCKING >= GEN_5 && gBattleMons[battlerAtk].volatiles.healBlock))
+     && !(B_HEAL_BLOCKING >= GEN_5 && IsHealDisabledByStatus(battlerAtk)))
     {
         SetHealAmount(battlerAtk, gBattleScripting.savedDmg / GetBattlerHoldEffectParam(battlerAtk));
         BattleScriptCall(BattleScript_ItemHealHP_Ret);
@@ -629,9 +629,9 @@ static enum ItemEffect TryLeftovers(enum BattlerId battler, enum HoldEffect hold
     enum ItemEffect effect = ITEM_NO_EFFECT;
 
     if (gBattleMons[battler].hp < gBattleMons[battler].maxHP
-     && !(B_HEAL_BLOCKING >= GEN_5 && gBattleMons[battler].volatiles.healBlock))
+     && !(B_HEAL_BLOCKING >= GEN_5 && IsHealDisabledByStatus(battler)))
     {
-        SetHealAmount(battler, GetNonDynamaxMaxHP(battler) / 16);
+        SetHealAmount(battler, GetNonDynamaxMaxHP(battler) / 8);
         RecordItemEffectBattle(battler, holdEffect);
         BattleScriptExecute(BattleScript_ItemHealHP_End2);
         effect = ITEM_HP_CHANGE;
@@ -818,7 +818,7 @@ static u32 ItemHealHp(enum BattlerId battler, enum Item itemId, enum HealAmount 
     enum Ability ability = GetBattlerAbility(battler);
 
     if (!(gBattleScripting.overrideBerryRequirements && gBattleMons[battler].hp == gBattleMons[battler].maxHP)
-     && !(B_HEAL_BLOCKING >= GEN_5 && gBattleMons[battler].volatiles.healBlock)
+     && !(B_HEAL_BLOCKING >= GEN_5 && IsHealDisabledByStatus(battler))
      && HasEnoughHpToEatBerry(battler, ability, 2, itemId))
     {
         s32 healAmount = 0;
@@ -910,7 +910,7 @@ static enum ItemEffect HealConfuseBerry(enum BattlerId battler, enum Item itemId
     u32 ability = GetBattlerAbility(battler);
 
     if (HasEnoughHpToEatBerry(battler, ability, hpFraction, itemId)
-     && !(B_HEAL_BLOCKING >= GEN_5 && gBattleMons[battler].volatiles.healBlock))
+     && !(B_HEAL_BLOCKING >= GEN_5 && IsHealDisabledByStatus(battler)))
     {
         s32 healAmount = GetNonDynamaxMaxHP(battler) / GetItemHoldEffectParam(itemId);
         if (ability == ABILITY_RIPEN)

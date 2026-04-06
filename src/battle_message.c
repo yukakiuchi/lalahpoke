@@ -879,6 +879,11 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_ZENMODEENDED]                         = COMPOUND_STRING("{B_SCR_ABILITY} ended!"),
     [STRINGID_PKMNDROPPEDITEM]                      = COMPOUND_STRING("{B_OPPONENT_MON1_NAME} dropped\nits {B_LAST_ITEM}!{WAIT_SE}\p"),                       // 野生バトルアイテムドロップ
     [STRINGID_BAGISFULL]                            = COMPOUND_STRING("{B_OPPONENT_MON1_NAME} dropped\n{B_LAST_ITEM}!{WAIT_SE}\pBut your bag is full!\p"),    // 野生ドロップバッグいっぱい
+    [STRINGID_CANNOTBEHEALED]                       = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX} was unable to heal due to its status!"),                      // すいとるなどダメージだけ与えて回復はできない時
+    [STRINGID_PKMNHURTBYBLEED]                      = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} was hurt by its bleeding!"),                                  // 出血で傷ついてるというメッセージ(受け身)
+    [STRINGID_PKMNSTARTEDBLEEDING]                  = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX} started bleeding!"),                                          // 出血し始めたというメッセージ
+    [STRINGID_PKMBLEEDINGCONTINUING]                = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX} is bleeding again\nThe wound remains unsealed!"),             // 出血し続けているというメッセージ
+    [STRINGID_PKMNBLEEDSTOPPED]                     = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} stopped bleeding!"),                                          // 出血が止まったというメッセージ
 };
 
 const u16 gTrainerUsedItemStringIds[] =

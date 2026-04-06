@@ -243,6 +243,9 @@ const u8 gText_PokedollarVar1[] = _("¥{STR_VAR_1}");
 const u8 gText_HP3[] = _("HP");
 const u8 gText_SpAtk3[] = _("SP. ATK");
 const u8 gText_SpDef3[] = _("SP. DEF");
+// パーティメニューに表示させるメッセージ
+const u8 gText_HealingIsDenied[] = _("{STR_VAR_1} is under Heal Block\nHeal actions cannot be taken!{PAUSE_UNTIL_PRESS}"); // 回復封じされてる
+const u8 gText_PkmnIsBleeding[] = _("{STR_VAR_1} is bleeding!\nIt won't have any effect!{PAUSE_UNTIL_PRESS}");             // 出血してて回復できないよ
 const u8 gText_UsedShinyCandy[] = _("Congratulations!\n{STR_VAR_1} has become a Shiny Pokémon!{PAUSE_UNTIL_PRESS}");       // 色違いになった
 const u8 gText_RestoredBodyColor[] = _("{STR_VAR_1}'s body color turned to normal.{PAUSE_UNTIL_PRESS}");                   // 通常色になった
 const u8 gText_WontHaveEffect[] = _("It won't have any effect.{PAUSE_UNTIL_PRESS}");

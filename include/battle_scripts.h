@@ -520,6 +520,13 @@ extern const u8 BattleScript_SkyDropNoTarget[];
 // 追加機能
 extern const u8 BattleScript_ItemDropped[];                      // 野生バトルアイテムドロップ機能追加
 extern const u8 End_Battle_From_Item_Drop[];                     // アイテムドロップ機能 ダブルスやトレーナー戦は何もせずに処理を終了
+extern const u8 BattleScript_BleedTurnDmg[];                     // 出血によるダメージ処理
+extern const u8 BattleScript_BleedStopped[];                     // 出血止まったっていうメッセージ表示処理
+extern const u8 BattleScript_MoveEffectBleed[];                  // 出血を付与したときに処理
+extern const u8 BattleScript_MoveEffectBleedContinue[];          // 出血ターン数上書きされた時のメッセージ表示処理
+extern const u8 BattleScript_BleedCannotBeHealed[];              //「出血によって回復できない」ということを表示させる処理
+extern const u8 BattleScript_WishButBleedCannotBeHealed[];       // ねがいごとで「出血によって回復できない」ということを表示させる処理
+extern const u8 BattleScript_AbsorbNoEffect[];                   // 出血時、ドレイン技は回復ができないというメッセージを表示させる
 
 // zmoves
 extern const u8 BattleScript_ZMoveActivateDamaging[];
