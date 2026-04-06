@@ -702,6 +702,12 @@ enum StringID
     STRINGID_ZENMODEENDED,
     STRINGID_PKMNDROPPEDITEM,               // 野生バトルアイテムドロップメッセージ
     STRINGID_BAGISFULL,                     // 野生バトルアイテムドロップ バッグいっぱいメッセージ
+    STRINGID_PKMNSTARTEDBLEEDING,           // 相手によって出血したというメッセージ
+    STRINGID_PKMBLEEDINGCONTINUING,         // 出血し続けているというメッセージ(出血ターン数上書き)
+    STRINGID_PKMNHURTBYBLEED,               // 出血で傷ついたというメッセージ
+    STRINGID_PKMNBLEEDBYABILITY,            // 相手の特性によって出血したというメッセージ
+    STRINGID_CANNOTBEHEALED,                // 出血or回復封じされてるから回復できなかったというメッセージ
+    STRINGID_PKMNBLEEDSTOPPED,              // 出血止まったというメッセージ
     STRINGID_COUNT
 };
 
