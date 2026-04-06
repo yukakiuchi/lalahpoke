@@ -206,7 +206,7 @@ static const struct BattleWeatherInfo sBattleWeatherInfo[BATTLE_WEATHER_COUNT] =
         .flag = B_WEATHER_FOG,
         .rock = HOLD_EFFECT_NONE,
         .abilityStartMessage = B_MSG_STARTED_DRIZZLE, // Placeholder
-        .moveStartMessage = B_MSG_STARTED_RAIN, // Placeholder
+        .moveStartMessage = B_MSG_STARTED_FOG,
         .endMessage = B_MSG_WEATHER_END_FOG,
         .continuesMessage = B_MSG_WEATHER_TURN_FOG,
         .animation = B_ANIM_FOG_CONTINUES,
@@ -2147,6 +2147,7 @@ bool32 TryChangeBattleWeather(enum BattlerId battler, u32 battleWeatherId, enum 
     return TRUE;
 }
 
+// 地形効果上書き処理
 bool32 TryChangeBattleTerrain(enum BattlerId battler, u32 statusFlag)
 {
     if (gBattleStruct->isSkyBattle)
@@ -2154,6 +2155,8 @@ bool32 TryChangeBattleTerrain(enum BattlerId battler, u32 statusFlag)
 
     if (!(gFieldStatuses & statusFlag))
     {
+        // 上書きする前に現在のフィールドによる状態異常付与を解除
+        ClearTerrainStatusEffects();
         gFieldStatuses &= ~STATUS_FIELD_TERRAIN_ANY;
         gFieldStatuses |= statusFlag;
         for (enum BattlerId i = 0; i < gBattlersCount; i++)
@@ -2170,6 +2173,38 @@ bool32 TryChangeBattleTerrain(enum BattlerId battler, u32 statusFlag)
     }
 
     return FALSE;
+}
+
+// 地形による状態効果を解除
+void ClearTerrainStatusEffects(void)
+{
+    u32 i;
+    // グラスフィールドの「ねをはる」効果を解除
+    for (i = 0; i < gBattlersCount; i++)
+    {
+        if (gBattleMons[i].volatiles.grassyTerrainRoot)
+        {
+            gBattleMons[i].volatiles.root = FALSE;
+            gBattleMons[i].volatiles.grassyTerrainRoot = FALSE;
+            BtlController_EmitSetMonData(i, B_COMM_TO_CONTROLLER, REQUEST_STATUS_BATTLE, 0, 
+                                     sizeof(gBattleMons[i].volatiles), &gBattleMons[i].volatiles);
+            MarkBattlerForControllerExec(i);
+        }
+    }
+}
+
+// グラスフィールド時、自分由来の「ねをはる」に上書きをする
+void ClearGrassyRootForOverwrite(void)
+{
+    u32 battler = gBattlerAttacker;
+    
+    // グラスフィールド由来の「ねをはる」が張られている場合のみ、
+    // 一時的にrootフラグを落として、直後のtrysetvolatileを「成功」ルートへ導く
+    if (gBattleMons[battler].volatiles.grassyTerrainRoot)
+    {
+        gBattleMons[battler].volatiles.root = FALSE;
+        gBattleMons[battler].volatiles.grassyTerrainRoot = FALSE;
+    }
 }
 
 static void ForewarnChooseMove(enum BattlerId battler)
@@ -6604,14 +6639,25 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct BattleContext *ctx)
         modifier = uq4_12_multiply(modifier, UQ_4_12(2.0));
     if (GetMoveEffect(ctx->chosenMove) == EFFECT_ME_FIRST)
         modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
+
+    // --------- フィールド効果によるダメージ修正 ---------
+    // グラスフィールド：くさタイプの技を1.3倍にする
     if (IsGrassyTerrainAffected(battlerAtk, ctx->abilityAtk, ctx->holdEffectAtk, ctx->fieldStatuses) && moveType == TYPE_GRASS)
-        modifier = uq4_12_multiply(modifier, (B_TERRAIN_TYPE_BOOST >= GEN_8 ? UQ_4_12(1.3) : UQ_4_12(1.5)));
-    if (IsMistyTerrainAffected(battlerDef, ctx->abilityDef, ctx->holdEffectDef, ctx->fieldStatuses) && moveType == TYPE_DRAGON)
-        modifier = uq4_12_multiply(modifier, UQ_4_12(0.5));
+        modifier = uq4_12_multiply(modifier, UQ_4_12(1.3));
+    // グラスフィールド：炎タイプのダメージを1.2倍にする
+    if (gFieldStatuses & STATUS_FIELD_GRASSY_TERRAIN && moveType == TYPE_FIRE)
+        modifier = uq4_12_multiply(modifier, UQ_4_12(1.2));
+    // ミストフィールド：フェアリータイプの技を1.3倍にする
+    if (IsMistyTerrainAffected(battlerDef, ctx->abilityDef, ctx->holdEffectDef, ctx->fieldStatuses) && moveType == TYPE_FAIRY)
+        modifier = uq4_12_multiply(modifier, UQ_4_12(1.3));
+    // エレキフィールド：でんきタイプの技を1.3倍にする
     if (IsElectricTerrainAffected(battlerAtk, ctx->abilityAtk, ctx->holdEffectAtk, ctx->fieldStatuses) && moveType == TYPE_ELECTRIC)
-        modifier = uq4_12_multiply(modifier, (B_TERRAIN_TYPE_BOOST >= GEN_8 ? UQ_4_12(1.3) : UQ_4_12(1.5)));
-    if (IsPsychicTerrainAffected(battlerAtk, ctx->abilityAtk, ctx->holdEffectAtk, ctx->fieldStatuses) && moveType == TYPE_PSYCHIC)
-        modifier = uq4_12_multiply(modifier, (B_TERRAIN_TYPE_BOOST >= GEN_8 ? UQ_4_12(1.3) : UQ_4_12(1.5)));
+        modifier = uq4_12_multiply(modifier, UQ_4_12(1.3));
+    // サイコフィールド：あくタイプの技を1.3倍にする
+    if (IsPsychicTerrainAffected(battlerAtk, ctx->abilityAtk, ctx->holdEffectAtk, ctx->fieldStatuses) && moveType == TYPE_DARK)
+        modifier = uq4_12_multiply(modifier, UQ_4_12(1.3));
+    // ----------- ここまで ----------------------------
+
     if (IsFieldMudSportAffected(ctx->moveType))
         modifier = uq4_12_multiply(modifier, UQ_4_12(GetConfig(B_SPORT_DMG_REDUCTION) >= GEN_5 ? 0.33 : 0.5));
     if (IsFieldWaterSportAffected(ctx->moveType))
@@ -7398,6 +7444,7 @@ static inline uq4_12_t GetSameTypeAttackBonusModifier(struct BattleContext *ctx)
     return (ctx->abilityAtk == ABILITY_ADAPTABILITY) ? UQ_4_12(2.0) : UQ_4_12(1.5);
 }
 
+// 天候によるダメージ倍率の変更処理
 // Utility Umbrella holders take normal damage from what would be rain- and sun-weakened attacks.
 static uq4_12_t GetWeatherDamageModifier(struct BattleContext *ctx)
 {
@@ -7408,17 +7455,21 @@ static uq4_12_t GetWeatherDamageModifier(struct BattleContext *ctx)
     if (ctx->holdEffectDef == HOLD_EFFECT_UTILITY_UMBRELLA)
         return UQ_4_12(1.0);
 
-    if (ctx->weather & B_WEATHER_RAIN)
+    if (ctx->weather & B_WEATHER_RAIN) // 雨の時のダメージ変更
     {
         if (ctx->moveType != TYPE_FIRE && ctx->moveType != TYPE_WATER)
             return UQ_4_12(1.0);
-        return (ctx->moveType == TYPE_FIRE) ? UQ_4_12(0.5) : UQ_4_12(1.5);
+        return (ctx->moveType == TYPE_FIRE) ? UQ_4_12(0.75) : UQ_4_12(1.5);
     }
     if (ctx->weather & B_WEATHER_SUN)
     {
         if (ctx->moveType != TYPE_FIRE && ctx->moveType != TYPE_WATER)
             return UQ_4_12(1.0);
-        return (ctx->moveType == TYPE_WATER) ? UQ_4_12(0.5) : UQ_4_12(1.5);
+        return (ctx->moveType == TYPE_WATER) ? UQ_4_12(0.75) : UQ_4_12(1.5);
+    }
+    if (ctx->weather & B_WEATHER_SANDSTORM)
+    {
+        return (ctx->moveType == TYPE_GROUND) ? UQ_4_12(1.5) : UQ_4_12(1.0);
     }
     return UQ_4_12(1.0);
 }
@@ -10440,6 +10491,7 @@ bool32 CanMoveSkipAccuracyCalc(enum BattlerId battlerAtk, enum BattlerId battler
     return effect;
 }
 
+// バトル時の命中率と回避率の処理(メソッド名が紛らわしいけどどっちの処理もしてる)
 u32 GetTotalAccuracy(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, enum Ability atkAbility, enum Ability defAbility, enum HoldEffect atkHoldEffect, enum HoldEffect defHoldEffect)
 {
     u32 calc, moveAcc;
@@ -10569,8 +10621,93 @@ u32 GetTotalAccuracy(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum 
     if (B_AFFECTION_MECHANICS == TRUE && GetBattlerAffectionHearts(battlerDef) == AFFECTION_FIVE_HEARTS)
         calc = (calc * 90) / 100;
 
-    if (HasWeatherEffect() && gBattleWeather & B_WEATHER_FOG)
-        calc = (calc * 60) / 100; // modified by 3/5
+    // フィールドや天候による命中率の変化
+
+    // ----- 晴れ -----
+    if (HasWeatherEffect() && (gBattleWeather & B_WEATHER_SUN))
+    {
+        // ほのおタイプへの命中が80%になる
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_FIRE) && IS_BATTLER_OF_TYPE(battlerDef, TYPE_FIRE))
+            calc = (calc * 80) / 100;
+    }
+
+    // -----  雨  -----
+    if (HasWeatherEffect() && (gBattleWeather & B_WEATHER_RAIN))
+    {
+        // 水タイプへの命中が80%になる
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_WATER) && IS_BATTLER_OF_TYPE(battlerDef, TYPE_WATER))
+            calc = (calc * 80) / 100;
+    }
+
+    // -----  砂  -----
+    if (HasWeatherEffect() && (gBattleWeather & B_WEATHER_SANDSTORM))
+    {
+        // 攻撃側がじめんタイプなら命中率ダウンの効果を受けない
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_GROUND))
+        {
+            if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GROUND))
+                calc = (calc * 80) / 100; // じめんタイプへの攻撃は命中率80%になる
+            else
+                calc = (calc * 90) / 100; // じめんタイプ以外のタイプへの攻撃は90%になる
+        }
+    }
+
+    // -----  雪  ------
+    if (HasWeatherEffect() && gBattleWeather & B_WEATHER_SNOW)
+    {
+        // こおりタイプへの命中が20%下がる(こおりタイプ以外)
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_ICE) && IS_BATTLER_OF_TYPE(battlerDef, TYPE_ICE))
+            calc = (calc * 80) / 100;     //こおりタイプへの攻撃は命中率80%になる
+    }
+
+    // -----  霧  ------
+    if (HasWeatherEffect() && (gBattleWeather & B_WEATHER_FOG))
+    {   
+        // 1. むしタイプ命中下がらない
+        if (!IS_BATTLER_ANY_TYPE(battlerAtk, TYPE_BUG))
+        {
+            // 2. あくタイプひこうタイプは命中20%下がる
+            if (IS_BATTLER_OF_TYPE(battlerAtk, TYPE_DARK) || IS_BATTLER_OF_TYPE(battlerAtk, TYPE_FLYING))
+                calc = (calc * 20) / 100;
+            // 3. それ以外は命中率60%になる
+            else
+                calc = (calc * 60) / 100;
+        }
+    }
+
+    // ------  グラスフィールド  ------
+    if (gFieldStatuses & STATUS_FIELD_GRASSY_TERRAIN)
+    {
+        // くさタイプは命中率ダウン効果を受けない
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_GRASS))
+        {
+            if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GRASS))
+                calc = (calc * 80) / 100; // 草タイプへの攻撃は命中率80%になる
+            else if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_BUG))
+                calc = (calc * 90) / 100; // 虫タイプへの攻撃は命中率90%になる
+        }
+    }
+
+        // ------  ミストフィールド  ------
+    if (gFieldStatuses & STATUS_FIELD_MISTY_TERRAIN)
+    {
+        // くさタイプは命中率ダウン効果を受けない
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_GRASS))
+        {
+            if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GRASS))
+                calc = (calc * 80) / 100; // 草タイプへの攻撃は命中率80%になる
+            else if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_BUG))
+                calc = (calc * 90) / 100; // 虫タイプへの攻撃は命中率90%になる
+        }
+    }
+
+    // ------  サイコフィールド(ダーク)  ------
+    if (gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN)
+    {
+        // あくタイプへの攻撃は命中率80%になる(攻撃側があくタイプの場合は命中率ダウンを受けない)
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_DARK) && IS_BATTLER_OF_TYPE(battlerDef, TYPE_DARK))
+            calc = (calc * 80) / 100;
+    }
 
     return calc;
 }
