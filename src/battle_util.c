@@ -3012,9 +3012,10 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
             effect = TRUE;
         }
         // 深夜の時間帯20%の確率で自動的にダークフィールが展開される
-        else if (!(gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN) && (gLocalTime.hours >= 0 || gLocalTime.hours < 5) && Random() % 20)
+        else if (!(gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN) && (gLocalTime.hours < 5))
+            // && (Random() % 100 < 20)
         {
-            gFieldStatuses = STATUS_FIELD_PSYCHIC_TERRAIN;
+            gFieldStatuses = STATUS_FIELD_GRASSY_TERRAIN;
             gFieldTimers.terrainTimer = 0;
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_PSYCHIC;
             BattleScriptPushCursorAndCallback(BattleScript_OverworldTerrain);

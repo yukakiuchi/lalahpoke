@@ -5,8 +5,8 @@ from PIL import Image
 # --- 設定 ---
 # 1. プロジェクトのルートパス (expandフォルダの場所)
 project_root = "/Users/yu/Desktop/expand/graphics/battle_anims" 
-# 2. 元にする画像
-source_png = "/Users/yu/Desktop/ccc/sandstorm.png"
+# 2. 元にする画像が入っているディレクトリ (この中のPNGを自動取得)
+source_dir = "/Users/yu/Desktop/ccc/"
 # 3. 出力先 (デスクトップのフォルダ)
 output_dir = os.path.expanduser("~/Desktop/all_palettes_test/")
 
@@ -19,7 +19,23 @@ def gba_to_rgb(gba_color):
     b = ((gba_color >> 10) & 0x1F) << 3
     return (r, g, b)
 
+def get_single_png(directory):
+    """ディレクトリ内の最初のPNGファイルパスを返す"""
+    for f in os.listdir(directory):
+        if f.lower().endswith(".png"):
+            return os.path.join(directory, f)
+    return None
+
 def scan_and_apply():
+    # --- 修正箇所：CCCフォルダから画像を探す ---
+    source_png = get_single_png(source_dir)
+    if not source_png:
+        print(f"エラー: {source_dir} の中にPNGファイルが見つかりません。")
+        return
+    
+    print(f"使用するベース画像: {os.path.basename(source_png)}")
+    # ---------------------------------------
+
     base_img = Image.open(source_png)
     if base_img.mode != 'P':
         print("Error: Image must be in Indexed Color mode (P).")
@@ -63,4 +79,5 @@ def scan_and_apply():
     print(f"\n完了！合計 {count} 個のパレットを適用しました。")
     print(f"結果は '{output_dir}' を確認してください。")
 
-scan_and_apply()
+if __name__ == "__main__":
+    scan_and_apply()

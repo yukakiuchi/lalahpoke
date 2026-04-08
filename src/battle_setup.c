@@ -711,7 +711,7 @@ enum BattleEnvironments BattleSetup_GetEnvironmentId(void)
 {
     u16 tileBehavior;
     s16 x, y;
-
+return BATTLE_ENVIRONMENT_CAVE;
     if (ShouldUseFishingEnvironmentInBattle())
         GetXYCoordsOneStepInFrontOfPlayer(&x, &y);
     else
