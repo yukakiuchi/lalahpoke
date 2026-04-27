@@ -386,6 +386,28 @@ static void FadeInScreenWithWeather(void)
         }
         break;
     case WEATHER_SNOW:
+        // トウカの森でのゆきはWEATHER_SHADEと同じようにマップを暗くする
+        if (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_PETALBURG_WOODS) && 
+            gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_PETALBURG_WOODS))
+        {
+            // すでに FadeSelectedPals で暗くなる準備ができているので、
+            // ここでは「フェードが終わったかどうか」だけをチェックします。
+            if (!gPaletteFade.active && FadeInScreen_RainShowShade() == FALSE)
+            {
+                gWeatherPtr->colorMapIndex = 3; // 暗がり(Index 3)に固定
+                gWeatherPtr->palProcessingState = WEATHER_PAL_STATE_IDLE;
+            }
+
+        }else // こっちが通常の処理
+        {
+            // それ以外のマップ（トウカの森以外）の雪では、通常のフェード処理を行う
+            if (!gPaletteFade.active)
+            {
+                gWeatherPtr->colorMapIndex = gWeatherPtr->targetColorMapIndex;
+                gWeatherPtr->palProcessingState = WEATHER_PAL_STATE_IDLE;
+            }
+        }
+        break;
     case WEATHER_VOLCANIC_ASH:
     case WEATHER_SANDSTORM:
     case WEATHER_FOG_DIAGONAL:
@@ -770,6 +792,13 @@ void FadeSelectedPals(u8 mode, s8 delay, u32 selectedPalettes)
     case WEATHER_SHADE:
     case WEATHER_DROUGHT:
         useWeatherPal = TRUE;
+        break;
+    case WEATHER_SNOW:
+        if (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_PETALBURG_WOODS)&& 
+            gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_PETALBURG_WOODS))
+            useWeatherPal = TRUE;
+        else
+            useWeatherPal = FALSE;
         break;
     default:
         useWeatherPal = FALSE;

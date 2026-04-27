@@ -15,6 +15,7 @@
 #include "trig.h"
 #include "gpu_regs.h"
 #include "palette.h"
+#include "rtc.h" // GetTimeOfDay()を使うため
 
 EWRAM_DATA static u8 sCurrentAbnormalWeather = 0;
 
@@ -935,7 +936,7 @@ static void InitSnowflakeSpriteMovement(struct Sprite *sprite)
     sprite->tPosY = sprite->y * 128;
     sprite->x2 = 0;
     rand = Random();
-    sprite->tDeltaY = (rand & 3) * 5 + 64;
+    sprite->tDeltaY = (rand & 3) * 5 + 128; // ゆきの落下速度を2倍に
     sprite->tDeltaY2 = sprite->tDeltaY;
     StartSpriteAnim(sprite, (rand & 1) ? 0 : 1);
     sprite->tWaveIndex = 0;
@@ -2596,6 +2597,20 @@ static const u8 sWeatherCycleRoute123[WEATHER_CYCLE_LENGTH] =
     WEATHER_SUNNY,
 };
 
+/* ------------ 天候ランダム化処理 ------------ */
+struct WeatherChance { u8 weather; u8 percent; }; // 配列の型を宣言
+
+// 2. プロトタイプ宣言
+static u8 GetRandomWeatherByPercent(const struct WeatherChance *table, size_t count);
+static u8 GetPetalburgWoodsWeather(void);                                        // 宣言だけしておく。森専用の天候システム
+#define ROLL_WEATHER(table) GetRandomWeatherByPercent(table, ARRAY_COUNT(table)) // コードを見やすく整理するためのシンプル関数
+
+// ときどき雨天候ボックス
+static const struct WeatherChance sRainSometimesTable[] = {
+    {WEATHER_RAIN,  30}, // 雨 30%
+    {WEATHER_SUNNY, 70}, // 晴 70%
+};
+
 static u8 TranslateWeatherNum(u8 weather)
 {
     switch (weather)
@@ -2618,6 +2633,8 @@ static u8 TranslateWeatherNum(u8 weather)
     case WEATHER_ABNORMAL:           return WEATHER_ABNORMAL;
     case WEATHER_ROUTE119_CYCLE:     return sWeatherCycleRoute119[gSaveBlock1Ptr->weatherCycleStage];
     case WEATHER_ROUTE123_CYCLE:     return sWeatherCycleRoute123[gSaveBlock1Ptr->weatherCycleStage];
+    case WEATHER_PETALBURG_WOODS:    return GetPetalburgWoodsWeather();        // 森専用の天候システム
+    case WEATHER_RAIN_SOMETIMES:     return ROLL_WEATHER(sRainSometimesTable); // 共有のランダム天候ときどき雨
     default:                         return WEATHER_NONE;
     }
 }
@@ -2634,4 +2651,28 @@ static void UpdateRainCounter(u8 newWeather, u8 oldWeather)
     if (newWeather != oldWeather
      && (newWeather == WEATHER_RAIN || newWeather == WEATHER_RAIN_THUNDERSTORM))
         IncrementGameStat(GAME_STAT_GOT_RAINED_ON);
+}
+
+// 指定された確率で天候を抽選して返す関数
+static u8 GetRandomWeatherByPercent(const struct WeatherChance *table, size_t count)
+{
+    u8 i;
+    u8 rand = Random() % 100;
+    u8 current = 0;
+    for (i = 0; i < count; i++)
+    {
+        current += table[i].percent;
+        if (rand < current)
+            return table[i].weather;
+    }
+    return table[0].weather;
+}
+
+// 森専用の天候システム
+static u8 GetPetalburgWoodsWeather(void)
+{
+    if (GetTimeOfDay() == TIME_NIGHT)
+        return WEATHER_SNOW; // 夜は雪が降る
+    else
+        return WEATHER_FOG_DIAGONAL;
 }
