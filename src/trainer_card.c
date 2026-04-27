@@ -72,7 +72,7 @@ struct TrainerCardData
     u8 textNumLinkPokeblocks[70];
     u8 textNumLinkContests[70];
     u8 textBattleFacilityStat[70];
-    u16 monIconPal[16 * PARTY_SIZE];
+    u16 monIconPal[16 * 8];
     s8 flipBlendY;
     bool8 timeColonNeedDraw;
     u8 cardType;
@@ -1364,7 +1364,7 @@ static void LoadMonIconGfx(void)
 {
     u8 i;
 
-    CpuSet(gMonIconPalettes, sData->monIconPal, 0x60);
+    CpuSet(gMonIconPalettes, sData->monIconPal, 0x80);
     switch (sData->trainerCard.monIconTint)
     {
     case MON_ICON_TINT_NORMAL:
@@ -1379,7 +1379,7 @@ static void LoadMonIconGfx(void)
         TintPalette_SepiaTone(sData->monIconPal, 96);
         break;
     }
-    LoadPalette(sData->monIconPal, BG_PLTT_ID(5), 6 * PLTT_SIZE_4BPP);
+    LoadPalette(sData->monIconPal, BG_PLTT_ID(5), 8 * PLTT_SIZE_4BPP);
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
