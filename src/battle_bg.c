@@ -29,6 +29,7 @@
 #include "constants/battle_anim.h"
 #include "constants/battle_partner.h"
 #include "data/battle_environment.h"
+#include "rtc.h" // GetTimeOfDay()を使うため
 
 // .rodata
 
@@ -869,7 +870,16 @@ static void LoadBattleEnvironmentGfx(u16 environment)
     // Copy to bg3
     DecompressDataWithHeaderVram(gBattleEnvironmentInfo[environment].background.tileset, (void *)(BG_CHAR_ADDR(2)));
     DecompressDataWithHeaderVram(gBattleEnvironmentInfo[environment].background.tilemap, (void *)(BG_SCREEN_ADDR(26)));
-    LoadPalette(gBattleEnvironmentInfo[environment].palette, BG_PLTT_ID(2), 3 * PLTT_SIZE_4BPP);
+
+    /* -----  デフォルトの戦闘パレットは昼間用  ----- */
+    const void *pal = gBattleEnvironmentInfo[environment].palette;
+    // 夜用のパレットがある場合はそれを使うようにさせる
+    if (GetTimeOfDay() == TIME_NIGHT && gBattleEnvironmentInfo[environment].nightPalette != NULL)
+        pal = gBattleEnvironmentInfo[environment].nightPalette;        
+    LoadPalette(pal, BG_PLTT_ID(2), 3 * PLTT_SIZE_4BPP);
+    /* ----------------------------------------- */
+
+    // LoadPalette(gBattleEnvironmentInfo[environment].palette, BG_PLTT_ID(2), 3 * PLTT_SIZE_4BPP);
 }
 
 // Loads the entry associated with the battle environment.
