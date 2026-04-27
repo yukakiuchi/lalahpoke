@@ -52,6 +52,9 @@
 #include "constants/trainers.h"
 #include "constants/weather.h"
 #include "constants/pokemon.h"
+#include "rtc.h"                  // gLocalTime.hours使うため
+#include "overworld.h"            // gMapHeader.mapType使うため
+
 
 static bool32 TryRemoveScreens(enum BattlerId battler);
 static bool32 IsUnnerveAbilityOnOpposingSide(enum BattlerId battler);
@@ -2688,6 +2691,7 @@ static bool32 SetStartingHazardStatus(enum Hazards hazard, u32 targetSide, u8 la
     return effect;
 }
 
+// フィールドの状態を見てバトルに反映させる
 bool32 TryFieldEffects(enum FieldEffectCases caseId)
 {
     bool32 effect = FALSE;
@@ -3009,6 +3013,15 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
             BattleScriptPushCursorAndCallback(BattleScript_OverworldTerrain);
             effect = TRUE;
         }
+        // 深夜の時間帯20%の確率で野外に自動的にダークフィールが展開される
+        else if (!(gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN) && (gLocalTime.hours < 5) && (Random() % 100 < 20) && gMapHeader.mapType != MAP_TYPE_INDOOR)
+        {
+            gFieldStatuses = STATUS_FIELD_PSYCHIC_TERRAIN;
+            gFieldTimers.terrainTimer = 0;
+            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_PSYCHIC;
+            BattleScriptPushCursorAndCallback(BattleScript_OverworldTerrain);
+            effect = TRUE;
+        }    
         break;
     case FIELD_EFFECT_OVERWORLD_WEATHER:
         if (!(gBattleTypeFlags & BATTLE_TYPE_RECORDED))

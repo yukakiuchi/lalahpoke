@@ -16,6 +16,7 @@ struct BattleEnvironment
     struct BattleBackgroundEntry entry;
     struct BattleBackground background;
     const void *palette;
+    const void *nightPalette; // 夜用の戦闘背景パレットを入れる場所を追加
     TaskFunc battleIntroSlide;
 };
 
