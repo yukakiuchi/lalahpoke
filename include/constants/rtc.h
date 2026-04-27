@@ -85,13 +85,13 @@
     #define MORNING_HOUR_END   10
 
     #define DAY_HOUR_BEGIN     10
-    #define DAY_HOUR_END       19
+    #define DAY_HOUR_END       17 // 日中終了時間定義変更
 
-    #define EVENING_HOUR_BEGIN 19
-    #define EVENING_HOUR_END   20
+    #define EVENING_HOUR_BEGIN 17 // 夕方開始時間定義変更
+    #define EVENING_HOUR_END   19 // 夕方終了時間定義変更
 
-    #define NIGHT_HOUR_BEGIN   20
-    #define NIGHT_HOUR_END     6
+    #define NIGHT_HOUR_BEGIN   19 // 夜間開始時間定義変更
+    #define NIGHT_HOUR_END     6  // 夜間終了時間間定義変更
 #endif
 
 // TIMES_OF_DAY_COUNT must be last or things will break
