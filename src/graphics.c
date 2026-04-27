@@ -1539,9 +1539,9 @@ const u32 gBattleAnimBgImage_MistyTerrain[] = INCGFX_U32("graphics/battle_anims/
 const u16 gBattleAnimBgPalette_MistyTerrain[] = INCGFX_U16("graphics/battle_anims/backgrounds/new_misty_terrain.pal", ".gbapal");
 const u32 gBattleAnimBgTilemap_MistyTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new_misty_terrain.bin.smolTM");
 
-const u32 gBattleAnimBgImage_PsychicTerrain[] = INCGFX_U32("graphics/battle_anims/backgrounds/new_psychic_terrain.png", ".4bpp.smol");
-const u16 gBattleAnimBgPalette_PsychicTerrain[] = INCGFX_U16("graphics/battle_anims/backgrounds/new_psychic_terrain.pal", ".gbapal");
-const u32 gBattleAnimBgTilemap_PsychicTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new_psychic_terrain.bin.smolTM");
+const u32 gBattleAnimBgImage_PsychicTerrain[] = INCGFX_U32("graphics/battle_anims/backgrounds/psychic_terrain.png", ".4bpp.smol");
+const u16 gBattleAnimBgPalette_PsychicTerrain[] = INCGFX_U16("graphics/battle_anims/backgrounds/max_lightning.pal", ".gbapal");
+const u32 gBattleAnimBgTilemap_PsychicTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/psychic_terrain.bin.smolTM");
 #else
 const u32 gBattleAnimBgImage_PsychicTerrain[] = INCGFX_U32("graphics/battle_anims/backgrounds/psychic_terrain.png", ".4bpp.smol");
 const u16 gBattleAnimBgPalette_PsychicTerrain[] = INCGFX_U16("graphics/battle_anims/backgrounds/psychic_terrain.pal", ".gbapal");
