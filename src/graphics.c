@@ -1539,9 +1539,10 @@ const u32 gBattleAnimBgImage_MistyTerrain[] = INCBIN_U32("graphics/battle_anims/
 const u16 gBattleAnimBgPalette_MistyTerrain[] = INCBIN_U16("graphics/battle_anims/backgrounds/new_misty_terrain.gbapal");
 const u32 gBattleAnimBgTilemap_MistyTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new_misty_terrain.bin.smolTM");
 
-const u32 gBattleAnimBgImage_PsychicTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new_psychic_terrain.4bpp.smol");
-const u16 gBattleAnimBgPalette_PsychicTerrain[] = INCBIN_U16("graphics/battle_anims/backgrounds/new_psychic_terrain.gbapal");
-const u32 gBattleAnimBgTilemap_PsychicTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new_psychic_terrain.bin.smolTM");
+// ダークフィールは既存の絵柄の方が好きだったから既存の画像+別のパレット
+const u32 gBattleAnimBgImage_PsychicTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/psychic_terrain.4bpp.smol");
+const u16 gBattleAnimBgPalette_PsychicTerrain[] = INCBIN_U16("graphics/battle_anims/backgrounds/max_lightning.gbapal");
+const u32 gBattleAnimBgTilemap_PsychicTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/psychic_terrain.bin.smolTM");
 #else
 const u32 gBattleAnimBgImage_PsychicTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/psychic_terrain.4bpp.smol");
 const u16 gBattleAnimBgPalette_PsychicTerrain[] = INCBIN_U16("graphics/battle_anims/backgrounds/psychic_terrain.gbapal");
