@@ -1,121 +1,120 @@
 import os
+import subprocess
 from PIL import Image
 
 # ==========================================
-# 設定エリア
+# ★ USER SETTINGS ★
 # ==========================================
-ROM_PATH = '/Users/yu/Downloads/Z (v1.2.0).gba'
-FIXED_IMG_OFFSET = 0x4BFA88  # ここが 0x10 で始まっていない可能性を考慮
-OUTPUT_DIR = 'palette_search_results'
-SCAN_START_OFFSET = 0x600000 
-MAX_RESULTS = 1000
-# ==========================================
+# アイコンデータの開始地点 (見つかったアドレス)
+REF_ADDR = 0xD5910C 
+# 基準となるID (0xD5910C が No.1 のデータなら 1)
+REF_ID = 1 
+ROM_PATH = "/Users/yu/Desktop/sprites_roms/adventure_red/U_FR_Adventure_Red_Beta_15_Expansion_Fix_Patch_C.gba"
+OUTPUT_DIR = "/Users/yu/Desktop/pokemon_icons_final"
 
-if not os.path.exists(OUTPUT_DIR):
-    os.makedirs(OUTPUT_DIR)
+# --- モード設定 ---
+# "RANGE" なら START_ID から END_ID まで
+# "EACH" なら EACH_IDS に書いたIDのみ
+MODE = "RANGE" 
+START_ID = 1
+END_ID   = 1000
+# EACH_IDS = [493]
 
-def lz77_decompress_gba(data, offset):
-    try:
-        if offset >= len(data) or data[offset] != 0x10: 
-            return None, None
-        
-        decomp_size = data[offset+1] | (data[offset+2] << 8) | (data[offset+3] << 16)
-        if decomp_size == 0 or decomp_size > 0x10000: return None, None
-        
-        ptr = offset + 4
-        out = bytearray()
-        while len(out) < decomp_size:
-            if ptr >= len(data): break
-            flags = data[ptr]; ptr += 1
-            for i in range(8):
-                if len(out) >= decomp_size: break
-                if flags & (0x80 >> i):
-                    if ptr + 1 >= len(data): break
-                    info = (data[ptr] << 8) | data[ptr+1]; ptr += 2
-                    length, disp = (info >> 12) + 3, (info & 0x0FFF) + 1
-                    back = len(out) - disp
-                    if back < 0: return None, None
-                    for _ in range(length):
-                        out.append(out[back]); back += 1
-                else:
-                    if ptr >= len(data): break
-                    out.append(data[ptr]); ptr += 1
-        return out, ptr
-    except:
-        return None, None
+# 生成したいパレット番号のリスト
+TARGET_PALETTES = [0]
 
-def gba_pal_to_rgb(pal_bytes):
-    colors = []
-    for i in range(0, 32, 2):
-        if i + 1 >= len(pal_bytes): break
-        val = pal_bytes[i] | (pal_bytes[i+1] << 8)
-        r, g, b = (val & 0x1F) << 3, ((val >> 5) & 0x1F) << 3, ((val >> 10) & 0x1F) << 3
-        colors.extend([r, g, b])
-    return colors
+# アイコン1つあたりのデータサイズ (32x64 4bpp = 1024 bytes)
+BYTE_PER_POKE = 1024
 
-def create_sprite_image(pixel_data, pal_bytes):
-    # ポケモンのグラフィックは通常 64x64
-    img = Image.new('P', (64, 64))
-    rgb_pal = gba_pal_to_rgb(pal_bytes)
-    img.putpalette(rgb_pal + [0] * (768 - len(rgb_pal)))
+# --- パレット定義 ---
+PALETTES = {
+    0: [(98, 156, 131), (131, 131, 115), (189, 189, 189), (255, 255, 255), (189, 164, 65), (246, 246, 41), (213, 98, 65), (246, 148, 41), (139, 123, 255), (98, 74, 205), (238, 115, 156), (255, 180, 164), (164, 197, 255), (106, 172, 156), (98, 98, 90), (65, 65, 65)],
+    1: [(98, 156, 131), (115, 115, 115), (189, 189, 189), (255, 255, 255), (123, 156, 74), (156, 205, 74), (148, 246, 74), (238, 115, 156), (246, 148, 246), (189, 164, 90), (246, 230, 41), (246, 246, 172), (213, 213, 106), (230, 74, 41), (98, 98, 90), (65, 65, 65)],
+    2: [(98, 156, 131), (123, 123, 123), (189, 189, 180), (255, 255, 255), (115, 115, 205), (164, 172, 246), (180, 131, 90), (238, 197, 139), (197, 172, 41), (246, 246, 41), (246, 98, 82), (148, 123, 205), (197, 164, 205), (189, 41, 156), (98, 98, 90), (65, 65, 65)],
+    3: [(98, 156, 131), (115, 115, 115), (189, 189, 189), (255, 255, 255), (65, 106, 148), (98, 148, 164), (164, 197, 255), (238, 115, 156), (213, 98, 65), (189, 164, 90), (246, 230, 41), (246, 246, 172), (213, 213, 106), (246, 148, 41), (98, 98, 90), (65, 65, 65)],
+    4: [(98, 156, 131), (115, 115, 115), (189, 189, 189), (255, 255, 255), (123, 156, 74), (156, 205, 74), (65, 106, 148), (238, 115, 156), (246, 148, 246), (189, 164, 90), (246, 246, 139), (164, 197, 255), (98, 148, 164), (213, 98, 65), (98, 98, 90), (65, 65, 65)],
+    5: [(98, 156, 131), (123, 123, 123), (189, 189, 180), (255, 255, 255), (123, 156, 74), (156, 205, 74), (180, 131, 90), (238, 197, 139), (197, 172, 41), (246, 246, 41), (213, 98, 65), (148, 123, 205), (197, 164, 205), (246, 148, 41), (98, 98, 90), (65, 65, 65)]
+}
+
+def get_indexed_pixels(data):
+    """GBAのタイル形式(4bpp)をピクセルインデックスに変換"""
+    raw_indices = []
+    for tile_idx in range(len(data) // 32):
+        for i in range(32):
+            b = data[tile_idx * 32 + i]
+            raw_indices.append(b & 0x0F)
+            raw_indices.append(b >> 4)
     
-    ptr = 0
-    for tile_y in range(0, 64, 8):
-        for tile_x in range(0, 64, 8):
-            for y in range(tile_y, tile_y + 8):
-                for x in range(tile_x, tile_x + 8, 2):
-                    if ptr >= len(pixel_data): break
-                    byte = pixel_data[ptr]; ptr += 1
-                    img.putpixel((tile_x + (x % 8), tile_y + (y % 8)), byte & 0x0F)
-                    img.putpixel((tile_x + (x % 8) + 1, tile_y + (y % 8)), (byte >> 4) & 0x0F)
+    # 32x32ピクセルに並べ替え
+    final_indices = [0] * (32 * 32)
+    for t in range(16):
+        tx, ty = (t % 4) * 8, (t // 4) * 8
+        for ly in range(8):
+            for lx in range(8):
+                src = (t * 64) + (ly * 8) + lx
+                if src < len(raw_indices):
+                    final_indices[(ty + ly) * 32 + (tx + lx)] = raw_indices[src]
+    return final_indices
+
+def create_indexed_image(rom_data, target_addr, palette_rgb):
+    """RAWデータから32x64の画像を作成"""
+    # 上半分と下半分をそれぞれタイル変換
+    f1_idx = get_indexed_pixels(rom_data[target_addr : target_addr + 512])
+    f2_idx = get_indexed_pixels(rom_data[target_addr + 512 : target_addr + 1024])
+    
+    img = Image.new('P', (32, 64))
+    
+    # パレットをフラット化(RGBタプル -> リスト)
+    flat_palette = [val for rgb in palette_rgb for val in rgb]
+    # Pillow用に768バイト(256色分)に拡張
+    img.putpalette(flat_palette + [0] * (768 - len(flat_palette)))
+    
+    # ピクセルデータを流し込む
+    img.putdata(f1_idx + f2_idx)
     return img
 
 def main():
-    if not os.path.exists(ROM_PATH):
-        print(f"Error: ROMが見つかりません {ROM_PATH}")
-        return
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR)
+    else:
+        # 既存ファイルをクリア（必要なら）
+        for f in os.listdir(OUTPUT_DIR):
+            if f.endswith(".png"): os.unlink(os.path.join(OUTPUT_DIR, f))
 
-    with open(ROM_PATH, 'rb') as f:
-        rom_data = f.read()
+    target_ids = list(range(START_ID, END_ID + 1)) if MODE == "RANGE" else EACH_IDS
+    count = 0
 
-    # 画像の検出 (指定アドレスの前後32バイトをスキャン)
-    pixel_data = None
-    actual_img_addr = 0
-    print(f"画像検索中 (Target: 0x{FIXED_IMG_OFFSET:X})...")
-    
-    for search_off in range(max(0, FIXED_IMG_OFFSET - 32), FIXED_IMG_OFFSET + 32):
-        if rom_data[search_off] == 0x10:
-            dec, _ = lz77_decompress_gba(rom_data, search_off)
-            if dec and len(dec) == 2048:
-                pixel_data = dec
-                actual_img_addr = search_off
-                print(f"[*] 画像を 0x{actual_img_addr:X} で発見しました。")
-                break
+    try:
+        with open(ROM_PATH, "rb") as f:
+            rom_data = f.read()
 
-    if not pixel_data:
-        print("!! エラー: 指定アドレス付近に有効なLZ77画像(2048bytes)が見つかりません。")
-        print(f"0x{FIXED_IMG_OFFSET:X} のバイト値: {rom_data[FIXED_IMG_OFFSET:FIXED_IMG_OFFSET+4].hex()}")
-        return
+        print(f"🚀 アイコン抽出開始 (モード: {MODE})")
 
-    # パレットスキャン
-    found_count = 0
-    offset = SCAN_START_OFFSET
-    print(f"パレットスキャン開始 (0x{offset:X}〜)...")
-
-    while offset < len(rom_data) - 4 and found_count < MAX_RESULTS:
-        if rom_data[offset] == 0x10:
-            pal_dec, next_ptr = lz77_decompress_gba(rom_data, offset)
-            if pal_dec and len(pal_dec) == 32:
-                found_count += 1
-                filename = f"pal_0x{offset:X}.png"
-                img = create_sprite_image(pixel_data, pal_dec)
-                img.save(os.path.join(OUTPUT_DIR, filename))
-                print(f"[{found_count}] Found: 0x{offset:X}")
-                offset = next_ptr if next_ptr else offset + 1
+        for current_id in target_ids:
+            # 基準アドレスからの位置を計算
+            target_addr = REF_ADDR + ((current_id - REF_ID) * BYTE_PER_POKE)
+            
+            if target_addr < 0 or target_addr + BYTE_PER_POKE > len(rom_data):
                 continue
-        offset += 1
 
-    print("\n完了しました。")
+            for p_num in TARGET_PALETTES:
+                active_pal = PALETTES.get(p_num, PALETTES[0])
+                img = create_indexed_image(rom_data, target_addr, active_pal)
+                
+                save_path = os.path.join(OUTPUT_DIR, f"icon_{current_id:04d}_pal{p_num}.png")
+                
+                # インデックス0を透明に設定して保存
+                img.save(save_path, "PNG", transparency=0)
+                count += 1
+
+        print("-" * 40)
+        print(f"✅ 生成完了: {count} 個のアイコンを保存しました")
+        print(f"出力先: {OUTPUT_DIR}")
+        print("-" * 40)
+        subprocess.run(["open", OUTPUT_DIR])
+
+    except Exception as e:
+        print(f"⚠️ エラーが発生しました: {e}")
 
 if __name__ == "__main__":
     main()

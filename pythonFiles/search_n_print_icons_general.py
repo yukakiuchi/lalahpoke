@@ -7,9 +7,13 @@ from PIL import Image
 # ==========================================
 # ★ 設定エリア ★
 # ==========================================
-ROM_PATH = '/Users/yu/Downloads/Super Mariomon (v1.5.1-Anniversary).gba'
-SAMPLE_IMAGE_PATH = '/Users/yu/Desktop/dd.png'
-BASE_OUTPUT_DIR = '/Users/yu/Desktop/mario_icons_auto_extracted'
+ROM_PATH = '/Users/yu/Desktop/sprites_roms/pisces/pisces v1.5.4.gba'
+SAMPLE_IMAGE_PATH = '/Users/yu/Desktop/iconss/starter.png'
+BASE_OUTPUT_DIR = '/Users/yu/Desktop/search_icon_result'
+
+ID_RANGE = (1350, 1550)
+SPECIFIC_IDS = []
+
 
 # 6つのパレット定義
 PALETTES = {
@@ -23,7 +27,6 @@ PALETTES = {
 # ==========================================
 
 def get_unique_dir(base_dir):
-    """ 【鉄則1】フォルダ名が重複している場合に自動でナンバリングする関数 """
     if not os.path.exists(base_dir):
         return base_dir
     counter = 1
@@ -34,41 +37,44 @@ def get_unique_dir(base_dir):
         counter += 1
 
 def open_folder_and_exit(target_dir):
-    """ 【鉄則2】フォルダを自動で開いて、スクリプトを終了させる関数 """
     print(f"\n📂 出力フォルダを自動で開きます: {target_dir}")
-    if sys.platform == "darwin":  # Mac
+    if sys.platform == "darwin":
         subprocess.run(["open", target_dir])
-    elif sys.platform == "win32":  # Windows
+    elif sys.platform == "win32":
         os.startfile(target_dir)
-    else:  # Linux等
+    else:
         subprocess.run(["xdg-open", target_dir])
     sys.exit(0)
 
-def convert_png_to_gba_4bpp(img_path):
-    try:
-        img = Image.open(img_path).convert('P')
-    except Exception as e:
-        print(f"❌ 画像ファイルの読み込みに失敗しました: {e}")
-        return None
-    if img.size != (32, 32):
-        print(f"❌ 警告: 画像サイズが {img.size} です。32x32ピクセルである必要があります。")
-        return None
-
+def convert_png_chunk_to_gba_4bpp(img, start_y):
     pixels = list(img.getdata())
+    img_w, _ = img.size
     gba_data = bytearray(512)
     byte_ptr = 0
 
     for tile_y in range(4):
         for tile_x in range(4):
             for y in range(8):
-                pixel_y = tile_y * 8 + y
+                pixel_y = (start_y + tile_y * 8) + y
                 for x in range(0, 8, 2):
                     pixel_x = tile_x * 8 + x
-                    p1 = pixels[pixel_y * 32 + pixel_x] & 0x0F
-                    p2 = pixels[pixel_y * 32 + (pixel_x + 1)] & 0x0F
+                    p1 = pixels[pixel_y * img_w + pixel_x] & 0x0F
+                    p2 = pixels[pixel_y * img_w + (pixel_x + 1)] & 0x0F
                     gba_data[byte_ptr] = p1 | (p2 << 4)
                     byte_ptr += 1
     return bytes(gba_data)
+
+def extract_search_bytes(img_path):
+    try:
+        img = Image.open(img_path).convert('P')
+    except Exception as e:
+        print(f"❌ 画像ファイルの読み込みに失敗しました: {e}")
+        return None
+    w, h = img.size
+    if w != 32 or (h != 32 and h != 64):
+        print(f"❌ 警告: 画像サイズが {w}x{h} です。32x32 または 32x64 である必要があります。")
+        return None
+    return convert_png_chunk_to_gba_4bpp(img, start_y=0)
 
 def get_indexed_pixels(data):
     if len(data) < 512: return [0] * (32 * 32)
@@ -99,7 +105,6 @@ def main():
         print("❌ ROMファイルが見つかりません。パスを確認してください。")
         return
         
-    # 重複回避を適用した出力フォルダパスを決定して作成
     output_dir = get_unique_dir(BASE_OUTPUT_DIR)
     os.makedirs(output_dir, exist_ok=True)
     
@@ -107,7 +112,7 @@ def main():
         rom_data = f.read()
 
     print("🖼️  【1】手がかり画像のバイナリ変換中...")
-    target_bytes = convert_png_to_gba_4bpp(SAMPLE_IMAGE_PATH)
+    target_bytes = extract_search_bytes(SAMPLE_IMAGE_PATH)
     if not target_bytes: return
 
     print("🔍 【2】ROM内から該当アイコンの位置をスキャンしています...")
@@ -157,45 +162,69 @@ def main():
         else:
             break
 
-    print("\n🚀 【4】目次から本物のアドレスを網羅し、6パレット連結画像を生成中...")
+    print("\n🚀 【4】条件に一致するIDの画像を抽出・生成中...")
     print("-" * 80)
+
+    # 🛠️ 優先度判定のロジック
+    use_specific = len(SPECIFIC_IDS) > 0
+    if use_specific:
+        print(f"🔥 【優先モード】個別指定されたIDリストのみを出力します: {SPECIFIC_IDS}")
+        max_limit_id = max(SPECIFIC_IDS)
+    else:
+        start_id, end_id = ID_RANGE
+        print(f"📊 【範囲モード】ID: {start_id} から {end_id} までを出力します。")
+        max_limit_id = end_id
 
     current_table_ptr = start_table_ptr
     poke_id = 1
+    extracted_count = 0
     
     while current_table_ptr < len(rom_data):
         val = struct.unpack("<I", rom_data[current_table_ptr : current_table_ptr + 4])[0]
         if not (0x08000000 <= val <= 0x0A000000): break
         
-        actual_img_addr = val & 0x01FFFFFF
-        if 0x100000 <= actual_img_addr < len(rom_data):
-            raw_poke_data = rom_data[actual_img_addr : actual_img_addr + 1024]
-            f1_idx = get_indexed_pixels(raw_poke_data[0:512])
-            f2_idx = get_indexed_pixels(raw_poke_data[512:1024])
-            
-            combined_canvas = Image.new('RGB', (192, 64))
-            
-            for p_num in range(6):
-                pal_rgb = PALETTES[p_num]
-                single_img = Image.new('P', (32, 64))
-                single_img.putpalette(make_palette_list(pal_rgb))
-                single_img.putdata(f1_idx + f2_idx)
-                combined_canvas.paste(single_img.convert('RGB'), (p_num * 32, 0))
+        # 🛠️ 現在の ID が出力条件にマッチするか判定
+        should_extract = False
+        if use_specific:
+            if poke_id in SPECIFIC_IDS:
+                should_extract = True
+        else:
+            if start_id <= poke_id <= end_id:
+                should_extract = True
+
+        if should_extract:
+            actual_img_addr = val & 0x01FFFFFF
+            if 0x100000 <= actual_img_addr < len(rom_data):
+                raw_poke_data = rom_data[actual_img_addr : actual_img_addr + 1024]
+                f1_idx = get_indexed_pixels(raw_poke_data[0:512])
+                f2_idx = get_indexed_pixels(raw_poke_data[512:1024])
                 
-            out_name = f"{poke_id:03d}_0x{actual_img_addr:X}.png"
-            combined_canvas.save(os.path.join(output_dir, out_name), "PNG")
-            
-            mark = "⭐ (手がかり元)" if actual_img_addr == found_addr else ""
-            print(f" 📦 {out_name} を出力しました。 {mark}")
-            poke_id += 1
+                combined_canvas = Image.new('RGB', (192, 64))
+                
+                for p_num in range(6):
+                    pal_rgb = PALETTES[p_num]
+                    single_img = Image.new('P', (32, 64))
+                    single_img.putpalette(make_palette_list(pal_rgb))
+                    single_img.putdata(f1_idx + f2_idx)
+                    combined_canvas.paste(single_img.convert('RGB'), (p_num * 32, 0))
+                    
+                out_name = f"{poke_id:03d}_0x{actual_img_addr:X}.png"
+                combined_canvas.save(os.path.join(output_dir, out_name), "PNG")
+                
+                mark = "⭐ (手がかり元)" if actual_img_addr == found_addr else ""
+                print(f" 📦 [{poke_id:03d}] {out_name} を出力しました。 {mark}")
+                extracted_count += 1
 
         current_table_ptr += 4
-        if poke_id > 500: break
+        poke_id += 1
+        
+        # 処理の最大上限を超えたらループを抜ける（無駄なスキャン防止）
+        if poke_id > max_limit_id: break
 
     print("-" * 80)
-    print(f"✨ 【全自動一括出力完了】 ➔ {output_dir}")
+    print(f"✨ 【条件付き一括出力完了】 計 {extracted_count} 枚の画像を出力しました。")
+    print(f" ➔ 保存先: {output_dir}")
     
-    # 【鉄則2】自動でフォルダを開き、スクリプトを終了する
     open_folder_and_exit(output_dir)
 
 if __name__ == "__main__":
