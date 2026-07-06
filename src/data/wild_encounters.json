@@ -705,42 +705,42 @@
               {
                 "min_level": 12,
                 "max_level": 12,
-                "species": "SPECIES_POOCHYENA"
+                "species": "SPECIES_ALTARIA"
               },
               {
                 "min_level": 12,
                 "max_level": 12,
-                "species": "SPECIES_ELECTRIKE"
+                "species": "SPECIES_ALTARIA_MEGA"
               },
               {
                 "min_level": 12,
                 "max_level": 12,
-                "species": "SPECIES_GULPIN"
+                "species": "SPECIES_ALTARIA"
               },
               {
                 "min_level": 13,
                 "max_level": 13,
-                "species": "SPECIES_ELECTRIKE"
+                "species": "SPECIES_ALTARIA_MEGA"
               },
               {
                 "min_level": 13,
                 "max_level": 13,
-                "species": "SPECIES_MINUN"
+                "species": "SPECIES_ALTARIA"
               },
               {
                 "min_level": 13,
                 "max_level": 13,
-                "species": "SPECIES_ODDISH"
+                "species": "SPECIES_ALTARIA_MEGA"
               },
               {
                 "min_level": 13,
                 "max_level": 13,
-                "species": "SPECIES_MINUN"
+                "species": "SPECIES_ALTARIA"
               },
               {
                 "min_level": 13,
                 "max_level": 13,
-                "species": "SPECIES_GULPIN"
+                "species": "SPECIES_ALTARIA_MEGA"
               },
               {
                 "min_level": 12,

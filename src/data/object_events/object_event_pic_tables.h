@@ -884,6 +884,18 @@ static const struct SpriteFrameImage sPicTable_GameboyKid[] = {
     overworld_frame(gObjectEventPic_GameboyKid, 2, 4, 2),
 };
 
+static const struct SpriteFrameImage sPicTable_EggSellDelibird[] = {
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 0),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 1),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 2),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 0),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 0),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 1),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 1),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 2),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 2),
+};
+
 static const struct SpriteFrameImage sPicTable_ContestJudge[] = {
     overworld_ascending_frames(gObjectEventPic_ContestJudge, 2, 4),
 };

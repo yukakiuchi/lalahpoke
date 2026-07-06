@@ -38,5 +38,10 @@ bool32 CheckObjectAtXY(u32, u32);
 bool32 CheckPartyHasSpecies(u32);
 bool8 CutMoveRuinValleyCheck(void);
 void CutMoveOpenDottedHoleDoor(void);
+bool8 HasEmptySlotsInBoxes(void);    // デリバードショップスクリプト用便利関数
+void CheckMoneyFromVar(void);        // デリバードショップスクリプト用便利関数
+void RemoveMoneyFromVar(void);       // デリバードショップスクリプト用便利関数
+void GiveDelibirdEggFromVar(void);   // デリバードショップスクリプト用便利関数
+void AddPurchaseCount(void);         // デリバードショップスクリプト用便利関数
 
 #endif // GUARD_FIELD_SPECIALS_H

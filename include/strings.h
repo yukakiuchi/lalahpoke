@@ -307,8 +307,6 @@ extern const u8 gText_SpDef3[];
 extern const u8 gText_PkmnBaseVar2StatIncreased[];
 extern const u8 gText_MovesPPIncreased[];
 extern const u8 gText_PPWasRestored[];
-extern const u8 gText_HealingIsDenied[];  // 回復封じによる回復ができないメッセージ
-extern const u8 gText_PkmnIsBleeding[];   // 出血による回復ができないメッセージ
 extern const u8 gText_WontHaveEffect[];
 extern const u8 gText_PkmnSnappedOutOfConfusion[];
 extern const u8 gText_PkmnFriendlyBaseVar2Fell[];
@@ -346,8 +344,12 @@ extern const u8 gText_SpDef[];
 extern const u8 gText_Speed[];
 extern const u8 gText_Dash[];
 extern const u8 gText_Plus[];
-extern const u8 gText_UsedShinyCandy[];    // ひかる飴を使った時のメッセージ
-extern const u8 gText_RestoredBodyColor[]; // ひかる飴をで通常色に戻った時のメッセージ
+extern const u8 gText_HealingIsDenied[];                   // 回復封じによる回復ができないメッセージ
+extern const u8 gText_PkmnIsBleeding[];                    // 出血による回復ができないメッセージ
+extern const u8 gText_UsedShinyCandy[];                    // ひかる飴を使った時のメッセージ
+extern const u8 gText_RestoredBodyColor[];                 // ひかる飴をで通常色に戻った時のメッセージ
+extern const u8 gText_BagFullCouldNotReturnBall[];         // ボールの個数が最大でポケモンの所持ボールをバッグに返せなかった時
+extern const u8 gText_ChangedMonHeldBall[];                // ポケモンの持ってるボールの交換が成功した時
 
 //Pokédex text
 extern const u8 gText_CryOf[];
@@ -651,6 +653,8 @@ extern const u8 gText_PeculiarEggNicePlace[];
 extern const u8 gText_PeculiarEggTrade[];
 extern const u8 gText_EggFromTraveler[];
 extern const u8 gText_EggFromHotSprings[];
+extern const u8 gText_EggFromDelibirdShop[];     // summary画面でのタマゴのmet location = デリバードショップ
+extern const u8 gText_EggFromDelibirdOutside[];  // summary画面でのタマゴのmet location = デリバード
 extern const u8 gText_OddEggFoundByCouple[];
 extern const u8 gText_None[];
 extern const u8 gText_RibbonsVar1[];

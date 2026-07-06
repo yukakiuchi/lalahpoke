@@ -937,6 +937,10 @@ static const union AnimCmd sSpriteAnim_TypeStellar[] = {
     ANIMCMD_FRAME(TYPE_STELLAR * 8, 0, FALSE, FALSE),
     ANIMCMD_END
 };
+static const union AnimCmd sSpriteAnim_TypeRainbow[] = {
+    ANIMCMD_FRAME(TYPE_RAINBOW * 8, 0, FALSE, FALSE),
+    ANIMCMD_END
+};
 static const union AnimCmd sSpriteAnim_CategoryCool[] = {
     ANIMCMD_FRAME((CONTEST_CATEGORY_COOL + NUMBER_OF_MON_TYPES) * 8, 0, FALSE, FALSE),
     ANIMCMD_END
@@ -979,6 +983,7 @@ static const union AnimCmd *const sSpriteAnimTable_MoveTypes[NUMBER_OF_MON_TYPES
     [TYPE_DARK] = sSpriteAnim_TypeDark,
     [TYPE_FAIRY] = sSpriteAnim_TypeFairy,
     [TYPE_STELLAR] = sSpriteAnim_TypeStellar,
+    [TYPE_RAINBOW] = sSpriteAnim_TypeRainbow, 
     [NUMBER_OF_MON_TYPES + CONTEST_CATEGORY_COOL] = sSpriteAnim_CategoryCool,
     [NUMBER_OF_MON_TYPES + CONTEST_CATEGORY_BEAUTY] = sSpriteAnim_CategoryBeauty,
     [NUMBER_OF_MON_TYPES + CONTEST_CATEGORY_CUTE] = sSpriteAnim_CategoryCute,
@@ -3828,6 +3833,10 @@ static void PrintEggMemo(void)
             text = gText_PeculiarEggTrade;
         else if (sum->metLocation == METLOC_SPECIAL_EGG)
             text = (DidMonComeFromRSE() == TRUE) ? gText_EggFromHotSprings : gText_EggFromTraveler;
+        else if (sum->metLocation == METLOC_DELIBIRD_SHOP)
+            text = (DidMonComeFromRSE() == TRUE) ? gText_EggFromDelibirdShop : gText_EggFromTraveler;
+        else if (sum->metLocation == METLOC_DELIBIRD_OUTSIDE)
+            text = (DidMonComeFromRSE() == TRUE) ? gText_EggFromDelibirdOutside : gText_EggFromTraveler;
         else
             text = gText_OddEggFoundByCouple;
     }

@@ -656,6 +656,17 @@ LittlerootTown_ProfessorBirchsLab_EventScript_ScottAboardSSTidalCall::
 	releaseall
 	end
 
+LittlerootTown_EventScript_NationalDexSign::
+	setflag FLAG_SYS_NATIONAL_DEX
+	special EnableNationalPokedex
+	msgbox LittlerootTown_NationalDexSign_Text, MSGBOX_SIGN
+	playfanfare MUS_OBTAIN_ITEM
+	waitfanfare
+	end
+
+LittlerootTown_NationalDexSign_Text:
+	.string "National Dex upgrated!$"
+
 LittlerootTown_ProfessorBirchsLab_Text_BirchAwayOnFieldwork:
 	.string "Hunh? PROF. BIRCH?\p"
 	.string "The PROF's away on fieldwork.\n"

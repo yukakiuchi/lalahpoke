@@ -79,6 +79,10 @@
 #include "battle_util.h"
 #include "naming_screen.h"
 #include "chooseboxmon.h"
+#include "delibirdShop_C.h"
+#include "constants/delibirdShop.h"
+#include "money.h"
+#include "constants/vars.h"
 
 #define TAG_ITEM_ICON 5500
 
@@ -5776,4 +5780,66 @@ bool8 CheckAddCoins(void)
         return FALSE;
     else
         return TRUE;
+}
+
+bool8 HasEmptySlotsInBoxes(void)
+{
+    int box, i;
+    int needed = VarGet(VAR_0x8005);
+    int found = 0;
+
+    // 全てのボックスをループ
+    for (box = 0; box < TOTAL_BOXES_COUNT; box++)
+    {
+        for (i = 0; i < IN_BOX_COUNT; i++)
+        {
+            if (GetBoxMonData(GetBoxedMonPtr(box, i), MON_DATA_SPECIES, NULL) == SPECIES_NONE)
+            {
+                found++;
+                // 必要数に達したら即座にTRUEを返す
+                if (found >= needed)
+                    return TRUE;
+            }
+        }
+    }
+    return FALSE; // 最後まで見つからなければFALSE
+}
+
+void CheckMoneyFromVar(void)
+{
+    u32 amount = VarGet(gSpecialVar_0x8006); // タマゴの金額が入っている変数ID
+
+    // 所持金チェック
+    gSpecialVar_Result = IsEnoughMoney(&gSaveBlock1Ptr->money, amount);
+}
+
+void RemoveMoneyFromVar(void)
+{
+    u32 amount = VarGet(gSpecialVar_0x8006); // タマゴの金額が入っている変数ID
+    
+    // 所持金チェック
+    RemoveMoney(&gSaveBlock1Ptr->money, amount);
+}
+
+void UpdateMoneyBox(void)
+{
+    ChangeAmountInMoneyBox(GetMoney(&gSaveBlock1Ptr->money));
+}
+
+void GiveDelibirdEggFromVar(void)
+{
+    u16 varId = gSpecialVar_0x8007; // タマゴグループのidが入ってる変数
+    u32 eggGroupdId = VarGet(varId);
+    giveDelibirdEgg(eggGroupdId);
+}
+
+void AddPurchaseCount(void)
+{
+    u16 addCount   = VarGet(VAR_0x8005); // タマゴの購入個数
+    u16 totalCount = VarGet(VAR_DELIBIRD_EGG_PURCHASE_COUNT);
+    totalCount = totalCount + addCount;
+    if (totalCount >= DELIBIRDSHOP_OUTSIDE_MAX_PURCHASE_NUM) // 購入上限個数になったら
+        FlagSet(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
+
+    VarSet(VAR_DELIBIRD_EGG_PURCHASE_COUNT, totalCount);
 }

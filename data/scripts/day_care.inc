@@ -249,6 +249,15 @@ Route117_PokemonDayCare_EventScript_TwoMonsInDaycare::
 	release
 	end
 
+Route117_EventScript_DelibirdweirdGreeting::
+	lock
+	faceplayer
+	playmoncry SPECIES_DELIBIRD, CRY_MODE_NORMAL
+	msgbox Route117_Text_Delibird_Weird_Greeting, MSGBOX_DEFAULT
+	waitmoncry
+	release
+	end
+
 @ Unused
 Route117_PokemonDayCare_EventScript_UnusedRetrieveMon::
 	special ShowDaycareLevelMenu
@@ -268,11 +277,18 @@ EventScript_EggHatch::
 	end
 
 Route117_Text_SeeWifeIfYoudLikeMeToRaiseMon:
-	.string "I'm the DAY-CARE MAN.\p"
-	.string "I help take care of the precious\n"
-	.string "POKéMON of TRAINERS.\p"
-	.string "If you'd like me to raise your POKéMON,\n"
-	.string "have a word with my wife.$"
+	.string "I'm the DAY-CARE MAN and\n"
+	.string "The Dlibird is my assisstant.\p"
+	.string "He gets along really well\n"
+	.string "with our trainer's Pokémon.\p"
+	.string "Sometimes his bag\n"
+	.string "shakes a little bit...\p"
+	.string "What could be inside?\p"
+	.string "I tried to take a peek\n"
+	.string "but he got angry\p"
+	.string "Still, he takes care of the\n"
+	.string "other Pokémon for free\p"
+	.string "so I think I'll just leave it at that.$"
 
 Route117_Text_DoYouWantEgg:
 	.string "Ah, it's you!\p"
@@ -409,3 +425,10 @@ Route117_PokemonDayCare_Text_YoullBeLeftWithJustOne:
 	.string "me, you'll be left with just one.\p"
 	.string "You will be better off if you catch\n"
 	.string "some more, I dare say.$"
+
+Route117_Text_Delibird_Weird_Greeting:
+	.string "Biri!\p"
+	.string "... ... ... \p"
+	.string "Bi...Bi...ri...\p"
+	.string "(...??)\p"
+	.string "(Why he looks evasive?)$"

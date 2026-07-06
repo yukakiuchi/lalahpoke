@@ -329,27 +329,24 @@ gBattleAnimMove_Feint::
 gBattleAnimMove_Pluck::
 	loadspritegfx ANIM_TAG_SEED_BROWN
 	loadspritegfx ANIM_TAG_IMPACT
-	playsewithpan SE_M_POISON_POWDER, SOUND_PAN_ATTACKER
-	create_basic_hitsplat_sprite ANIM_ATTACKER, 40, x=-10, y=-5, relative_to=ANIM_TARGET, animation=2
+
+	playsewithpan SE_M_HORN_ATTACK, SOUND_PAN_TARGET
+	createvisualtask AnimTask_RotateMonToSideAndRestore, 2, 3, -768, ANIM_TARGET, 2
+	create_flashing_hitsplat_sprite ANIM_TARGET, 3, x=-10, y=-5, relative_to=ANIM_TARGET, animation=3
 	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 3, 0, 20, 2, 1
 	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 7, 1, 20, 1, 1
 	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, -3, 5, 25, 2, -1
 	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 4, -4, 30, 3, -1
-	delay 30
-	playsewithpan SE_M_POISON_POWDER, SOUND_PAN_ATTACKER
-	create_basic_hitsplat_sprite ANIM_ATTACKER, 40, x=5, y=10, relative_to=ANIM_TARGET, animation=2
-	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 3, -4, 20, 1, 1
-	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 7, -6, 20, 0, 1
-	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, -3, -9, 25, 1, -1
-	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 4, -4, 30, 2, -1
-	delay 30
-	playsewithpan SE_M_POISON_POWDER, SOUND_PAN_ATTACKER
-	create_basic_hitsplat_sprite ANIM_ATTACKER, 40, x=0, y=0, relative_to=ANIM_TARGET, animation=2
-	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, -3, -4, 20, 1, 1
-	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 7, -6, 25, 0, 1
-	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, -4, -10, 25, 1, 1
-	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 4, -4, 25, 1, 2
-	waitforvisualfinish
+	delay 10
+
+	playsewithpan SE_M_HORN_ATTACK, SOUND_PAN_TARGET
+	createvisualtask AnimTask_RotateMonToSideAndRestore, 2, 3, -768, ANIM_TARGET, 2
+	create_flashing_hitsplat_sprite ANIM_TARGET, 3, x=-0, y=0, relative_to=ANIM_TARGET, animation=3
+	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 3, 0, 20, 2, 1
+	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 7, 1, 20, 1, 1
+	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, -3, 5, 25, 2, -1
+	createsprite gPluckParticleSpriteTemplate, ANIM_ATTACKER, 40, 4, -4, 30, 3, -1
+	delay 10
 	end
 
 gBattleAnimMove_Tailwind::
@@ -26865,6 +26862,24 @@ MegahornInContest:
 	goto MegahornContinue
 
 gBattleAnimMove_Gust::
+	loadspritegfx ANIM_TAG_GUST
+	loadspritegfx ANIM_TAG_IMPACT
+	monbg ANIM_DEF_PARTNER
+	splitbgprio ANIM_TARGET
+	setalpha 12, 8
+	playsewithpan SE_M_GUST, SOUND_PAN_TARGET
+	createsprite gEllipticalGustSpriteTemplate, ANIM_ATTACKER, 2, 0, -16
+	createvisualtask AnimTask_AnimateGustTornadoPalette, 5, 1, 70
+	waitforvisualfinish
+	createvisualtask AnimTask_ShakeMon2, 5, ANIM_TARGET, 1, 0, 7, 1
+	create_basic_hitsplat_sprite ANIM_ATTACKER, 2, x=0, y=0, relative_to=ANIM_TARGET, animation=2
+	playsewithpan SE_M_GUST2, SOUND_PAN_TARGET
+	waitforvisualfinish
+	clearmonbg ANIM_DEF_PARTNER
+	blendoff
+	end
+
+gBattleAnimMove_GrassyWind::
 	loadspritegfx ANIM_TAG_GUST
 	loadspritegfx ANIM_TAG_IMPACT
 	monbg ANIM_DEF_PARTNER

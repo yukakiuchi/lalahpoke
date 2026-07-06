@@ -580,8 +580,12 @@
 #define METATILE_PokemonMansion_Wall_EndPost_Mid                         0x2A5
 
 // gTileset_Rustboro
-#define METATILE_Rustboro_Door_Gray  0x21F
-#define METATILE_Rustboro_Door_Tan   0x22F
+#define METATILE_Rustboro_Deep_Sand                               0x2F5
+#define METATILE_Rustboro_Door_Gray                               0x21F
+#define METATILE_Rustboro_Door_Tan                                0x22F
+#define METATILE_Rustboro_Fortree_BridgeOverGrass_Lower           0x305
+#define METATILE_Rustboro_Fortree_BridgeOverGrass_Raised          0x304
+#define METATILE_Rustboro_METATILE_Fortree_BridgeOverGrass_lower  0x30C
 
 // gTileset_SSAnne
 #define METATILE_SSAnne_Door  0x281

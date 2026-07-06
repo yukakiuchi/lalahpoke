@@ -3,7 +3,7 @@ const u16 gObjectEventPal_Brendan[] = INCGFX_U16("graphics/object_events/palette
 const u32 gObjectEventPic_RubySapphireBrendanNormal[] = INCGFX_U32("graphics/object_events/pics/people/ruby_sapphire_brendan/walking.png", ".4bpp", "-mwidth 2 -mheight 4");
 const u32 gObjectEventPic_RubySapphireBrendanRunning[] = INCGFX_U32("graphics/object_events/pics/people/ruby_sapphire_brendan/running.png", ".4bpp", "-mwidth 2 -mheight 4");
 const u16 gObjectEventPal_RubySapphireBrendan[] = INCGFX_U16("graphics/object_events/palettes/ruby_sapphire_brendan.pal", ".gbapal");
-const u16 gObjectEventPal_Null1[16] = {};
+const u16 gObjectEventPal_EggSellDelibird [16] = INCGFX_U16("graphics/object_events/palettes/eggSellDelibird.pal", ".gbapal");
 const u16 gObjectEventPal_Null2[16] = {};
 const u16 gObjectEventPal_Null3[16] = {};
 const u16 gObjectEventPal_Null4[16] = {};
@@ -157,6 +157,9 @@ const u32 gObjectEventPic_RubySapphireLittleBoy[] = INCGFX_U32("graphics/object_
 const u32 gObjectEventPic_HotSpringsOldWoman[] = INCGFX_U32("graphics/object_events/pics/people/hot_springs_old_woman.png", ".4bpp", "-mwidth 2 -mheight 4");
 const u32 gObjectEventPic_LatiasLatios[] = INCGFX_U32("graphics/object_events/pics/pokemon_old/latias_latios.png", ".4bpp", "-mwidth 4 -mheight 4");
 const u32 gObjectEventPic_GameboyKid[] = INCGFX_U32("graphics/object_events/pics/people/gameboy_kid.png", ".4bpp", "-mwidth 2 -mheight 4");
+const u32 gObjectEventPic_EggSellDelibird[] = INCGFX_U32("graphics/object_events/pics/people/eggSellDelibird.png", ".4bpp", "-mwidth 2 -mheight 4");
+
+
 const u32 gObjectEventPic_ContestJudge[] = INCGFX_U32("graphics/object_events/pics/people/contest_judge.png", ".4bpp", "-mwidth 2 -mheight 4");
 const u32 gObjectEventPic_Archie[] = INCGFX_U32("graphics/object_events/pics/people/team_aqua/archie.png", ".4bpp", "-mwidth 2 -mheight 4");
 const u32 gObjectEventPic_Maxie[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/maxie.png", ".4bpp", "-mwidth 2 -mheight 4");
@@ -633,5 +636,10 @@ const u16 gObjectEventPic_PikachuOldFrlg[] = INCGFX_U16("graphics/object_events/
 const u16 gObjectEventPic_JigglypuffOld[] = INCGFX_U16("graphics/object_events/pics/pokemon_old/jigglypuff.png", ".4bpp", "-mwidth 2 -mheight 2");
 const u16 gObjectEventPic_PidgeyOld[] = INCGFX_U16("graphics/object_events/pics/pokemon_old/pidgey.png", ".4bpp", "-mwidth 2 -mheight 2");
 const u16 gObjectEventPic_ClefairyOld[] = INCGFX_U16("graphics/object_events/pics/pokemon_old/clefairy.png", ".4bpp", "-mwidth 2 -mheight 2");
+
+// OWイベント追加
+// 引数は1=8 ピクセルを分割していくっていう意味
+// 4,4にすると32x32ずつ分割していく
+
 
 #endif // IS_FRLG
