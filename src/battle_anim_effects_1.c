@@ -413,6 +413,24 @@ const struct SpriteTemplate gSleepPowderParticleSpriteTemplate =
     .callback = AnimMovePowderParticle,
 };
 
+const struct SpriteTemplate gIcePowderParticleSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SLEEP_POWDER,
+    .paletteTag = ANIM_TAG_SLASH_2,
+    .oam = &gOamData_AffineOff_ObjNormal_8x16,
+    .anims = gPowderParticlesAnimTable,
+    .callback = AnimMovePowderParticle,
+};
+
+const struct SpriteTemplate gVolcanicAshParticleSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SLEEP_POWDER,
+    .paletteTag = ANIM_TAG_CROSS_IMPACT,
+    .oam = &gOamData_AffineOff_ObjNormal_8x16,
+    .anims = gPowderParticlesAnimTable,
+    .callback = AnimMovePowderParticle,
+};
+
 const struct SpriteTemplate gStunSporeParticleSpriteTemplate =
 {
     .tileTag = ANIM_TAG_STUN_SPORE,
@@ -581,6 +599,16 @@ const struct SpriteTemplate gAbsorptionOrbSpriteTemplate =
     .callback = AnimAbsorptionOrb,
 };
 
+const struct SpriteTemplate gPurpleAbsorptionOrbSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_ORBS,
+    .paletteTag = ANIM_TAG_STEEL_BEAM,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gPowerAbsorptionOrbAnimTable,
+    .affineAnims = gAbsorptionOrbAffineAnimTable,
+    .callback = AnimAbsorptionOrb,
+};
+
 const struct SpriteTemplate gHyperBeamOrbSpriteTemplate =
 {
     .tileTag = ANIM_TAG_ORBS,
@@ -693,6 +721,22 @@ const struct SpriteTemplate gPetalDanceSmallFlowerSpriteTemplate =
     .callback = AnimPetalDanceSmallFlower,
 };
 
+const struct SpriteTemplate gFallingButterflySpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY,
+    .paletteTag = ANIM_TAG_SMALL_FEATHER,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimPetalDanceBigFlower,
+};
+
+const struct SpriteTemplate gFallingButterflyPowderSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY_POWDER,
+    .paletteTag = ANIM_TAG_SPHERE_TO_CUBE,
+    .oam = &gOamData_AffineOff_ObjNormal_8x8,
+    .callback = AnimPetalDanceSmallFlower,
+};
+
 const union AnimCmd gRazorLeafParticleAnimCmds1[] =
 {
     ANIMCMD_FRAME(0, 5),
@@ -760,6 +804,24 @@ const struct SpriteTemplate gAttackOrderParticleSpriteTemplate =
     .callback = AnimMoveTwisterParticle,
 };
 
+const struct SpriteTemplate gGreenButterfulyTwisterSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY,
+    .paletteTag = ANIM_TAG_BUTTERFLY,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gAnims_UseFirstPictureAnimTable,
+    .callback = AnimMoveTwisterParticle,
+};
+
+const struct SpriteTemplate gYellowButterfulyTwisterSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY,
+    .paletteTag = ANIM_TAG_AMNESIA,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gAnims_UseFirstPictureAnimTable,
+    .callback = AnimMoveTwisterParticle,
+};
+
 const union AnimCmd gRazorLeafCutterAnimCmds[] =
 {
     ANIMCMD_FRAME(0, 3),
@@ -779,6 +841,15 @@ const struct SpriteTemplate gRazorLeafCutterSpriteTemplate =
     .tileTag = ANIM_TAG_RAZOR_LEAF,
     .paletteTag = ANIM_TAG_RAZOR_LEAF,
     .oam = &gOamData_AffineOff_ObjNormal_32x16,
+    .anims = gRazorLeafCutterAnimTable,
+    .callback = AnimTranslateLinearSingleSineWave,
+};
+
+const struct SpriteTemplate gLeafageGreenBubbleSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_NEW_SMALL_BUBBLE,
+    .paletteTag = ANIM_TAG_PENCIL,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
     .anims = gRazorLeafCutterAnimTable,
     .callback = AnimTranslateLinearSingleSineWave,
 };
@@ -1422,6 +1493,24 @@ const struct SpriteTemplate gCuttingSliceSpriteTemplate =
     .callback = AnimCuttingSlice,
 };
 
+const struct SpriteTemplate gPurpleSlashSliceSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SLASH,
+    .paletteTag = ANIM_TAG_PURPLE_SCRATCH,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gCuttingSliceAnimTable,
+    .callback = AnimCuttingSlice,
+};
+
+const struct SpriteTemplate gBugSlashSliceSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SLASH,
+    .paletteTag = ANIM_TAG_HORN_LEECH,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gCuttingSliceAnimTable,
+    .callback = AnimCuttingSlice,
+};
+
 const struct SpriteTemplate gAirCutterSliceSpriteTemplate =
 {
     .tileTag = ANIM_TAG_CUT,
@@ -2009,10 +2098,27 @@ const struct SpriteTemplate gHealingBlueStarSpriteTemplate =
     .callback = AnimSpriteOnMonPos,
 };
 
+const struct SpriteTemplate gHealingPurpleStarSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BLUE_STAR,
+    .paletteTag = ANIM_TAG_PURPLE_FLAME,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = gHealingBlueStarAnimTable,
+    .callback = AnimSpriteOnMonPos,
+};
+
 const struct SpriteTemplate gHornHitSpriteTemplate =
 {
     .tileTag = ANIM_TAG_HORN_HIT,
     .paletteTag = ANIM_TAG_HORN_HIT,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .callback = AnimHornHit,
+};
+
+const struct SpriteTemplate gYellowHornHitSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_HORN_HIT,
+    .paletteTag = ANIM_TAG_ORANGE_LIGHT_WALL,
     .oam = &gOamData_AffineOff_ObjNormal_32x32,
     .callback = AnimHornHit,
 };
@@ -2381,104 +2487,121 @@ const union AnimCmd gRockPolishStreak_AnimCmd[] =
     ANIMCMD_END,
 };
 
+const union AnimCmd gWhiteThinSlashesFaster_AnimCmd[] =
+{
+    ANIMCMD_FRAME(0, 2),
+    ANIMCMD_FRAME(4, 1),
+    ANIMCMD_FRAME(8, 1),
+    ANIMCMD_FRAME(12, 2),
+    ANIMCMD_FRAME(8, 1),
+    ANIMCMD_FRAME(4, 1),
+    ANIMCMD_FRAME(0, 2),
+    ANIMCMD_END,
+};
+
 const union AnimCmd *const gRockPolishStreak_AnimCmds[] =
 {
     gRockPolishStreak_AnimCmd,
 };
 
+const union AnimCmd *const gWhiteThinSlashesFaster_AnimCmds[] =
+{
+    gWhiteThinSlashesFaster_AnimCmd,
+};
+
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmd0[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x0, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x08, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmd1[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x10, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x18, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmd2[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x20, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x28, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmd3[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x30, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x38, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmd4[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x40, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x48, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmd5[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x50, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x58, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmd6[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x60, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x68, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmd7[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x70, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x78, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmd8[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x80, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x88, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmd9[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x90, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0x98, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmdA[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xA0, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xA8, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmdB[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xB0, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xB8, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmdC[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xC0, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xC8, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmdD[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xD0, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xD8, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmdE[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xE0, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xE8, 0),
     AFFINEANIMCMD_END,
 };
 
 const union AffineAnimCmd gRockPolishStreak_AffineAnimCmdF[] =
 {
-    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xF0, 0),
+    AFFINEANIMCMD_FRAME(0x100, 0x100, 0xF8, 0),
     AFFINEANIMCMD_END,
 };
 
@@ -2858,6 +2981,16 @@ const struct SpriteTemplate gAcrobaticsSlashesSpriteTemplate =
     .paletteTag = ANIM_TAG_WHITE_STREAK,
     .oam = &gOamData_AffineDouble_ObjBlend_32x8,
     .anims = gRockPolishStreak_AnimCmds,
+    .affineAnims = gRockPolishStreak_AffineAnimCmds,
+    .callback = AnimAcrobaticsSlashes,
+};
+
+const struct SpriteTemplate gWhiteThinSlashesSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_WHITE_STREAK,
+    .paletteTag = ANIM_TAG_WHITE_STREAK,
+    .oam = &gOamData_AffineDouble_ObjBlend_32x8,
+    .anims = gWhiteThinSlashesFaster_AnimCmds,
     .affineAnims = gRockPolishStreak_AffineAnimCmds,
     .callback = AnimAcrobaticsSlashes,
 };
@@ -7386,3 +7519,59 @@ static void AnimAcrobaticsSlashes(struct Sprite *sprite)
     StoreSpriteCallbackInData6(sprite, DestroySpriteAndMatrix);
     sprite->callback = RunStoredCallbackWhenAnimEnds;
 }
+
+// 緑のキラキラたち
+const struct SpriteTemplate gMeadowBreezeBigSparkSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARKLE_6,
+    .paletteTag = ANIM_TAG_PENCIL,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .affineAnims = gSilverWindBigSparkAffineAnimTable,
+    .callback = AnimFlyingParticle,
+};
+
+const struct SpriteTemplate gMeadowBreezeMediumSparkSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARKLE_6,
+    .paletteTag = ANIM_TAG_PENCIL,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .affineAnims = gSilverWindMediumSparkAffineAnimTable,
+    .callback = AnimFlyingParticle,
+};
+
+const struct SpriteTemplate gMeadowBreezeSmallSparkSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARKLE_6,
+    .paletteTag = ANIM_TAG_PENCIL,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .affineAnims = gSilverWindSmallSparkAffineAnimTable,
+    .callback = AnimFlyingParticle,
+};
+
+// ピンクのキラキラたち
+const struct SpriteTemplate gPinkBigSparkSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARKLE_6,
+    .paletteTag = ANIM_TAG_CLAPPING,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .affineAnims = gSilverWindBigSparkAffineAnimTable,
+    .callback = AnimFlyingParticle,
+};
+
+const struct SpriteTemplate gPinkMediumSparkSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARKLE_6,
+    .paletteTag = ANIM_TAG_CLAPPING,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .affineAnims = gSilverWindMediumSparkAffineAnimTable,
+    .callback = AnimFlyingParticle,
+};
+
+const struct SpriteTemplate gPinkSmallSparkSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARKLE_6,
+    .paletteTag = ANIM_TAG_CLAPPING,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .affineAnims = gSilverWindSmallSparkAffineAnimTable,
+    .callback = AnimFlyingParticle,
+};

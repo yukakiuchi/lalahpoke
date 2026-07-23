@@ -462,57 +462,57 @@
               {
                 "min_level": 4,
                 "max_level": 4,
-                "species": "SPECIES_POOCHYENA"
+                "species": "SPECIES_SCYTHER"
               },
               {
                 "min_level": 4,
                 "max_level": 4,
-                "species": "SPECIES_WURMPLE"
+                "species": "SPECIES_CATERPIE"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_POOCHYENA"
+                "species": "SPECIES_SCYTHER"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_MARILL"
+                "species": "SPECIES_SILCOON"
               },
               {
                 "min_level": 4,
                 "max_level": 4,
-                "species": "SPECIES_MARILL"
+                "species": "SPECIES_GYARADOS"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_POOCHYENA"
+                "species": "SPECIES_CHIMECHO"
               },
               {
                 "min_level": 4,
                 "max_level": 4,
-                "species": "SPECIES_TAILLOW"
+                "species": "SPECIES_CHINGLING"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_TAILLOW"
+                "species": "SPECIES_CHARMANDER"
               },
               {
                 "min_level": 4,
                 "max_level": 4,
-                "species": "SPECIES_WINGULL"
+                "species": "SPECIES_CORVIKNIGHT"
               },
               {
                 "min_level": 4,
                 "max_level": 4,
-                "species": "SPECIES_WINGULL"
+                "species": "SPECIES_LATIOS"
               },
               {
                 "min_level": 3,
                 "max_level": 3,
-                "species": "SPECIES_WINGULL"
+                "species": "SPECIES_ENTEI"
               },
               {
                 "min_level": 5,

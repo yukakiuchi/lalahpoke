@@ -178,6 +178,16 @@ const struct SpriteTemplate gMegaPunchKickSpriteTemplate =
     .callback = AnimSpinningKickOrPunch,
 };
 
+const struct SpriteTemplate gMegaDarkKickSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_HUMANOID_FOOT,
+    .paletteTag = ANIM_TAG_DARK_SAND_PAL,
+    .oam = &gOamData_AffineDouble_ObjNormal_32x32,
+    .anims = gAnims_HandsAndFeet,
+    .affineAnims = gAffineAnims_MegaPunchKick,
+    .callback = AnimSpinningKickOrPunch,
+};
+
 const struct SpriteTemplate gStompFootSpriteTemplate =
 {
     .tileTag = ANIM_TAG_HANDS_AND_FEET,
@@ -191,6 +201,22 @@ const struct SpriteTemplate gDizzyPunchDuckSpriteTemplate =
 {
     .tileTag = ANIM_TAG_DUCK,
     .paletteTag = ANIM_TAG_DUCK,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimDizzyPunchDuck,
+};
+
+const struct SpriteTemplate gDizzyPunchBugWebSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_WEB,
+    .paletteTag = ANIM_TAG_WEB,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .callback = AnimDizzyPunchDuck,
+};
+
+const struct SpriteTemplate gRedHeartDizzyDuckSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_RED_HEART,
+    .paletteTag = ANIM_TAG_RED_HEART,
     .oam = &gOamData_AffineOff_ObjNormal_16x16,
     .callback = AnimDizzyPunchDuck,
 };

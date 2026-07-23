@@ -198,7 +198,7 @@ extern const u8 gBattleAnimMove_ZapCannon[];
 extern const u8 gBattleAnimMove_Foresight[];
 extern const u8 gBattleAnimMove_DestinyBond[];
 extern const u8 gBattleAnimMove_PerishSong[];
-extern const u8 gBattleAnimMove_IcyWind[];
+// extern const u8 gBattleAnimMove_IcyWind[];
 extern const u8 gBattleAnimMove_Detect[];
 extern const u8 gBattleAnimMove_BoneRush[];
 extern const u8 gBattleAnimMove_LockOn[];
@@ -538,7 +538,6 @@ extern const u8 gBattleAnimMove_HornLeech[];
 extern const u8 gBattleAnimMove_SacredSword[];
 extern const u8 gBattleAnimMove_RazorShell[];
 extern const u8 gBattleAnimMove_HeatCrash[];
-extern const u8 gBattleAnimMove_LeafTornado[];
 extern const u8 gBattleAnimMove_Steamroller[];
 extern const u8 gBattleAnimMove_CottonGuard[];
 extern const u8 gBattleAnimMove_NightDaze[];
@@ -1015,6 +1014,114 @@ extern const u8 gBattleAnimGeneral_GhostGetOut[];
 extern const u8 gBattleAnimGeneral_SilphScoped[];
 extern const u8 gBattleAnimGeneral_SafariRockThrow[];
 extern const u8 gBattleAnimGeneral_SafariReaction[];
+// --------- 自分の作った技一覧 ---------- //
+
+// 草の風系
+extern const u8 gBattleAnimMove_MeadowBreeze[];
+extern const u8 gBattleAnimMove_GrassyWind[];
+extern const u8 gBattleAnimMove_GrassyStorm[];
+extern const u8 gBattleAnimMove_LeafTornado[];
+
+// フェアリー風系
+extern const u8 gBattleAnimMove_SpringBreeze[];
+extern const u8 gBattleAnimMove_SpringWind[];
+
+// 氷の風系
+extern const u8 gBattleAnimMove_WinterSigh[];
+extern const u8 gBattleAnimMove_IcyWind[];
+extern const u8 gBattleAnimMove_FrostBorea[];
+
+// 炎の風系
+extern const u8 gBattleAnimMove_SolsticeWind[];
+extern const u8 gBattleAnimMove_BurningWind[];
+extern const u8 gBattleAnimMove_FireStorm[];
+
+// 闇の風系
+extern const u8 gBattleAnimMove_OminousCloud[];
+extern const u8 gBattleAnimMove_GloomWind[];
+extern const u8 gBattleAnimMove_MidnightStorm[];
+extern const u8 gBattleAnimMove_ShadowKick[];
+
+// 電気系
+extern const u8 gBattleAnimMove_ElectricSonicBoom[];
+extern const u8 gBattleAnimMove_ThunderCloud[];
+extern const u8 gBattleAnimMove_ThunderStorm[];
+extern const u8 gBattleAnimMove_VoltCannon[];
+extern const u8 gBattleAnimMove_StaticBubble[];
+extern const u8 gBattleAnimMove_ElectricBubble[];
+extern const u8 gBattleAnimMove_NumbingSeaWater[];
+
+// 虫x水系
+extern const u8 gBattleAnimMove_BugBreath[];
+
+// 草x岩系
+extern const u8 gBattleAnimMove_WoodThrow[];
+extern const u8 gBattleAnimMove_WoodSlide[];
+
+// 氷x岩系
+extern const u8 gBattleAnimMove_IceThrow[];
+
+// 炎x岩系
+extern const u8 gBattleAnimMove_MagmaThrow[];
+extern const u8 gBattleAnimMove_MagmaSlide[];
+
+// すなかけ系
+extern const u8 gBattleAnimMove_SproutShower[];
+extern const u8 gBattleAnimMove_HotSand[];
+extern const u8 gBattleAnimMove_ColdSand[];
+extern const u8 gBattleAnimMove_StaticSand[];
+
+// ひっかき系
+extern const u8 gBattleAnimMove_StaticScratch[];
+extern const u8 gBattleAnimMove_BubbleScratch[];
+extern const u8 gBattleAnimMove_FireScratch[];
+extern const u8 gBattleAnimMove_DarkScratch[];
+extern const u8 gBattleAnimMove_BugScratch[];
+
+// みだれひっかき系
+extern const u8 gBattleAnimMove_StaticFurySwipes[];
+extern const u8 gBattleAnimMove_BubbleFurySwipes[];
+extern const u8 gBattleAnimMove_FireFurySwipes[];
+extern const u8 gBattleAnimMove_DarkFurySwipes[];
+extern const u8 gBattleAnimMove_BugFurySwipes[];
+
+// 連続系
+extern const u8 gBattleAnimMove_BugWeb[];		// 虫
+extern const u8 gBattleAnimMove_Flap[];         // 風
+extern const u8 gBattleAnimMove_PunishSlap[];	// フェアリー
+extern const u8 gBattleAnimMove_FalconSlash[];	// 力
+
+// 粉系
+extern const u8 gBattleAnimMove_IcePowder[];    // 氷
+extern const u8 gBattleAnimMove_VolcanicAsh[];  // 炎
+
+// たいあたり系
+extern const u8 gBattleAnimMove_SingleAxel[];
+extern const u8 gBattleAnimMove_DoubleAxel[];
+
+// 回復系
+extern const u8 gBattleAnimMove_DrainTouch[];   // 闇
+extern const u8 gBattleAnimMove_AngelKiss[];    // フェアリー 
+
+// 虹系
+extern const u8 gBattleAnimMove_RainbowBubbleBeam[];
+extern const u8 gBattleAnimMove_RainbowStorm[];
+
+// 虫系
+extern const u8 gBattleAnimMove_ButterflyPowder[];
+extern const u8 gBattleAnimMove_ButterflyDance[];
+extern const u8 gBattleAnimMove_ButterflyTwister[];
+extern const u8 gBattleAnimMove_ButterflyStorm[];
+
+// 切る系
+extern const u8 gBattleAnimMove_PoisonSlash[];
+extern const u8 gBattleAnimMove_MantisSlash[];
+
+// 音再生系
+extern const u8 gBattleAnimMove_SoundTest1[];
+extern const u8 gBattleAnimMove_SoundTest2[];
+extern const u8 gBattleAnimMove_SoundTest3[];
+extern const u8 gBattleAnimMove_SoundTest4[];
 
 // special animations
 extern const u8 gBattleAnimSpecial_LevelUp[];
@@ -1025,5 +1132,7 @@ extern const u8 gBattleAnimSpecial_BallThrowWithTrainer[];
 extern const u8 gBattleAnimSpecial_SubstituteToMon[];
 extern const u8 gBattleAnimSpecial_MonToSubstitute[];
 extern const u8 gBattleAnimSpecial_CriticalCaptureBallThrow[];
+
+extern const u8 gBattleAnimMove_Testyu[];
 
 #endif // GUARD_BATTLE_ANIM_SCRIPTS_H

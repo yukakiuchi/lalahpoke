@@ -245,6 +245,14 @@ const struct SpriteTemplate gSonicBoomSpriteTemplate =
     .callback = AnimSonicBoomProjectile,
 };
 
+const struct SpriteTemplate gYellowSonicBoomSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_AIR_WAVE,
+    .paletteTag = ANIM_TAG_MILK_BOTTLE,
+    .oam = &gOamData_AffineDouble_ObjBlend_32x16,
+    .callback = AnimSonicBoomProjectile,
+};
+
 const struct SpriteTemplate gAirWaveProjectileSpriteTemplate =
 {
     .tileTag = ANIM_TAG_AIR_WAVE,
@@ -855,6 +863,14 @@ const struct SpriteTemplate gRedHeartBurstSpriteTemplate =
     .callback = AnimParticleBurst,
 };
 
+const struct SpriteTemplate gNewYellowStarBurstSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_NEW_GREEN_STAR,
+    .paletteTag = ANIM_TAG_FANG_ATTACK,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimParticleBurst,
+};
+
 const struct SpriteTemplate gRedHeartRisingSpriteTemplate =
 {
     .tileTag = ANIM_TAG_RED_HEART,
@@ -1048,6 +1064,51 @@ const struct SpriteTemplate gFurySwipesSpriteTemplate =
 {
     .tileTag = ANIM_TAG_SWIPE,
     .paletteTag = ANIM_TAG_SWIPE,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gBubbleFurySwipesSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SWIPE,
+    .paletteTag = ANIM_TAG_SLASH_2,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gDarkFurySwipesSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SWIPE,
+    .paletteTag = ANIM_TAG_PURPLE_GENERAL_PAL,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gBugFurySwipesSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SWIPE,
+    .paletteTag = ANIM_TAG_BUG_PAL,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gStaticFurySwipesSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SWIPE,
+    .paletteTag = ANIM_TAG_YELLOW_SCRATCH_PAL,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gWineWhipSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_VINE_2,
+    .paletteTag = ANIM_TAG_HORN_LEECH,
     .oam = &gOamData_AffineOff_ObjNormal_32x32,
     .anims = sAnims_FurySwipes,
     .callback = AnimFurySwipes,

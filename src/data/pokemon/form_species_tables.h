@@ -41,7 +41,7 @@ static const u16 sBlastoiseFormSpeciesIdTable[] = {
 #if P_FAMILY_CATERPIE
 static const u16 sButterfreeFormSpeciesIdTable[] = {
     SPECIES_BUTTERFREE,
-#if P_GIGANTAMAX_FORMS
+#if P_MEGA_EVOLUTIONS
     SPECIES_BUTTERFREE_GMAX,
 #endif
     FORM_SPECIES_END,

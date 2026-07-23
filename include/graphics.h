@@ -2943,6 +2943,31 @@ extern const u32 gBattleAnimSpriteGfx_TeraStarstormBeam[];
 extern const u16 gBattleAnimSpritePal_TeraStarstormBeam[];
 extern const u32 gBattleAnimSpriteGfx_SaltParticle[];
 extern const u16 gBattleAnimSpritePal_SaltParticle[];
+extern const u16 gBattleAnimSpritePal_PurpleGeneralPal[];       // 紫一般パレット
+extern const u16 gBattleAnimSpritePal_PurpleBackgroundPal[];    // 紫背景パレット
+extern const u16 gBattleAnimSpritePal_DarkSandPal[];            // 紫の砂専用パレット
+extern const u16 gBattleAnimSpritePal_DarkGustPal[];            // 紫の風専用パレット
+extern const u32 gBattleAnimSpriteGfx_SmallFeather[];           // 16x16羽用画像
+extern const u16 gBattleAnimSpritePal_SmallFeather[];           // 16x16羽パレット
+extern const u32 gBattleAnimSpriteGfx_FallingFeather[];         // 16x16舞う羽画像
+extern const u16 gBattleAnimSpritePal_FallingFeather[];         // 16x16舞う羽パレット
+extern const u16 gBattleAnimSpritePal_HighSpeedPurplePal[];     // HighSpeed紫背景用パレット
+extern const u16 gBattleAnimSpritePal_HighSpeedPinkPal[];       // HighSpeedピンク背景用パレット
+extern const u16 gBattleAnimSpritePal_BubbleScratchPal[];       // バブルひっかき用
+extern const u16 gBattleAnimSpritePal_BugPal[];                 // 虫技用パレット
+extern const u32 gBattleAnimSpriteGfx_MoonBall[];				// ムーンボール画像
+extern const u16 gBattleAnimSpritePal_MoonBall[];				// ムーンボールパレット
+extern const u16 gBattleAnimSpritePal_ElectricWaterPal[];
+extern const u32 gBattleAnimSpriteGfx_Butterfly[];
+extern const u32 gBattleAnimSpriteGfx_ButterflyPowder[];
+extern const u16 gBattleAnimSpritePal_Butterfly[];
+extern const u32 gBattleAnimSpriteGfx_ButterflyMixed[];
+extern const u16 gBattleAnimSpritePal_ButterflyMixed[];
+extern const u32 gBattleAnimSpriteGfx_NewBubble[];
+extern const u32 gBattleAnimSpriteGfx_NewSmallBubble[];
+extern const u16 gBattleAnimSpritePal_NewBubble[];
+extern const u32 gBattleAnimSpriteGfx_NewPoisonBubble[];
+extern const u16 gBattleAnimSpritePal_NewPoisonBubble[];
 
 extern const u32 gBattleAnimBgImage_Dark[];
 extern const u32 gBattleAnimBgImage_Ghost[];

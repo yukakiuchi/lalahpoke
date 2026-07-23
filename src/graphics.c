@@ -1435,8 +1435,36 @@ const u32 gBattleAnimBgTilemap_SolarBeam[] = INCBIN_U32("graphics/battle_anims/b
 
 const u16 gBattleAnimBgPalette_MagmaStorm[] = INCGFX_U16("graphics/battle_anims/backgrounds/magma_storm.pal", ".gbapal");
 
-//new battle bgs
+// 自分の追加した技画像と技パレット
+const u16 gBattleAnimSpritePal_PurpleBackgroundPal[] = INCGFX_U16("graphics/battle_anims/backgrounds/purple_background.pal", ".gbapal"); // 紫背景パレット
+const u16 gBattleAnimSpritePal_PurpleGeneralPal[] = INCGFX_U16("graphics/battle_anims/sprites/purple_general.pal", ".gbapal");           // 紫一般パレット
+const u16 gBattleAnimSpritePal_DarkSandPal[] = INCGFX_U16("graphics/battle_anims/sprites/dark_sand_pal.pal", ".gbapal");                 // 紫の砂用パレット
+const u16 gBattleAnimSpritePal_DarkGustPal[] = INCGFX_U16("graphics/battle_anims/sprites/dark_gust_pal.pal", ".gbapal");                 // 紫の風用パレット
+const u32 gBattleAnimSpriteGfx_SmallFeather[] = INCGFX_U32("graphics/battle_anims/sprites/small_feather.png", ".4bpp.smol");             // 紫の羽画像
+const u16 gBattleAnimSpritePal_SmallFeather[] = INCGFX_U16("graphics/battle_anims/sprites/small_feather.png", ".gbapal");                // 紫の羽画像パレット
+const u32 gBattleAnimSpriteGfx_FallingFeather[] = INCGFX_U32("graphics/battle_anims/sprites/falling_feather.png", ".4bpp.smol");         // 舞う羽画像
+const u16 gBattleAnimSpritePal_FallingFeather[] = INCGFX_U16("graphics/battle_anims/sprites/falling_feather.png", ".gbapal");            // 舞う羽パレット
+const u16 gBattleAnimSpritePal_HighSpeedPurplePal[] = INCGFX_U16("graphics/battle_anims/sprites/high_speed_purple.pal", ".gbapal");      // 紫の風用パレット
+const u16 gBattleAnimSpritePal_HighSpeedPinkPal[]   = INCGFX_U16("graphics/battle_anims/sprites/high_speed_pink.pal", ".gbapal");        // ピンクのハイスピード用パレット
+const u16 gBattleAnimSpritePal_BubbleScratchPal[]   = INCGFX_U16("graphics/battle_anims/sprites/bubble_scratch.pal", ".gbapal");         // 水色のひっかく用パレット
+const u16 gBattleAnimSpritePal_BugPal[]             = INCGFX_U16("graphics/battle_anims/sprites/bug_pal.pal", ".gbapal");                // 虫技用パレット
+const u32 gBattleAnimSpriteGfx_MoonBall[] = INCGFX_U32("graphics/battle_anims/sprites/moon_ball.png", ".4bpp.smol");                     // ムーンボール画像
+const u16 gBattleAnimSpritePal_MoonBall[] = INCGFX_U16("graphics/battle_anims/sprites/moon_ball.png", ".gbapal");                        // ムーンボールパレット
+const u16 gBattleAnimSpritePal_ElectricWaterPal[]   = INCGFX_U16("graphics/battle_anims/sprites/electic_water_pal.pal", ".gbapal");      // 技しびれるなみのり用のパレット
 
+const u32 gBattleAnimSpriteGfx_Butterfly[]         = INCGFX_U32("graphics/battle_anims/sprites/butterfly.png", ".4bpp.smol");            // 蝶々の画像
+const u32 gBattleAnimSpriteGfx_ButterflyPowder[]   = INCGFX_U32("graphics/battle_anims/sprites/butterfly_powder.png", ".4bpp.smol");     // 蝶々の粉の画像(パレットは共用)
+const u16 gBattleAnimSpritePal_Butterfly[]         = INCGFX_U16("graphics/battle_anims/sprites/butterfly.png", ".gbapal");               // 蝶々のパレット
+const u32 gBattleAnimSpriteGfx_ButterflyMixed[]    = INCGFX_U32("graphics/battle_anims/sprites/butterfly_mixed.png", ".4bpp.smol");      // 蝶々のミックス画像
+const u16 gBattleAnimSpritePal_ButterflyMixed[]    = INCGFX_U16("graphics/battle_anims/sprites/butterfly_mixed.png", ".gbapal");         // 蝶々のミックスパレット
+
+const u32 gBattleAnimSpriteGfx_NewBubble[]         = INCGFX_U32("graphics/battle_anims/sprites/new_bubble.png", ".4bpp.smol");           // 新しい泡の画像
+const u32 gBattleAnimSpriteGfx_NewSmallBubble[]    = INCGFX_U32("graphics/battle_anims/sprites/new_small_bubble.png", ".4bpp.smol");     // 新しいみずでっぽうの画像
+const u16 gBattleAnimSpritePal_NewBubble[]         = INCGFX_U16("graphics/battle_anims/sprites/new_bubble.png", ".gbapal");              // 新しい泡のパレット
+const u32 gBattleAnimSpriteGfx_NewPoisonBubble[]   = INCGFX_U32("graphics/battle_anims/sprites/new_poison_bubble.png", ".4bpp.smol");    // 新しい毒泡の画像
+const u16 gBattleAnimSpritePal_NewPoisonBubble[]   = INCGFX_U16("graphics/battle_anims/sprites/new_poison_bubble.png", ".gbapal");       // 新しい毒泡のパレット
+
+//new battle bgs
 const u32 gBattleAnimBgImage_Hurricane[] = INCGFX_U32("graphics/battle_anims/backgrounds/hurricane.png", ".4bpp.smol");
 const u16 gBattleAnimBgPalette_Hurricane[] = INCGFX_U16("graphics/battle_anims/backgrounds/hurricane.pal", ".gbapal");
 const u32 gBattleAnimBgTilemap_Hurricane[] = INCBIN_U32("graphics/battle_anims/backgrounds/hurricane.bin.smolTM");
@@ -2134,3 +2162,7 @@ const u16 gBattleIcons_Pal2[] = INCGFX_U16("graphics/types/battle_icons2.pal", "
 
 const u16 gGhostPalette[] = INCGFX_U16("graphics/pokemon/ghost/front.png", ".gbapal");
 const u32 gGhostFrontPic[] = INCGFX_U32("graphics/pokemon/ghost/front.png", ".4bpp.smol");
+
+
+
+

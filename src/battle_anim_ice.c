@@ -111,6 +111,13 @@ static const union AnimCmd sAnim_SmallBubblePair[] =
     ANIMCMD_JUMP(0),
 };
 
+// 1画像目を使う
+static const union AnimCmd sAnim_Use_Static_Image0[] =
+{
+    ANIMCMD_FRAME(0, 1),
+    ANIMCMD_END,
+};
+
 // Unused, contains just the top left corner of the large ice crystal
 static const union AnimCmd *const sAnims_IceCrystalLargeChunk[] =
 {
@@ -130,6 +137,13 @@ const union AnimCmd *const gAnims_IceCrystalSmall[] =
 const union AnimCmd *const gAnims_Snowball[] =
 {
     sAnim_Snowball,
+};
+
+
+// 1画像目を使う
+const union AnimCmd *const gAnims_Use_Static_Image0[] =
+{
+    sAnim_Use_Static_Image0,
 };
 
 const union AnimCmd *const gAnims_BlizzardIceCrystal[] =
@@ -253,6 +267,15 @@ const struct SpriteTemplate gSwirlingSnowballSpriteTemplate =
     .callback = AnimSwirlingSnowball,
 };
 
+const struct SpriteTemplate gSwirlingSparparkleSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_FLOWER,
+    .paletteTag = ANIM_TAG_FLOWER,
+    .oam = &gOamData_AffineOff_ObjNormal_8x8,
+    .anims = gAnims_Use_Static_Image0,
+    .callback = AnimSwirlingSnowball,
+};
+
 const struct SpriteTemplate gBlizzardIceCrystalSpriteTemplate =
 {
     .tileTag = ANIM_TAG_ICE_CRYSTALS,
@@ -322,6 +345,24 @@ const struct SpriteTemplate gSmogCloudSpriteTemplate =
 {
     .tileTag = ANIM_TAG_PURPLE_GAS_CLOUD,
     .paletteTag = ANIM_TAG_PURPLE_GAS_CLOUD,
+    .oam = &gOamData_AffineOff_ObjBlend_32x16,
+    .anims = sAnims_Cloud,
+    .callback = InitSwirlingFogAnim,
+};
+
+const struct SpriteTemplate gGloomCloudSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_MIST_CLOUD,
+    .paletteTag = ANIM_TAG_PURPLE_BACKGROUND_PAL,
+    .oam = &gOamData_AffineOff_ObjBlend_32x16,
+    .anims = sAnims_Cloud,
+    .callback = InitSwirlingFogAnim,
+};
+
+const struct SpriteTemplate gThunderCloudSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_MIST_CLOUD,
+    .paletteTag = ANIM_TAG_BENT_SPOON,
     .oam = &gOamData_AffineOff_ObjBlend_32x16,
     .anims = sAnims_Cloud,
     .callback = InitSwirlingFogAnim,
@@ -498,6 +539,24 @@ const struct SpriteTemplate gIceBallImpactShardSpriteTemplate =
     .paletteTag = ANIM_TAG_ICE_CRYSTALS,
     .oam = &gOamData_AffineOff_ObjNormal_8x8,
     .anims = gAnims_IceCrystalSmall,
+    .callback = InitIceBallParticle,
+};
+
+const struct SpriteTemplate gPurpleButterflySpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY,
+    .paletteTag = ANIM_TAG_SMALL_FEATHER,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gAnims_UseFirstPictureAnimTable,
+    .callback = InitIceBallParticle,
+};
+
+const struct SpriteTemplate gBlueButterflySpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY,
+    .paletteTag = ANIM_TAG_SLASH_2,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gAnims_UseFirstPictureAnimTable,
     .callback = InitIceBallParticle,
 };
 
@@ -1644,18 +1703,36 @@ static void AnimThrowIceBall(struct Sprite *sprite)
 static void InitIceBallParticle(struct Sprite *sprite)
 {
     s16 randA, randB;
+    // 追加の引数を取得（指定がない場合は 0 になります
+    s16 duration = gBattleAnimArgs[2]; // 引数 A（表示フレーム）
+    s16 speedPercent = gBattleAnimArgs[3]; // 引数 B（スピード倍率％）
 
     sprite->oam.tileNum += 8;
     InitSpritePosToAnimTarget(sprite, TRUE);
 
+    // 既存のランダム速度を生成
     randA = (Random2() & 0xFF) + 256;
     randB = Random2() & 0x1FF;
 
     if (randB > 0xFF)
         randB = 256 - randB;
 
+    // 【追加機能】Bの指定（％）がある場合、ランダム速度に掛け合わせる
+    if (speedPercent != 0)
+    {
+        randA = (randA * speedPercent) / 100;
+        randB = (randB * speedPercent) / 100;
+    }
+
     sprite->data[1] = randA;
     sprite->data[2] = randB;
+
+    // 【追加機能】Aの指定がある場合は data[5] に保存、ない場合は従来の寿命「21」をセット
+    if (duration != 0)
+        sprite->data[5] = duration;
+    else
+        sprite->data[5] = 21;
+
     sprite->callback = AnimIceBallParticle;
 }
 
@@ -1672,7 +1749,8 @@ static void AnimIceBallParticle(struct Sprite *sprite)
 
     sprite->y2 = sprite->data[4] >> 8;
 
-    if (++sprite->data[0] == 21)
+    // ハードコーディングされていた「21」を、保存した寿命（data[5]）に変更
+    if (++sprite->data[0] == sprite->data[5])
         DestroyAnimSprite(sprite);
 }
 

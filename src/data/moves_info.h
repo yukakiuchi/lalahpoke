@@ -1803,15 +1803,16 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .description = COMPOUND_STRING(
             "Attacks the foe with a\n"
             "jabbing beak, etc."),
-        .effect = EFFECT_HIT,
-        .power = 35,
-        .type = TYPE_FLYING,
+        .effect = EFFECT_SUPER_EFFECTIVE_ON_ARG,
+        .power = 30,
+        .type = TYPE_NORMAL,
         .accuracy = 100,
         .pp = 35,
         .target = TARGET_SELECTED,
         .priority = 0,
         .category = DAMAGE_CATEGORY_PHYSICAL,
         .makesContact = TRUE,
+        .argument = { .type = TYPE_FLYING },
         .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
         .contestCategory = CONTEST_CATEGORY_COOL,
         .contestComboStarterId = COMBO_STARTER_PECK,
@@ -1825,15 +1826,16 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .description = COMPOUND_STRING(
             "A corkscrewing attack with\n"
             "the beak acting as a drill."),
-        .effect = EFFECT_HIT,
+        .effect = EFFECT_SUPER_EFFECTIVE_ON_ARG,
         .power = 80,
-        .type = TYPE_FLYING,
+        .type = TYPE_NORMAL,
         .accuracy = 100,
         .pp = 20,
         .target = TARGET_SELECTED,
         .priority = 0,
         .category = DAMAGE_CATEGORY_PHYSICAL,
         .makesContact = TRUE,
+        .argument = { .type = TYPE_FLYING },
         .contestEffect = C_UPDATED_MOVE_EFFECTS >= GEN_6 ? CONTEST_EFFECT_AFFECTED_BY_PREV_APPEAL : CONTEST_EFFECT_HIGHLY_APPEALING,
         .contestCategory = CONTEST_CATEGORY_COOL,
         .contestComboStarterId = 0,
@@ -3010,7 +3012,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "hard shell to raise Defense."),
         .effect = EFFECT_DEFENSE_UP,
         .power = 0,
-        .type = TYPE_WATER,
+        .type = TYPE_NORMAL,
         .accuracy = 0,
         .pp = 40,
         .target = TARGET_USER,
@@ -11082,7 +11084,6 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .target = TARGET_SELECTED,
         .priority = -4,
         .category = DAMAGE_CATEGORY_PHYSICAL,
-        .makesContact = TRUE,
         .contestEffect = CONTEST_EFFECT_AFFECTED_BY_PREV_APPEAL,
         .contestCategory = C_UPDATED_MOVE_CATEGORIES >= GEN_6 ? CONTEST_CATEGORY_BEAUTY : CONTEST_CATEGORY_COOL,
         .contestComboStarterId = 0,
@@ -11781,7 +11782,6 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .target = TARGET_SELECTED,
         .priority = 0,
         .category = DAMAGE_CATEGORY_SPECIAL,
-        .makesContact = TRUE,
         .skyBattleBanned = TRUE,
         .contestEffect = CONTEST_EFFECT_BETTER_WHEN_LATER,
         .contestCategory = C_UPDATED_MOVE_CATEGORIES >= GEN_6 ? CONTEST_CATEGORY_CUTE : CONTEST_CATEGORY_SMART,
@@ -13921,6 +13921,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
             .chance = 50,
         }),
+        .windMove = TRUE,
         .contestEffect = CONTEST_EFFECT_REPETITION_NOT_BORING,
         .contestCategory = CONTEST_CATEGORY_COOL,
         .contestComboStarterId = 0,
@@ -15074,7 +15075,6 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .target = TARGET_FIELD,
         .priority = 0,
         .category = DAMAGE_CATEGORY_STATUS,
-        .zMove = { .effect = Z_EFFECT_SPDEF_UP_1 },
         .ignoresProtect = TRUE,
         .mirrorMoveBanned = TRUE,
         .skyBattleBanned = TRUE,
@@ -15827,7 +15827,6 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .target = TARGET_SELECTED,
         .priority = 0,
         .category = DAMAGE_CATEGORY_SPECIAL,
-        .makesContact = TRUE,
         .additionalEffects = ADDITIONAL_EFFECTS({
             .moveEffect = MOVE_EFFECT_WRAP,
             .multistring.wrapped = B_MSG_WRAPPED_INFESTATION,
@@ -23047,4 +23046,1343 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .ignoresProtect = TRUE,
         .battleAnimScript = gBattleAnimMove_GMaxRapidFlow,
     },
+
+// ここから自分の新しく作った技たち
+    [MOVE_MEADOW_BREEZE] =
+    {
+        .name = COMPOUND_STRING("Meadow Breeze"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .type = TYPE_GRASS,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_MeadowBreeze,
+    },
+
+    [MOVE_GRASSY_WIND] =
+    {
+        .name = COMPOUND_STRING("Grassy Wind"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_GrassyWind,
+    },
+    [MOVE_GRASSY_STORM] =
+    {
+        .name = COMPOUND_STRING("Grassy Storm"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_GrassyStorm,
+    },
+
+    [MOVE_SPRING_BREEZE] =
+    {
+        .name = COMPOUND_STRING("Spring Breeze"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_SpringBreeze,
+    },
+
+    [MOVE_SPRING_WIND] =
+    {
+        .name = COMPOUND_STRING("Spring Wind"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_SpringWind,
+    },
+
+    [MOVE_WINTER_SIGH] =
+    {
+        .name = COMPOUND_STRING("Winter Sigh"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_WinterSigh,
+    },
+
+    [MOVE_FROST_BOREA] =
+    {
+        .name = COMPOUND_STRING("Frost Borea"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_FrostBorea,
+    },
+
+    [MOVE_SOLSTICE_WIND] =
+    {
+        .name = COMPOUND_STRING("Solstice Wind"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_SolsticeWind,
+    },
+
+    [MOVE_BURNING_WIND] =
+    {
+        .name = COMPOUND_STRING("Burning Wind"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_BurningWind,
+    },
+
+    [MOVE_FIRE_STORM] =
+    {
+        .name = COMPOUND_STRING("Fire Storm"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_FireStorm,
+    },
+
+    [MOVE_OMINOUS_CLOUD] =
+    {
+        .name = COMPOUND_STRING("Ominous Cloud"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_OminousCloud,
+    },
+
+    [MOVE_GLOOM_WIND] =
+    {
+        .name = COMPOUND_STRING("Gloom Wind"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_GloomWind,
+    },
+
+    [MOVE_MIDNIGHT_STORM] =
+    {
+        .name = COMPOUND_STRING("Midnight Storm"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_MidnightStorm,
+    },
+
+    [MOVE_SHADOW_KICK] =
+    {
+        .name = COMPOUND_STRING("Shadow Kick"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_BREAK_SCREEN,
+            .preAttackEffect = TRUE,
+        }),
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_ShadowKick,
+    },
+
+    [MOVE_ELECTRIC_SONIC_BOOM] =
+    {
+        .name = COMPOUND_STRING("Electric Sonic Boom"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_ElectricSonicBoom,
+    },
+
+    [MOVE_THUNDER_CLOUD] =
+    {
+        .name = COMPOUND_STRING("Thunder Cloud"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_ThunderCloud,
+    },
+
+    [MOVE_THUNDER_STORM] =
+    {
+        .name = COMPOUND_STRING("Thunder Storm"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_ThunderStorm,
+    },
+
+    [MOVE_VOLT_CANNON] =
+    {
+        .name = COMPOUND_STRING("Volt Cannon"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .multiHit = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_VoltCannon,
+    },
+
+    [MOVE_STATIC_BUBBLE] =
+    {
+        .name = COMPOUND_STRING("Static Bubble"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_PARALYSIS,
+            .chance = 70,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_StaticBubble,
+    },
+
+    [MOVE_ELECTRIC_BUBBLE] =
+    {
+        .name = COMPOUND_STRING("Electric Bubble"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_PARALYSIS,
+            .chance = 40,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_ElectricBubble,
+    },
+
+    [MOVE_RAINBOW_BUBBLE_BEAM] =
+    {
+        .name = COMPOUND_STRING("Rainbow Bubble Beam"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_TRI_ATTACK,
+            .chance = 40,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_RainbowBubbleBeam,
+    },
+
+    [MOVE_NUMBING_SEA_WATER] =
+    {
+        .name = COMPOUND_STRING("Numbing Sea Water"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_PARALYSIS,
+            .chance = 30,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_NumbingSeaWater,
+    },
+
+    [MOVE_BUG_BREATH] =
+    {
+        .name = COMPOUND_STRING("Bug Breath"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_BugBreath,
+    },
+
+    [MOVE_WOOD_THROW] =
+    {
+        .name = COMPOUND_STRING("Wood Throw"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_WoodThrow,
+    },
+
+    [MOVE_WOOD_SLIDE] =
+    {
+        .name = COMPOUND_STRING("Wood Slide"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_WoodSlide,
+    },
+
+    [MOVE_ICE_THROW] =
+    {
+        .name = COMPOUND_STRING("Ice Throw"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_IceThrow,
+    },
+
+    [MOVE_MAGMA_THROW] =
+    {
+        .name = COMPOUND_STRING("Magma Throw"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_MagmaThrow,
+    },
+
+    [MOVE_MAGMA_SLIDE] =
+    {
+        .name = COMPOUND_STRING("Magma Slide"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_MagmaSlide,
+    },
+
+    [MOVE_SPROUT_SHOWER] =
+    {
+        .name = COMPOUND_STRING("Sprout Shower"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
+            .chance = 70,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_SproutShower,
+    },
+
+    [MOVE_HOT_SAND] =
+    {
+        .name = COMPOUND_STRING("Hot Sand"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
+            .chance = 70,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_HotSand,
+    },
+
+    [MOVE_COLD_SAND] =
+    {
+        .name = COMPOUND_STRING("Cold Sand"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
+            .chance = 70,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_ColdSand,
+    },
+
+    [MOVE_STATIC_SAND] =
+    {
+        .name = COMPOUND_STRING("Static Sand"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
+            .chance = 70,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_StaticSand,
+    },
+
+    [MOVE_BUTTERFLY_POWDER] =
+    {
+        .name = COMPOUND_STRING("Butterfly Powder"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
+            .chance = 70,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_ButterflyPowder,
+    },
+
+    [MOVE_STATIC_SCRATCH] =
+    {
+        .name = COMPOUND_STRING("Static Scratch"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_StaticScratch,
+    },
+
+    [MOVE_BUBBLE_SCRATCH] =
+    {
+        .name = COMPOUND_STRING("Bubble Scratch"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_BubbleScratch,
+    },
+
+    [MOVE_FIRE_SCRATCH] =
+    {
+        .name = COMPOUND_STRING("Fire Scratch"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_FireScratch,
+    },
+
+    [MOVE_DARK_SCRATCH] =
+    {
+        .name = COMPOUND_STRING("Dark Scratch"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_DarkScratch,
+    },
+
+    [MOVE_BUG_SCRATCH] =
+    {
+        .name = COMPOUND_STRING("Bug Scratch"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_BugScratch,
+    },
+
+    [MOVE_STATIC_FURY_SWIPES] =
+    {
+        .name = COMPOUND_STRING("Static Fury Swipes"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .multiHit = TRUE,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_StaticFurySwipes,
+    },
+
+    [MOVE_BUBBLE_FURY_SWIPES] =
+    {
+        .name = COMPOUND_STRING("Bubble Fury Swipes"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .multiHit = TRUE,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_BubbleFurySwipes,
+    },
+
+    [MOVE_FIRE_FURY_SWIPES] =
+    {
+        .name = COMPOUND_STRING("Fire Fury Swipes"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .multiHit = TRUE,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_FireFurySwipes,
+    },
+
+    [MOVE_DARK_FURY_SWIPES] =
+    {
+        .name = COMPOUND_STRING("Dark Fury Swipes"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .multiHit = TRUE,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_DarkFurySwipes,
+    },
+
+    [MOVE_BUG_FURY_SWIPES] =
+    {
+        .name = COMPOUND_STRING("Bug Fury Swipes"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .multiHit = TRUE,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_BugFurySwipes,
+    },
+
+    [MOVE_POISON_SLASH] =
+    {
+        .name = COMPOUND_STRING("Poison Slash"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_POISON,
+            .chance = 20,
+        }),
+        .slicingMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_PoisonSlash,
+    },
+
+    [MOVE_MANTIS_SLASH] =
+    {
+        .name = COMPOUND_STRING("Mantis Slash"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_BLEED,
+            .chance = 20,
+        }),
+        .slicingMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_MantisSlash,
+    },
+
+    [MOVE_BUG_WEB] =
+    {
+        .name = COMPOUND_STRING("Bug Web"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .multiHit = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_BugWeb,
+    },
+
+    [MOVE_FLAP] =
+    {
+        .name = COMPOUND_STRING("Flap"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .multiHit = TRUE,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_Flap,
+    },
+
+    [MOVE_PUNISH_SLAP] =
+    {
+        .name = COMPOUND_STRING("Punish Slap"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .multiHit = TRUE,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_PunishSlap,
+    },
+
+    [MOVE_FALCON_SLASH] =
+    {
+        .name = COMPOUND_STRING("Falcon Slash"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .multiHit = TRUE,
+        .makesContact = TRUE,
+        .slicingMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_FalconSlash,
+    },
+
+    [MOVE_ICE_POWDER] =
+    {
+        .name = COMPOUND_STRING("Ice Powder"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_NON_VOLATILE_STATUS,
+        .power = 0,
+        .type = TYPE_NORMAL,
+        .accuracy = 75,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_STATUS,
+        .argument = { .nonVolatileStatus = MOVE_EFFECT_FREEZE_OR_FROSTBITE },
+        .magicCoatAffected = TRUE,
+        .powderMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_IcePowder,
+    },
+
+    [MOVE_VOLCANIC_ASH] =
+    {
+        .name = COMPOUND_STRING("Volcanic Ash"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 10,
+        .type = TYPE_NORMAL,
+        .accuracy = 75,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_BURN,
+            .chance = 70,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_VolcanicAsh,
+    },
+
+    [MOVE_SINGLE_AXEL] =
+    {
+        .name = COMPOUND_STRING("Single Axel"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_SingleAxel,
+    },
+
+    [MOVE_DOUBLE_AXEL] =
+    {
+        .name = COMPOUND_STRING("Double Axel"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .strikeCount = 2,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_DoubleAxel,
+    },
+
+    [MOVE_ANGEL_KISS] =
+    {
+        .name = COMPOUND_STRING("Angel Kiss"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_ABSORB,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .argument = { .absorbPercentage = 50 },
+        .healingMove = FALSE,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_AngelKiss,
+    },
+
+    [MOVE_RAINBOW_STORM] =
+    {
+        .name = COMPOUND_STRING("Rainbow Storm"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_RainbowStorm,
+    },
+
+    [MOVE_BUTTERFLY_DANCE] =
+    {
+        .name = COMPOUND_STRING("Butterfly Dance"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_RANDOM,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .danceMove = TRUE,
+        .instructBanned = TRUE,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_THRASH,
+            .self = TRUE,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_ButterflyDance,
+    },
+
+    [MOVE_BUTTERFLY_TWISTER] =
+    {
+        .name = COMPOUND_STRING("Butterfly Twister"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .damagesAirborneDoubleDamage = TRUE,
+        .windMove = TRUE,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_FLINCH,
+            .chance = 20,
+        }),
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_ButterflyTwister,
+    },
+
+    [MOVE_BUTTERFLY_STORM] =
+    {
+        .name = COMPOUND_STRING("Butterfly Storm"),
+        .description = COMPOUND_STRING(
+            "Descriptions\n"
+            "Take time to write this"),
+        .effect = EFFECT_HIT,
+        .power = 40,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 35,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .windMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_HIGHLY_APPEALING,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_ButterflyStorm,
+    },
+
 };

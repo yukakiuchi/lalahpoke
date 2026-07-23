@@ -70,6 +70,66 @@ const struct SpriteTemplate gSandAttackDirtSpriteTemplate =
     .callback = AnimDirtScatter,
 };
 
+const struct SpriteTemplate gHotSandAttackDirtSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_MUD_SAND,
+    .paletteTag = ANIM_TAG_RED_BALL,
+    .oam = &gOamData_AffineOff_ObjNormal_8x8,
+    .callback = AnimDirtScatter,
+};
+
+const struct SpriteTemplate gColdSandAttackDirtSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_MUD_SAND,
+    .paletteTag = ANIM_TAG_POKEBALL,
+    .oam = &gOamData_AffineOff_ObjNormal_8x8,
+    .callback = AnimDirtScatter,
+};
+
+const struct SpriteTemplate gSkyButterflyAttackDirtSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY,
+    .paletteTag = ANIM_TAG_SLASH_2,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimDirtScatter,
+};
+
+const struct SpriteTemplate gGreenButterflyAttackDirtSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY,
+    .paletteTag = ANIM_TAG_BUTTERFLY,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimDirtScatter,
+};
+
+const struct SpriteTemplate gStaticSandAttackDirtSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_MUD_SAND,
+    .paletteTag = ANIM_TAG_IMPACT,
+    .oam = &gOamData_AffineOff_ObjNormal_8x8,
+    .callback = AnimDirtScatter,
+};
+
+const union AnimCmd gAnimCmd_YoungLeafFromSeed[] =
+{
+    ANIMCMD_FRAME(8, 0), // オフセット8のフレームを1回表示して終了
+    ANIMCMD_END,
+};
+
+const union AnimCmd *const gAnimTable_YoungLeafFromSeed[] =
+{
+    gAnimCmd_YoungLeafFromSeed,
+};
+
+const struct SpriteTemplate gFlowerShowerSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SEED,
+    .paletteTag = ANIM_TAG_SEED,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gAnimTable_YoungLeafFromSeed,
+    .callback = AnimDirtScatter,
+};
+
 static const union AnimCmd sAnim_MudSlapMud[] =
 {
     ANIMCMD_FRAME(1, 1),

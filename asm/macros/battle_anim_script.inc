@@ -448,6 +448,14 @@
 	createsprite gOverheatFlameSpriteTemplate, \anim_battler, \subpriority_offset, \speed, \unk1, \unk2, \duration, \y
 	.endm
 
+	.macro create_ice_powder_particle_sprite anim_battler:req, subpriority_offset:req, x:req, y:req, duration:req, y_velocity:req, wave_amplitude:req, wave_speed:req
+	createsprite gIcePowderParticleSpriteTemplate, \anim_battler, \subpriority_offset, \x, \y, \duration, 256 * \y_velocity, \wave_amplitude, \wave_speed
+	.endm
+
+	.macro create_volcanic_ash_particle_sprite anim_battler:req, subpriority_offset:req, x:req, y:req, duration:req, y_velocity:req, wave_amplitude:req, wave_speed:req
+	createsprite gVolcanicAshParticleSpriteTemplate, \anim_battler, \subpriority_offset, \x, \y, \duration, 256 * \y_velocity, \wave_amplitude, \wave_speed
+	.endm
+
 	.macro create_sleep_powder_particle_sprite anim_battler:req, subpriority_offset:req, x:req, y:req, duration:req, y_velocity:req, wave_amplitude:req, wave_speed:req
 	createsprite gSleepPowderParticleSpriteTemplate, \anim_battler, \subpriority_offset, \x, \y, \duration, 256 * \y_velocity, \wave_amplitude, \wave_speed
 	.endm
@@ -569,6 +577,14 @@
 	createsprite gRandomPosHitSplatSpriteTemplate, \anim_battler, \subpriority_offset, \relative_to, \animation
 	.else
 	createsprite gRandomPosHitSplatSpriteTemplate, \anim_battler, \subpriority_offset, \relative_to, -1
+	.endif
+	.endm
+
+	.macro create_random_pos_pink_hitsplat_sprite anim_battler:req, subpriority_offset:req, relative_to:req, animation
+	.ifnb \animation
+	createsprite gPinkRandomPosHitSplatSpriteTemplate, \anim_battler, \subpriority_offset, \relative_to, \animation
+	.else
+	createsprite gPinkRandomPosHitSplatSpriteTemplate, \anim_battler, \subpriority_offset, \relative_to, -1
 	.endif
 	.endm
 

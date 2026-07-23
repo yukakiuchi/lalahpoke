@@ -102,6 +102,17 @@ static void SpriteCB_TripleArrowKick(struct Sprite* sprite);
 
 // const data
 // general
+const union AnimCmd gAnimCmdUseFirstPicture[] =
+{
+    ANIMCMD_FRAME(0, 1),
+    ANIMCMD_END
+};
+
+const union AnimCmd *const gAnims_UseFirstPictureAnimTable[] =
+{
+    gAnimCmdUseFirstPicture,
+};
+
 static const union AffineAnimCmd sSquishTargetAffineAnimCmds[] =
 {
     AFFINEANIMCMD_FRAME(0, 64, 0, 16), //Flatten
@@ -600,6 +611,16 @@ const struct SpriteTemplate gLeafTornadoVortexTemplate =
 {
     .tileTag = ANIM_TAG_LEAF,
     .paletteTag = ANIM_TAG_LEAF,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gRazorLeafParticleAnimTable,
+    .callback = AnimParticleInVortex
+};
+
+// Pink Leaf Tornado
+const struct SpriteTemplate gPinkLeafTornadoVortexTemplate =
+{
+    .tileTag = ANIM_TAG_LEAF,
+    .paletteTag = ANIM_TAG_CLAPPING,
     .oam = &gOamData_AffineOff_ObjNormal_16x16,
     .anims = gRazorLeafParticleAnimTable,
     .callback = AnimParticleInVortex
@@ -1494,6 +1515,16 @@ const struct SpriteTemplate gHoldBackStarsTemplate =
     .tileTag = ANIM_TAG_PAIN_SPLIT,
     .paletteTag = ANIM_TAG_DUCK,
     .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimDizzyPunchDuck
+};
+
+const struct SpriteTemplate gFallingLeafsTemplate =
+{
+    .tileTag = ANIM_TAG_LEAF,
+    .paletteTag = ANIM_TAG_LEAF,
+    .oam = &gOamData_AffineDouble_ObjNormal_16x16,
+    .anims = gRazorLeafParticleAnimTable,
+    .affineAnims = gAffineAnims_PoisonProjectile,
     .callback = AnimDizzyPunchDuck
 };
 
@@ -3524,6 +3555,16 @@ const struct SpriteTemplate gDualWingbeatFeatherSpriteTemplate =
     .callback = AnimDizzyPunchDuck
 };
 
+const struct SpriteTemplate gDarkFeatherSplashSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_WHITE_FEATHER,
+    .paletteTag = ANIM_TAG_PURPLE_GENERAL_PAL,
+    .oam = &gOamData_AffineNormal_ObjNormal_32x32,
+    .anims = gAnims_FallingFeather,
+    .affineAnims = sSpriteAffineAnimTable_WingAttackFeather,
+    .callback = AnimDizzyPunchDuck
+};
+
 // False Surrender
 const struct SpriteTemplate gSpriteTemplate_LargeCrossImpact = {
     .tileTag = ANIM_TAG_CROSS_IMPACT,
@@ -3861,6 +3902,114 @@ const struct SpriteTemplate gSpriteTemplate_StoneAxeSlash = {
 const struct SpriteTemplate gSpriteTemplate_SpringtideHeart = {
     .tileTag = ANIM_TAG_RED_HEART,
     .paletteTag = ANIM_TAG_RED_HEART,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimParticleInVortex
+};
+
+const struct SpriteTemplate gSpriteTemplate_GreenButterflyStorm = {
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimParticleInVortex
+};
+
+const struct SpriteTemplate gSpriteTemplate_YellowButterflyStorm = {
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_AMNESIA,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimParticleInVortex
+};
+
+const struct SpriteTemplate gSpriteTemplate_BlueButterflyStorm = {
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_SLASH_2,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimParticleInVortex
+};
+
+const struct SpriteTemplate gSpriteTemplate_PinkButterflyStorm = {
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_PINK_CLOUD,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimParticleInVortex
+};
+
+const struct SpriteTemplate gSpriteTemplate_PurpleButterflyStorm = {
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_SMALL_FEATHER,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimParticleInVortex
+};
+
+const struct SpriteTemplate gSpriteTemplate_RedButterflyStorm = {
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_ALERT,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimParticleInVortex
+};
+
+
+static const union AnimCmd sAnimCmdSparkleTornados[] = {
+    ANIMCMD_FRAME(0, 4),
+    ANIMCMD_FRAME(4, 4),
+    ANIMCMD_FRAME(8, 4),
+    ANIMCMD_FRAME(12, 4),
+    ANIMCMD_END,
+};
+static const union AnimCmd *const sAnimCmdTable_SparkleTornados[] = {
+    sAnimCmdSparkleTornados,
+};
+
+// 緑のキラキラ
+const struct SpriteTemplate gGreenSparkleTornadoVortexTemplate =
+{
+    .tileTag = ANIM_TAG_GREEN_SPARKLE,
+    .paletteTag = ANIM_TAG_GREEN_SPARKLE,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .anims = sAnimCmdTable_SparkleTornados,
+    .callback = AnimParticleInVortex
+};
+
+// 空のキラキラ
+const struct SpriteTemplate gSkySparkleTornadoVortexTemplate =
+{
+    .tileTag = ANIM_TAG_GREEN_SPARKLE,
+    .paletteTag = ANIM_TAG_SPLASH,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .anims = sAnimCmdTable_SparkleTornados,
+    .callback = AnimParticleInVortex
+};
+
+// 黄のキラキラ
+const struct SpriteTemplate gYellowSparkleTornadoVortexTemplate =
+{
+    .tileTag = ANIM_TAG_GREEN_SPARKLE,
+    .paletteTag = ANIM_TAG_ANGER,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .anims = sAnimCmdTable_SparkleTornados,
+    .callback = AnimParticleInVortex
+};
+
+// ピンクのキラキラ
+const struct SpriteTemplate gPinkSparkleTornadoVortexTemplate =
+{
+    .tileTag = ANIM_TAG_GREEN_SPARKLE,
+    .paletteTag = ANIM_TAG_PINK_CLOUD,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .anims = sAnimCmdTable_SparkleTornados,
+    .callback = AnimParticleInVortex
+};
+
+const struct SpriteTemplate gSpriteTemplate_MidnightStormFeather = {
+    .tileTag = ANIM_TAG_SMALL_FEATHER,
+    .paletteTag = ANIM_TAG_SMALL_FEATHER,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimParticleInVortex
+};
+
+const struct SpriteTemplate gSpriteTemplate_GhostlyFeather = {
+    .tileTag = ANIM_TAG_FALLING_FEATHER,
+    .paletteTag = ANIM_TAG_DARK_SAND_PAL,
     .oam = &gOamData_AffineOff_ObjNormal_16x16,
     .callback = AnimParticleInVortex
 };
@@ -8385,6 +8534,20 @@ void AnimTask_GetCommanderType(u8 taskId)
         gBattleAnimArgs[ARG_RET_ID] = ANIM_ORDER_UP_NONE;
         break;
     }
+
+    DestroyAnimVisualTask(taskId);
+}
+
+// ターゲットが状態異常かどうかを確認
+void AnimTask_HasStatusCondition(u8 taskId)
+{
+    struct Pokemon *mon = GetBattlerMon(gBattleAnimTarget);
+    u32 status = GetMonData(mon, MON_DATA_STATUS);
+
+    if (status)
+        gBattleAnimArgs[0] = TRUE;
+    else
+        gBattleAnimArgs[0] = FALSE;
 
     DestroyAnimVisualTask(taskId);
 }
