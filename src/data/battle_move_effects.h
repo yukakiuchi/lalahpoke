@@ -285,6 +285,14 @@ const struct BattleMoveEffect gBattleMoveEffects[NUM_BATTLE_MOVE_EFFECTS] =
         .encourageEncore = TRUE,
     },
 
+    [EFFECT_ATTACK_UP_3] =
+    {
+        .battleScript = BattleScript_EffectAttackUp3,
+        .battleTvScore = 1,
+        .battleFactoryStyle = FACTORY_STYLE_PREPARATION,
+        .encourageEncore = TRUE,
+    },
+
     [EFFECT_DEFENSE_UP_2] =
     {
         .battleScript = BattleScript_EffectDefenseUp2,

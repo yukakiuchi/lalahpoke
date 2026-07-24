@@ -2716,6 +2716,10 @@ BattleScript_EffectAttackUp2::
 	setstatchanger STAT_ATK, 2, FALSE
 	goto BattleScript_EffectStatUp
 
+BattleScript_EffectAttackUp3::
+	setstatchanger STAT_ATK, 3, FALSE
+	goto BattleScript_EffectStatUp
+
 BattleScript_EffectDefenseUp2::
 	setstatchanger STAT_DEF, 2, FALSE
 	goto BattleScript_EffectStatUp
@@ -3152,7 +3156,7 @@ BattleScript_EffectMinimize::
 	attackcanceler
 	setvolatile BS_ATTACKER, VOLATILE_MINIMIZE
 	jumpifgenconfiglowerthan CONFIG_B_MINIMIZE_EVASION, GEN_5, BattleScript_EffectMinimizeGen4
-	setstatchanger STAT_EVASION, 2, FALSE
+	setstatchanger STAT_EVASION, 3, FALSE
 	goto BattleScript_EffectStatUpAfterAtkCanceler
 BattleScript_EffectMinimizeGen4:
 	setstatchanger STAT_EVASION, 1, FALSE

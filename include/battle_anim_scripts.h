@@ -1086,10 +1086,11 @@ extern const u8 gBattleAnimMove_DarkFurySwipes[];
 extern const u8 gBattleAnimMove_BugFurySwipes[];
 
 // 連続系
-extern const u8 gBattleAnimMove_BugWeb[];		// 虫
-extern const u8 gBattleAnimMove_Flap[];         // 風
-extern const u8 gBattleAnimMove_PunishSlap[];	// フェアリー
-extern const u8 gBattleAnimMove_FalconSlash[];	// 力
+extern const u8 gBattleAnimMove_BugWeb[];		  // 虫
+extern const u8 gBattleAnimMove_Flap[];           // 風
+extern const u8 gBattleAnimMove_PunishSlap[];	  // フェアリー
+extern const u8 gBattleAnimMove_FalconSlash[];	  // 力
+extern const u8 gBattleAnimMove_PoisonShuriken[]; // ノーマル
 
 // 粉系
 extern const u8 gBattleAnimMove_IcePowder[];    // 氷
@@ -1116,6 +1117,9 @@ extern const u8 gBattleAnimMove_ButterflyStorm[];
 // 切る系
 extern const u8 gBattleAnimMove_PoisonSlash[];
 extern const u8 gBattleAnimMove_MantisSlash[];
+
+// 闇系
+extern const u8 gBattleAnimMove_SonicSoulSlash[];
 
 // 音再生系
 extern const u8 gBattleAnimMove_SoundTest1[];

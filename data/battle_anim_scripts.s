@@ -40882,6 +40882,84 @@ gBattleAnimMove_VoltCannon::
 	waitforvisualfinish
 	end
 
+gBattleAnimMove_SonicSoulSlash::
+	loadspritegfx ANIM_TAG_AIR_WAVE
+	loadspritegfx ANIM_TAG_PURPLE_FLAME
+	loadspritegfx ANIM_TAG_CUT
+	loadspritegfx ANIM_TAG_DARK_SAND_PAL
+	delay 0
+	monbg ANIM_DEF_PARTNER
+	setalpha 12, 8
+	delay 0
+	createvisualtask AnimTask_TranslateMonEllipticalRespectSide, 2, ANIM_ATTACKER, 24, 6, 1, 5
+	createvisualtask AnimTask_TraceMonBlended, 2, 0, 4, 7, 3
+	playsewithpan SE_M_JUMP_KICK, SOUND_PAN_ATTACKER
+	delay 4
+	call DarkSonicBoomProjectile
+	delay 10
+	invert_screen_color scenery=0x1 | 0x2 | 0x4
+	delay 30
+	playsewithpan SE_M_TOXIC, SOUND_PAN_TARGET
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_TARGET, 3, 0, 12, 3
+	delay 6
+	playsewithpan SE_M_TOXIC, SOUND_PAN_TARGET
+	delay 6
+	playsewithpan SE_M_TOXIC, SOUND_PAN_TARGET
+	delay 6
+	waitforvisualfinish
+	playsewithpan SE_M_CUT, SOUND_PAN_TARGET
+	createsprite gDarkAirCutterSliceSpriteTemplate, ANIM_ATTACKER, 2, 40, -32, 0, 2
+	delay 5
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_TARGET, 0, 2, 8, 1
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_DEF_PARTNER, 2, 0, 8, 1
+	waitforvisualfinish
+	invert_screen_color scenery=0x1 | 0x2 | 0x4
+	waitforvisualfinish
+	blendoff
+	clearmonbg ANIM_DEF_PARTNER
+	delay 0
+	end
+DarkSonicBoomProjectile:
+	playsewithpan SE_M_RAZOR_WIND2, SOUND_PAN_ATTACKER
+	createsprite gDarkSonicBoomSpriteTemplate, ANIM_TARGET, 2, 16, 0, 0, -5, 15, 100
+	delay 4
+	playsewithpan SE_M_RAZOR_WIND2, SOUND_PAN_ATTACKER
+	createsprite gDarkSonicBoomSpriteTemplate, ANIM_TARGET, 2, 16, 0, 0, -5, 15, 95
+	delay 4
+	playsewithpan SE_M_RAZOR_WIND2, SOUND_PAN_ATTACKER
+	createsprite gDarkSonicBoomSpriteTemplate, ANIM_TARGET, 2, 16, 0, 0, -5, 15, 90
+	return
+
+gBattleAnimMove_PoisonShuriken::
+	loadspritegfx ANIM_TAG_AIR_WAVE
+	loadspritegfx ANIM_TAG_HOOPA_RING
+	delay 0
+	monbg ANIM_TARGET
+	setalpha 12, 8
+	delay 0
+	createvisualtask AnimTask_TranslateMonEllipticalRespectSide, 2, ANIM_ATTACKER, 24, 6, 1, 5
+	createvisualtask AnimTask_TraceMonBlended, 2, 0, 4, 7, 3
+	playsewithpan SE_M_JUMP_KICK, SOUND_PAN_ATTACKER
+	delay 4
+	call DarkShurikenProjectile
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_TARGET, 3, 0, 8, 3
+	waitforvisualfinish
+	blendoff
+	clearmonbg ANIM_TARGET
+	delay 0
+	end
+DarkShurikenProjectile:
+	playsewithpan SE_M_RAZOR_WIND2, SOUND_PAN_ATTACKER
+	createsprite gPoisonShurikenSpriteTemplate, ANIM_TARGET, 2, 16, -15, 0, 0, 15, 20
+	delay 4
+	playsewithpan SE_M_RAZOR_WIND2, SOUND_PAN_ATTACKER
+	createsprite gPoisonShurikenSpriteTemplate, ANIM_TARGET, 2, 16, 30, 0, 0, 15, 15
+	delay 4
+	playsewithpan SE_M_RAZOR_WIND2, SOUND_PAN_ATTACKER
+	createsprite gPoisonShurikenSpriteTemplate, ANIM_TARGET, 2, 16, 0, 0, 0, 15, 10
+	return
+
+
 gBattleAnimMove_SoundTest1::
 	playsewithpan SE_M_THUNDERBOLT, SOUND_PAN_ATTACKER
 	delay 60

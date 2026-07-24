@@ -4080,6 +4080,7 @@ static bool32 IsDomeComboMove(enum Move move)
     // Anything that ups offensive stats by more than one
     case EFFECT_ATTACK_UP:
     case EFFECT_ATTACK_UP_2:
+    case EFFECT_ATTACK_UP_3:
     case EFFECT_ATTACK_SPATK_UP:
     case EFFECT_SPECIAL_ATTACK_UP:
     case EFFECT_SPECIAL_ATTACK_UP_2:

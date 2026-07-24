@@ -2507,6 +2507,7 @@ bool32 CanAbilityAbsorbMove(struct BattleContext *ctx)
             battleScript = AbsorbedByFlashFire(ctx->battlerDef);
         break;
     case ABILITY_SOUNDPROOF:
+    case ABILITY_DEATH_SINGER:
         if (IsSoundMove(ctx->move))
             battleScript = BattleScript_SoundproofProtected;
         break;
@@ -7901,7 +7902,7 @@ s32 DoFixedDamageMoveCalc(struct BattleContext *ctx)
         }
         break;
     case EFFECT_FIXED_HP_DAMAGE:
-        dmg = GetMoveFixedHPDamage(ctx->move);
+        dmg = GetMoveFixedHPDamage(ctx->move) + (gBattleMons[ctx->battlerAtk].level * 2);
         break;
     case EFFECT_FIXED_PERCENT_DAMAGE:
         dmg = GetNonDynamaxHP(ctx->battlerDef) * GetMoveDamagePercentage(ctx->move) / 100;

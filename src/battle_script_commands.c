@@ -9410,7 +9410,15 @@ static void Cmd_trysetperishsong(void)
         else
         {
             gBattleMons[i].volatiles.perishSong = TRUE;
-            gBattleMons[i].volatiles.perishSongTimer = 3;
+
+            if (GetBattlerAbility(gBattlerAttacker) == ABILITY_DEATH_SINGER)
+            {
+                gBattleMons[i].volatiles.perishSongTimer = 0;
+            }
+            else
+            {
+                gBattleMons[i].volatiles.perishSongTimer = 3;
+            }
         }
     }
 
@@ -12875,7 +12883,9 @@ void BS_JumpIfBlockedBySoundproof(void)
 {
     NATIVE_ARGS(u8 battler, const u8 *jumpInstr);
     enum BattlerId battler = GetBattlerForBattleScript(cmd->battler);
-    if (IsSoundMove(gCurrentMove) && GetBattlerAbility(battler) == ABILITY_SOUNDPROOF)
+    if (IsSoundMove(gCurrentMove) 
+        && (GetBattlerAbility(battler) == ABILITY_SOUNDPROOF 
+         || GetBattlerAbility(battler) == ABILITY_DEATH_SINGER))
     {
         gLastUsedAbility = ABILITY_SOUNDPROOF;
         gBattlescriptCurrInstr = cmd->jumpInstr;

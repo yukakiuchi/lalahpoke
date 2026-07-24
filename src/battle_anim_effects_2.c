@@ -253,6 +253,22 @@ const struct SpriteTemplate gYellowSonicBoomSpriteTemplate =
     .callback = AnimSonicBoomProjectile,
 };
 
+const struct SpriteTemplate gDarkSonicBoomSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_AIR_WAVE,
+    .paletteTag = ANIM_TAG_PURPLE_FLAME,
+    .oam = &gOamData_AffineDouble_ObjBlend_32x16,
+    .callback = AnimSonicBoomProjectile,
+};
+
+const struct SpriteTemplate gPoisonShurikenSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_AIR_WAVE,
+    .paletteTag = ANIM_TAG_HOOPA_RING,
+    .oam = &gOamData_AffineDouble_ObjBlend_32x16,
+    .callback = AnimSonicBoomProjectile,
+};
+
 const struct SpriteTemplate gAirWaveProjectileSpriteTemplate =
 {
     .tileTag = ANIM_TAG_AIR_WAVE,
@@ -1474,6 +1490,15 @@ static void AnimSwordsDanceBlade_Step(struct Sprite *sprite)
     StoreSpriteCallbackInData6(sprite, DestroyAnimSprite);
 }
 
+// ★追加: 滞在時間（sprite->data[5]）を待ってから消去する関数
+static void AnimSonicBoom_WaitThenDestroy(struct Sprite *sprite)
+{
+    if (sprite->data[5]-- <= 0)
+    {
+        DestroyAnimSprite(sprite);
+    }
+}
+
 // Moves a projectile towards the target mon. The sprite is rotated to be pointing
 // in the same direction it's moving.
 // arg 0: initial x pixel offset
@@ -1481,6 +1506,7 @@ static void AnimSwordsDanceBlade_Step(struct Sprite *sprite)
 // arg 2: target x pixel offset
 // arg 3: target y pixel offset
 // arg 4: duration
+// arg 5: stay duration (optional) ★追加
 void AnimSonicBoomProjectile(struct Sprite *sprite)
 {
     s16 targetXPos;
@@ -1511,7 +1537,17 @@ void AnimSonicBoomProjectile(struct Sprite *sprite)
     sprite->data[2] = targetXPos;
     sprite->data[4] = targetYPos;
     sprite->callback = StartAnimLinearTranslation;
-    StoreSpriteCallbackInData6(sprite, DestroyAnimSprite);
+
+    // ★変更: arg 5 に値が入っているか判定
+    if (gBattleAnimArgs[5] != 0)
+    {
+        sprite->data[5] = gBattleAnimArgs[5]; // 滞在フレーム数を保持
+        StoreSpriteCallbackInData6(sprite, AnimSonicBoom_WaitThenDestroy);
+    }
+    else
+    {
+        StoreSpriteCallbackInData6(sprite, DestroyAnimSprite); // 従来通りの即消去
+    }
 }
 
 static void AnimAirWaveProjectile_Step2(struct Sprite *sprite)

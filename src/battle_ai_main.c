@@ -47,6 +47,7 @@ static bool32 IsPinchBerryItemEffect(enum HoldEffect holdEffect);
 static bool32 DoesAbilityBenefitFromSunOrRain(enum BattlerId battler, enum Ability ability, u32 weather);
 static void AI_CompareDamagingMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef);
 static u32 GetWindAbilityScore(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
+static bool32 IsDeathSongThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
 
 // ewram
 EWRAM_DATA const u8 *gAIScriptPtr = NULL;   // Still used in contests
@@ -1251,6 +1252,23 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
      && aiData->effectiveness[battlerAtk][BATTLE_PARTNER(battlerDef)][gAiThinkingStruct->movesetIndex] != UQ_4_12(0.0))
         ADJUST_SCORE(-5);
 
+     if (IsDeathSongThreat(battlerAtk, battlerDef, aiData))
+    {
+        enum BattleMoveEffects moveEffect = GetMoveEffect(move);
+
+        // 1. 積み技（能力上昇系）は一切意味がないため超大幅減点
+        if (IsStatRaisingEffect(moveEffect) || moveEffect == EFFECT_BELLY_DRUM || moveEffect == EFFECT_SHELL_SMASH)
+        {
+            RETURN_SCORE_MINUS(20);
+        }
+
+        // 2. 回復技も意味がないため超大幅減点
+        if (IsHealingMove(move) || moveEffect == EFFECT_REST)
+        {
+            RETURN_SCORE_MINUS(20);
+        }
+    }
+
     // check non-user target
     if (moveTarget != TARGET_USER)
     {
@@ -1467,6 +1485,7 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
     // stat raising effects
     case EFFECT_ATTACK_UP:
     case EFFECT_ATTACK_UP_2:
+    case EFFECT_ATTACK_UP_3:
         if (!BattlerStatCanRise(battlerAtk, aiData->abilities[battlerAtk], STAT_ATK) || !HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL))
             ADJUST_SCORE(-10);
         break;
@@ -2015,11 +2034,17 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
         }
         else
         {
-            if (CountUsablePartyMons(battlerAtk) == 0 && aiData->abilities[battlerAtk] != ABILITY_SOUNDPROOF
-              && CountUsablePartyMons(battlerDef) >= 1)
+            if (CountUsablePartyMons(battlerAtk) == 0
+            && aiData->abilities[battlerAtk] != ABILITY_SOUNDPROOF
+            && aiData->abilities[battlerAtk] != ABILITY_DEATH_SINGER
+            && CountUsablePartyMons(battlerDef) >= 1)
+            {
                 ADJUST_SCORE(-10);
+            }
 
-            if (gBattleMons[battlerDef].volatiles.perishSong || aiData->abilities[battlerDef] == ABILITY_SOUNDPROOF)
+            if (gBattleMons[battlerDef].volatiles.perishSong
+                || aiData->abilities[battlerDef] == ABILITY_SOUNDPROOF
+                || aiData->abilities[battlerDef] == ABILITY_DEATH_SINGER)
                 ADJUST_SCORE(-10);
         }
         break;
@@ -4393,6 +4418,55 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
     if (IsExplosionMove(move) && gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_WILL_SUICIDE && gBattleMons[battlerDef].statStages[STAT_EVASION] <= DEFAULT_STAT_STAGE)
         ADJUST_SCORE(DECENT_EFFECT);
 
+    // =========================================================================
+    // ★ ABILITY_DEATH_SINGER 対策専用ロジック（
+    // =========================================================================
+    if (IsDeathSongThreat(battlerAtk, battlerDef, aiData))
+    {
+        enum Move predictedMoveSpeedCheck = GetIncomingMoveSpeedCheck(battlerAtk, battlerDef, aiData);
+        bool32 isFaster = AI_IsFaster(battlerAtk, battlerDef, move, predictedMoveSpeedCheck, CONSIDER_PRIORITY);
+
+        // 【優先度2】一撃で倒せないが先制できる場合、阻止技のスコアを「+5」にする
+        // (先制1撃KOの「7点」より低く、通常攻撃の「1〜3点」より高い絶妙な数値)
+        if (isFaster)
+        {
+            // 特性消去・変更（いえき、スキルスワップ、なやみのたね等）
+            if (moveEffect == EFFECT_GASTRO_ACID 
+             || moveEffect == EFFECT_SKILL_SWAP 
+             || moveEffect == EFFECT_OVERWRITE_ABILITY 
+             || moveEffect == EFFECT_ENTRAINMENT)
+            {
+                ADJUST_SCORE(BEST_EFFECT); 
+            }
+
+            // 技封じ（ちょうはつ）
+            if (moveEffect == EFFECT_TAUNT)
+            {
+                ADJUST_SCORE(5);
+            }
+
+            // 状態異常・ひるみ（ねむりごな、でんじは、ねこだまし等）
+            if (GetMoveNonVolatileStatus(move) == MOVE_EFFECT_SLEEP 
+             || moveEffect == EFFECT_YAWN
+             || GetMoveNonVolatileStatus(move) == MOVE_EFFECT_PARALYSIS
+             || IsFlinchGuaranteed(battlerAtk, battlerDef, move))
+            {
+                ADJUST_SCORE(DECENT_EFFECT);
+            }
+        }
+        // 【優先度3】後攻確定の場合
+        else
+        {
+            // みちづれ
+            if (moveEffect == EFFECT_DESTINY_BOND)
+            {
+                ADJUST_SCORE(WEAK_EFFECT);
+            }
+        }
+    }
+    // =========================================================================
+
+
     // Non-volatile statuses
     switch (GetMoveNonVolatileStatus(move))
     {
@@ -4459,6 +4533,9 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
         break;
     case EFFECT_ATTACK_UP_2:
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_ATK_2));
+        break;
+    case EFFECT_ATTACK_UP_3:
+        ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_ATK_3));
         break;
     case EFFECT_DEFENSE_UP:
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_DEF));
@@ -6328,6 +6405,7 @@ static s32 AI_ForceSetupFirstTurn(enum BattlerId battlerAtk, enum BattlerId batt
     case EFFECT_FOCUS_ENERGY:
     case EFFECT_CONFUSE:
     case EFFECT_ATTACK_UP_2:
+    case EFFECT_ATTACK_UP_3:
     case EFFECT_DEFENSE_UP_2:
     case EFFECT_DEFENSE_UP_3:
     case EFFECT_SPEED_UP_2:
@@ -6714,6 +6792,7 @@ static s32 AI_HPAware(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum
             case EFFECT_MIST:
             case EFFECT_FOCUS_ENERGY:
             case EFFECT_ATTACK_UP_2:
+            case EFFECT_ATTACK_UP_3:
             case EFFECT_DEFENSE_UP_2:
             case EFFECT_SPEED_UP_2:
             case EFFECT_SPECIAL_ATTACK_UP_2:
@@ -7140,3 +7219,20 @@ void ResetDynamicAiFunctions(void)
     sDynamicAiFunc = NULL;
     gDynamicAiSwitchFunc = NULL;
 }
+
+// 相手が即死コンボの脅威であり、自分が対策する必要があるか判定する関数
+static bool32 IsDeathSongThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData)
+{
+    // 自分が「ぼうおん」or「DEATH_SONG」0r 「化学変化ガス」なら効かないので警戒不要
+    if (aiData->abilities[battlerAtk] == ABILITY_SOUNDPROOF
+        || aiData->abilities[battlerAtk] == ABILITY_DEATH_SINGER
+        || aiData->abilities[battlerAtk] == ABILITY_NEUTRALIZING_GAS)
+        return FALSE;
+
+    // 相手が「DEATH_SONG」を持っており、「ほろびのうた」を覚えている場合のみ脅威
+    if (aiData->abilities[battlerDef] == ABILITY_DEATH_SINGER)
+        return TRUE;
+
+    return FALSE;
+}
+

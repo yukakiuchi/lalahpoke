@@ -1520,6 +1520,15 @@ const struct SpriteTemplate gAirCutterSliceSpriteTemplate =
     .callback = AnimAirCutterSlice,
 };
 
+const struct SpriteTemplate gDarkAirCutterSliceSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_CUT,
+    .paletteTag = ANIM_TAG_DARK_SAND_PAL,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gCuttingSliceAnimTable,
+    .callback = AnimAirCutterSlice,
+};
+
 static const union AnimCmd sAnim_CirclingMusicNote_Eighth[] =
 {
     ANIMCMD_FRAME(0, 1),

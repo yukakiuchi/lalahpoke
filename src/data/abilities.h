@@ -2432,4 +2432,14 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
         .cantBeSwapped = TRUE,
         .cantBeTraced = TRUE,
     },
+
+    [ABILITY_DEATH_SINGER] =
+    {
+        .name = _("Death Singer"),
+        .description = COMPOUND_STRING("Perish Song 0 turn instant."),
+        .aiRating = 8,
+        .cantBeCopied = TRUE,
+        .cantBeSwapped = TRUE,
+        .cantBeTraced = TRUE,
+    },
 };

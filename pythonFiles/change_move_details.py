@@ -6,51 +6,56 @@ TARGET_FILE_PATH = "/Users/yu/Desktop/expand/src/data/moves_info.h"
 def flatten_line(line, param_name):
     """
     .power または .accuracy の行に三項演算子 (? ... :) が含まれている場合、
-    小さい方の数値を取り出して固定値表記に置換する。
+    演算子部分だけを小さい方の数値文字列に置換する。（改行・カンマ等はそのまま残す）
     """
-    pattern = re.compile(r'(\s*\.' + param_name + r'\s*=\s*).*?\?\s*(\d+)\s*:\s*(\d+)\s*(,.*)')
-    match = pattern.search(line)
+    match = re.search(r'\.' + param_name + r'\s*=\s*(.*?\?\s*(\d+)\s*:\s*(\d+))', line)
     if match:
-        prefix = match.group(1)
+        full_expr = match.group(1) # "B_UPDATED_MOVE_DATA >= GEN_3 ? 100 : 75"
         val1 = int(match.group(2))
         val2 = int(match.group(3))
-        suffix = match.group(4)
         min_val = min(val1, val2)
-        return f"{prefix}{min_val}{suffix}"
+        # 式の部分だけを数値文字列に置換
+        line = line.replace(full_expr, str(min_val))
+    return line
+
+def modify_line_val(line, param_name):
+    """
+    .power = 80 や .accuracy = 75 の数値部分を判定し、
+    条件を満たせば数値部分のみを -10 して置換する。（改行・カンマ等はそのまま残す）
+    """
+    match = re.search(r'(\.' + param_name + r'\s*=\s*)(\d+)', line)
+    if match:
+        prefix = match.group(1)
+        val = int(match.group(2))
+
+        should_modify = False
+        if param_name == 'power' and val >= 40:
+            should_modify = True
+        elif param_name == 'accuracy' and val > 50:
+            should_modify = True
+
+        if should_modify:
+            new_val = val - 10
+            # 該当する ".power = 80" の部分だけを置き換え、前後の文字列（改行等）は一切触らない
+            line = line[:match.start()] + f"{prefix}{new_val}" + line[match.end():]
+
     return line
 
 def process_move_block(block_text):
-    # 特殊技（DAMAGE_CATEGORY_SPECIAL）以外は対象外
+    # 特殊技（DAMAGE_CATEGORY_SPECIAL）以外は何も変更しない
     if not re.search(r'\.category\s*=\s*DAMAGE_CATEGORY_SPECIAL\b', block_text):
         return block_text
 
-    lines = block_text.splitlines(keepends=True)
+    lines = block_text.splitlines(keepends=True) # 改行コードを保持して行分割
     new_lines = []
 
     for line in lines:
-        # --- .power 行の独立処理 ---
         if '.power' in line:
-            # 1. 演算子の平坦化（三項演算子があれば小さい方に上書き）
             line = flatten_line(line, 'power')
-            # 2. 数値を取得して独立判定 (威力40以上なら -10)
-            m = re.search(r'(\s*\.power\s*=\s*)(\d+)(,.*)', line)
-            if m:
-                prefix, power_val, suffix = m.group(1), int(m.group(2)), m.group(3)
-                if power_val >= 40:
-                    new_power = power_val - 10
-                    line = f"{prefix}{new_power}{suffix}"
-
-        # --- .accuracy 行の独立処理 ---
+            line = modify_line_val(line, 'power')
         elif '.accuracy' in line:
-            # 1. 演算子の平坦化（三項演算子があれば小さい方に上書き）
             line = flatten_line(line, 'accuracy')
-            # 2. 数値を取得して独立判定 (命中51以上なら -10)
-            m = re.search(r'(\s*\.accuracy\s*=\s*)(\d+)(,.*)', line)
-            if m:
-                prefix, acc_val, suffix = m.group(1), int(m.group(2)), m.group(3)
-                if acc_val > 50:
-                    new_acc = acc_val - 10
-                    line = f"{prefix}{new_acc}{suffix}"
+            line = modify_line_val(line, 'accuracy')
 
         new_lines.append(line)
 
@@ -83,7 +88,7 @@ def main():
     with open(TARGET_FILE_PATH, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    print(f"処理完了: {modified_count} 個の特殊技ブロックを調整・更新しました。")
+    print(f"処理完了: {modified_count} 個の特殊技ブロックを更新しました。")
 
 if __name__ == "__main__":
     main()
