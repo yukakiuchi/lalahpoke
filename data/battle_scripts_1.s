@@ -3165,7 +3165,7 @@ BattleScript_EffectMinimizeGen4:
 BattleScript_EffectCurse::
 	jumpiftype BS_ATTACKER, TYPE_GHOST, BattleScript_GhostCurse
 	attackcanceler
-	jumpiftype BS_ATTACKER, TYPE_GHOST, BattleScript_DoGhostCurse
+	jumpiftype BS_ATTACKER, TYPE_DARK, BattleScript_DoGhostCurse
 	jumpifstat BS_ATTACKER, CMP_GREATER_THAN, STAT_SPEED, MIN_STAT_STAGE, BattleScript_CurseTrySpeed
 	jumpifstat BS_ATTACKER, CMP_NOT_EQUAL, STAT_ATK, MAX_STAT_STAGE, BattleScript_CurseTrySpeed
 	jumpifstat BS_ATTACKER, CMP_EQUAL, STAT_DEF, MAX_STAT_STAGE, BattleScript_ButItFailed
@@ -3243,9 +3243,9 @@ BattleScript_IdentifiedFoe:
 
 BattleScript_EffectPerishSong::
 	attackcanceler
-	trysetperishsong BattleScript_ButItFailed
 	attackanimation
 	waitanimation
+	trysetperishsong BattleScript_ButItFailed
 	printstring STRINGID_FAINTINTHREE
 	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_MoveEnd
@@ -4651,6 +4651,30 @@ BattleScript_LeechSeedTurnDrain:
 	tryactivateitem BS_ATTACKER, ACTIVATION_ON_HP_THRESHOLD
 	return
 
+BattleScript_LeechSeedTurnKO::
+	call BattleScript_AbilityPopUp
+	playanimation BS_ATTACKER, B_ANIM_LEECH_SEED_PARASITIZED, sB_ANIM_ARG1
+	
+	@ アニメーション終了後、逆転してしまったアタッカーとターゲットを戻す
+	@ この時点で、BS_ATTACKER＝自分（回復）、BS_TARGET＝相手（ダメージ）
+	swapattackerwithtarget
+	
+	@ 1. 先に相手（BS_TARGET）のHPを減らし、KO（瀕死）処理を行う
+	healthbarupdate BS_TARGET, PASSIVE_HP_UPDATE
+	datahpupdate BS_TARGET, PASSIVE_HP_UPDATE
+	tryactivateitem BS_TARGET, ACTIVATION_ON_HP_THRESHOLD
+	printstring STRINGID_TARGETPARASITIZED @ 吸い尽くされたメッセージを表示
+	tryfaintmon BS_TARGET                  @ ここで相手が倒れる
+	waitmessage B_WAIT_TIME_LONG
+	
+	@ 2. 次に自分（BS_ATTACKER）のHPを回復させる
+	healthbarupdate BS_ATTACKER, PASSIVE_HP_UPDATE
+	datahpupdate BS_ATTACKER, PASSIVE_HP_UPDATE
+	printfromtable gLeechSeedStringIds      @ 回復時のメッセージ（〜から 体力を すいとった！）を表示
+	waitmessage B_WAIT_TIME_LONG
+	tryfaintmon BS_ATTACKER                @ 念のための生存チェック
+	end2
+
 BattleScript_BideStoringEnergy::
 	printstring STRINGID_PKMNSTORINGENERGY
 	waitmessage B_WAIT_TIME_LONG
@@ -5842,8 +5866,7 @@ BattleScript_MoveUsedIsConfusedRet::
 BattleScript_MoveUsedPowder::
 	pause B_WAIT_TIME_SHORT
 	cancelmultiturnmoves
-	volatileanimation BS_ATTACKER, VOLATILE_POWDER
-	waitanimation
+	playanimation BS_SCRIPTING, B_ANIM_POWDER_EXPLOSION
 	effectivenesssound
 	hitanimation BS_ATTACKER
 	waitstate
@@ -8437,3 +8460,18 @@ BattleScript_ItemDropped::
 
 End_Battle_From_Item_Drop::
 	end2
+
+BattleScript_BattlerAbilityAuroraBarrier::
+	call BattleScript_AbilityPopUpScripting
+	playanimation BS_SCRIPTING, B_ANIM_AURORER_BARRIER
+	waitanimation
+	printstring STRINGID_ABILITYAURORABARRIERMSG
+	waitmessage B_WAIT_TIME_LONG
+	return
+
+BattleScript_WindPowerActivatedByTailWind::
+	call BattleScript_AbilityPopUp
+	setvolatile BS_TARGET, VOLATILE_CHARGE_TIMER, 2
+	printstring STRINGID_TAILWINDCHARGEDPKMNWITHPOWER
+	waitmessage B_WAIT_TIME_LONG
+	return

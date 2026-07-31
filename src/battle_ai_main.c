@@ -47,7 +47,14 @@ static bool32 IsPinchBerryItemEffect(enum HoldEffect holdEffect);
 static bool32 DoesAbilityBenefitFromSunOrRain(enum BattlerId battler, enum Ability ability, u32 weather);
 static void AI_CompareDamagingMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef);
 static u32 GetWindAbilityScore(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
-static bool32 IsDeathSongThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
+static void AI_CheckSturdyShedinjaBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, s32 *score);
+static void AI_HandleSturdyShedinja(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, s32 *score);
+static void AI_HandleDeathSongThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score);
+static void AI_HandleKrabbyKinglerAbilityChange(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, s32 *score);
+static void AI_CheckDeathSongBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score);
+static void AI_CheckNewAbilityThreatBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score);
+static void AI_CheckContactAbilityBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score); // ★追加（新規）
+
 
 // ewram
 EWRAM_DATA const u8 *gAIScriptPtr = NULL;   // Still used in contests
@@ -196,11 +203,20 @@ static u64 GetWildAiFlags(void)
         avgLevel = (GetMonData(&gEnemyParty[0], MON_DATA_LEVEL) + GetMonData(&gEnemyParty[1], MON_DATA_LEVEL)) / 2;
 
     flags |= AI_FLAG_CHECK_BAD_MOVE;
-    if (avgLevel >= 20)
+    flags |= AI_FLAG_OMNISCIENT;
+    flags |= AI_FLAG_TRY_TO_FAINT;
+
+    if (avgLevel >= 1)
         flags |= AI_FLAG_CHECK_VIABILITY;
-    if (avgLevel >= 60)
+    if (avgLevel >= 25)
         flags |= AI_FLAG_TRY_TO_2HKO;
-    if (avgLevel >= 80)
+    if (avgLevel >= 35)
+        flags |= AI_FLAG_POWERFUL_STATUS;
+    if (avgLevel >= 45)
+        flags |= AI_FLAG_PP_STALL_PREVENTION;
+    if (avgLevel >= 55)
+        flags |= AI_FLAG_PREDICT_MOVE;
+    if (avgLevel >= 70)
         flags |= AI_FLAG_HP_AWARE;
 
     if (B_VAR_WILD_AI_FLAGS != 0 && VarGet(B_VAR_WILD_AI_FLAGS) != 0)
@@ -1252,22 +1268,14 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
      && aiData->effectiveness[battlerAtk][BATTLE_PARTNER(battlerDef)][gAiThinkingStruct->movesetIndex] != UQ_4_12(0.0))
         ADJUST_SCORE(-5);
 
-     if (IsDeathSongThreat(battlerAtk, battlerDef, aiData))
-    {
-        enum BattleMoveEffects moveEffect = GetMoveEffect(move);
-
-        // 1. 積み技（能力上昇系）は一切意味がないため超大幅減点
-        if (IsStatRaisingEffect(moveEffect) || moveEffect == EFFECT_BELLY_DRUM || moveEffect == EFFECT_SHELL_SMASH)
-        {
-            RETURN_SCORE_MINUS(20);
-        }
-
-        // 2. 回復技も意味がないため超大幅減点
-        if (IsHealingMove(move) || moveEffect == EFFECT_REST)
-        {
-            RETURN_SCORE_MINUS(20);
-        }
-    }
+    // ★ 滅びの歌の脅威時の無効な行動（減点処理）
+    AI_CheckDeathSongBadMoves(battlerAtk, battlerDef, move, aiData, &score);
+    // ★ 頑丈ヌケニンに対する無効な攻撃の減点処理
+    AI_CheckSturdyShedinjaBadMoves(battlerAtk, battlerDef, move, &score);
+    // ★ 新たな脅威特性に対する無駄な行動の減点処理
+    AI_CheckNewAbilityThreatBadMoves(battlerAtk, battlerDef, move, aiData, &score);
+    // ★ ミイラ・さまようたましいに対する接触技の減点処理
+    AI_CheckContactAbilityBadMoves(battlerAtk, battlerDef, move, aiData, &score);
 
     // check non-user target
     if (moveTarget != TARGET_USER)
@@ -2588,7 +2596,9 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
         break;
     case EFFECT_TAUNT:
         if (gBattleMons[battlerDef].volatiles.tauntTimer > 0
-          || DoesPartnerHaveSameMoveEffect(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
+          || DoesPartnerHaveSameMoveEffect(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove)
+          || DoesSubstituteBlockMove(battlerAtk, battlerDef, move)                                   // ← みがわりチェック追加
+          || (B_MENTAL_HERB >= GEN_5 && aiData->holdEffects[battlerDef] == HOLD_EFFECT_MENTAL_HERB)) // ← メンタルハーブチェック追加)
             ADJUST_SCORE(-10);
         break;
     case EFFECT_BESTOW:
@@ -3196,7 +3206,7 @@ static s32 AI_TryToFaint(enum BattlerId battlerAtk, enum BattlerId battlerDef, e
             && GetBattleMovePriority(battlerAtk, gAiLogicData->abilities[battlerAtk], move) > 0)
     {
         if (RandomPercentage(RNG_AI_PRIORITIZE_LAST_CHANCE, PRIORITIZE_LAST_CHANCE_CHANCE) && !IsDoubleBattle()) // Last Chance behaviour is too easily abused in doubles
-            ADJUST_SCORE(SLOW_KILL + 2); // Don't outscore Fast Kill (which gets a bonus point in AI_CompareDamagingMoves), but do outscore Slow Kill getting the same
+            ADJUST_SCORE(BEST_EFFECT); // Don't outscore Fast Kill (which gets a bonus point in AI_CompareDamagingMoves), but do outscore Slow Kill getting the same
         else
             ADJUST_SCORE(LAST_CHANCE);
     }
@@ -3418,7 +3428,8 @@ static s32 AI_DoubleBattle(enum BattlerId battlerAtk, enum BattlerId battlerDef,
     case EFFECT_TAILWIND:
         // Anticipate both opponents protecting to stall out Trick Room, and apply Tailwind.
         if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM && gFieldTimers.trickRoomTimer == 1
-         && RandomPercentage(RNG_AI_APPLY_TAILWIND_ON_LAST_TURN_OF_TRICK_ROOM, TAILWIND_IN_TRICK_ROOM_CHANCE))
+         && RandomPercentage(RNG_AI_APPLY_TAILWIND_ON_LAST_TURN_OF_TRICK_ROOM, TAILWIND_IN_TRICK_ROOM_CHANCE)
+         && !gSideTimers[GetBattlerSide(battlerAtk)].tailwindTimer)
             ADJUST_SCORE(BEST_EFFECT);
         break;
     default:
@@ -4374,6 +4385,7 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
     bool32 hasPartner = HasPartner(battlerAtk);
     enum MoveTarget moveTarget = AI_GetBattlerMoveTargetType(battlerAtk, move);
     bool32 moveTargetsBothOpponents = hasTwoOpponents && (IsSpreadMove(moveTarget) || moveTarget == TARGET_ALL_BATTLERS || moveTarget == TARGET_FIELD);
+    bool32 isAiFaster = AI_IsFaster(battlerAtk, battlerDef, move, predictedMoveSpeedCheck, CONSIDER_PRIORITY);
 
     // The AI should understand that while Dynamaxed, status moves function like Protect.
     if (GetActiveGimmick(battlerAtk) == GIMMICK_DYNAMAX && GetMoveCategory(move) == DAMAGE_CATEGORY_STATUS)
@@ -4418,54 +4430,14 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
     if (IsExplosionMove(move) && gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_WILL_SUICIDE && gBattleMons[battlerDef].statStages[STAT_EVASION] <= DEFAULT_STAT_STAGE)
         ADJUST_SCORE(DECENT_EFFECT);
 
-    // =========================================================================
-    // ★ ABILITY_DEATH_SINGER 対策専用ロジック（
-    // =========================================================================
-    if (IsDeathSongThreat(battlerAtk, battlerDef, aiData))
-    {
-        enum Move predictedMoveSpeedCheck = GetIncomingMoveSpeedCheck(battlerAtk, battlerDef, aiData);
-        bool32 isFaster = AI_IsFaster(battlerAtk, battlerDef, move, predictedMoveSpeedCheck, CONSIDER_PRIORITY);
+    // ★ クラブ・キングラーに対する特性消す技の加点処理
+    AI_HandleKrabbyKinglerAbilityChange(battlerAtk, battlerDef, move, &score);
 
-        // 【優先度2】一撃で倒せないが先制できる場合、阻止技のスコアを「+5」にする
-        // (先制1撃KOの「7点」より低く、通常攻撃の「1〜3点」より高い絶妙な数値)
-        if (isFaster)
-        {
-            // 特性消去・変更（いえき、スキルスワップ、なやみのたね等）
-            if (moveEffect == EFFECT_GASTRO_ACID 
-             || moveEffect == EFFECT_SKILL_SWAP 
-             || moveEffect == EFFECT_OVERWRITE_ABILITY 
-             || moveEffect == EFFECT_ENTRAINMENT)
-            {
-                ADJUST_SCORE(BEST_EFFECT); 
-            }
+    // ★ 特性死の歌に対する対処加点
+    AI_HandleDeathSongThreat(battlerAtk, battlerDef, move, aiData, &score);
 
-            // 技封じ（ちょうはつ）
-            if (moveEffect == EFFECT_TAUNT)
-            {
-                ADJUST_SCORE(5);
-            }
-
-            // 状態異常・ひるみ（ねむりごな、でんじは、ねこだまし等）
-            if (GetMoveNonVolatileStatus(move) == MOVE_EFFECT_SLEEP 
-             || moveEffect == EFFECT_YAWN
-             || GetMoveNonVolatileStatus(move) == MOVE_EFFECT_PARALYSIS
-             || IsFlinchGuaranteed(battlerAtk, battlerDef, move))
-            {
-                ADJUST_SCORE(DECENT_EFFECT);
-            }
-        }
-        // 【優先度3】後攻確定の場合
-        else
-        {
-            // みちづれ
-            if (moveEffect == EFFECT_DESTINY_BOND)
-            {
-                ADJUST_SCORE(WEAK_EFFECT);
-            }
-        }
-    }
-    // =========================================================================
-
+    // ★ 頑丈ヌケニンに対する有効打の加点処理
+    AI_HandleSturdyShedinja(battlerAtk, battlerDef, move, &score);
 
     // Non-volatile statuses
     switch (GetMoveNonVolatileStatus(move))
@@ -4599,7 +4571,34 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
         break;
     case EFFECT_ACCURACY_DOWN:
     case EFFECT_ACCURACY_DOWN_2:
-        ADJUST_SCORE(IncreaseStatDownScore(battlerAtk, battlerDef, STAT_ACC));
+        {
+            // ① 基本の判定関数を実行（無効なら 0、有効なら +1 以上が返る）
+            // ※ IncreaseStatDownScore はすでに-3段階以下の時、自動的に NO_INCREASE (0) を返します。
+            s32 statScore = IncreaseStatDownScore(battlerAtk, battlerDef, STAT_ACC);
+            ADJUST_SCORE(statScore);
+
+            // 共通の安全な実行可能フラグを定義
+            bool32 canSafelyLowerAccuracy = (statScore > NO_INCREASE)
+                && CanLowerStat(battlerAtk, battlerDef, aiData, STAT_ACC)                             // 特性やアイテム、しろいきりによる無効化をチェック
+                && !DoesSubstituteBlockMove(battlerAtk, battlerDef, move)                             // 相手のみがわり状態をチェック
+                && !IsMoveUnusable(gAiThinkingStruct->movesetIndex, move, aiData->moveLimitations[battlerAtk]); // 自分がちょうはつ等で封じられていないかチェック
+
+            if (canSafelyLowerAccuracy)
+            {
+                // ② 「まるくなる（defenseCurl）＋ころがる」の脅威に対するメタ加点
+                if (gBattleMons[battlerDef].volatiles.defenseCurl 
+                 && HasMoveWithEffect(battlerDef, EFFECT_ROLLOUT))
+                {
+                    ADJUST_SCORE(GOOD_EFFECT); 
+                }
+
+                // ③ 「round body (ROUND_BODY)」の特性を持つ相手に対するメタ加点
+                if (aiData->abilities[battlerDef] == ABILITY_ROUND_BODY)
+                {
+                    ADJUST_SCORE(GOOD_EFFECT); 
+                }
+            }
+        }
         break;
     case EFFECT_EVASION_DOWN:
     case EFFECT_EVASION_DOWN_2:
@@ -4826,17 +4825,26 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
         }
         break;
     case EFFECT_LEECH_SEED:
+        // 無効・危険な相手なら処理を中断（評価を上げない）
         if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GRASS)
           || gBattleMons[battlerDef].volatiles.leechSeed
           || HasMoveWithEffect(battlerDef, EFFECT_RAPID_SPIN)
           || aiData->abilities[battlerDef] == ABILITY_LIQUID_OOZE
           || aiData->abilities[battlerDef] == ABILITY_MAGIC_GUARD)
+        {
             break;
-        ADJUST_SCORE(GOOD_EFFECT);
+        }
+        // 水または虫タイプなら＋5スコア、それ以外は通常（GOOD_EFFECT）加算
+        if (IS_BATTLER_ANY_TYPE(battlerDef, TYPE_WATER, TYPE_BUG))
+            ADJUST_SCORE(5);
+        else
+            ADJUST_SCORE(GOOD_EFFECT);
         if (!HasDamagingMove(battlerDef)
             || IsBattlerTrapped(battlerAtk, battlerDef)
             || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT)
+        {
             ADJUST_SCORE(DECENT_EFFECT);
+        }
         break;
     case EFFECT_DO_NOTHING:
     case EFFECT_HOLD_HANDS:
@@ -5209,10 +5217,36 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
             ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPDEF));
         break;
     case EFFECT_TAUNT:
-        if (IsBattleMoveStatus(predictedMove))
-            ADJUST_SCORE(GOOD_EFFECT);
-        else if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_STATUS))
-            ADJUST_SCORE(DECENT_EFFECT);
+        // ★ 安全チェック：
+        // 1. 相手がまだちょうはつ状態ではない (tauntTimer == 0)
+        // 2. 相手がみがわりを張っていない (!DoesSubstituteBlockMove)
+        // 3. 自分がちょうはつ等で技を封じられていない (!IsMoveUnusable)
+        // 4. 相手がメンタルハーブを持っていない（即座に治されるのを防ぐ）
+        if (gBattleMons[battlerDef].volatiles.tauntTimer == 0
+         && !DoesSubstituteBlockMove(battlerAtk, battlerDef, move)
+         && !IsMoveUnusable(movesetIndex, move, aiData->moveLimitations[battlerAtk])
+         && !(B_MENTAL_HERB >= GEN_5 && aiData->holdEffects[battlerDef] == HOLD_EFFECT_MENTAL_HERB))
+        {
+            // ① DEATH_SINGER または トリック/スキスワ/脅威特性等の危険コンボ阻止
+            if (IsDeathSongThreat(battlerAtk, battlerDef, aiData)
+             || ShouldTauntToPreventDangers(battlerAtk, battlerDef, aiData))
+            {
+                if (isAiFaster)
+                    ADJUST_SCORE(5);           // 先制できるなら確実に阻止できるため +5点
+                else
+                    ADJUST_SCORE(GOOD_EFFECT); // 後攻でも次ターン以降の阻止用に +3点
+            }
+            // ② 相手がこのターン変化技を使う予測なら +3点
+            else if (IsBattleMoveStatus(predictedMove))
+            {
+                ADJUST_SCORE(DECENT_EFFECT);
+            }
+            // ③ 相手が変化技を持っているなら +2点
+            else if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_STATUS))
+            {
+                ADJUST_SCORE(DECENT_EFFECT);
+            }
+        }
         break;
     case EFFECT_TRICK:
     case EFFECT_BESTOW:
@@ -5361,6 +5395,11 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
     case EFFECT_SKILL_SWAP:
     case EFFECT_OVERWRITE_ABILITY:
         AbilityChangeScore(battlerAtk, battlerDef, move, &score, aiData);
+        // ★ 追加：相手の特性が脅威であり、かつ使用する技が特性書き換え技（Worry Seed等）の場合、優先して使用するようにスコアを＋5加算
+        if (moveEffect == EFFECT_OVERWRITE_ABILITY && IsNewAbilityThreat(battlerAtk, battlerDef, aiData))
+        {
+            ADJUST_SCORE(5);
+        }
         return score;
     case EFFECT_IMPRISON:
         if (predictedMove != MOVE_NONE && HasMove(battlerAtk, predictedMove))
@@ -6216,7 +6255,10 @@ static s32 AI_CalcAdditionalEffectScore(enum BattlerId battlerAtk, enum BattlerI
 
                             if (AI_IsFaster(battlerAtk, battlerDef, move, predictedMoveSpeedCheck, CONSIDER_PRIORITY))
                             {
-                                ADJUST_SCORE(GOOD_EFFECT);
+                                if(IsDeathSongThreat(battlerAtk, battlerDef, aiData))
+                                    ADJUST_SCORE(5);
+                                else
+                                    ADJUST_SCORE(GOOD_EFFECT);
                                 break;
                             }
                             else
@@ -6356,6 +6398,13 @@ static s32 AI_CheckViability(enum BattlerId battlerAtk, enum BattlerId battlerDe
             if (gAiThinkingStruct->aiFlags[battlerAtk] & (AI_FLAG_RISKY | AI_FLAG_PREFER_HIGHEST_DAMAGE_MOVE)
                 && IsBestDmgMove(battlerAtk, battlerDef, AI_ATTACKING, move))
                 ADJUST_SCORE(BEST_DAMAGE_MOVE);
+            // ★相手（battlerDef）がクラブまたはキングラーの場合、自分が使う先制技（優先度>0）の評価を大幅上昇
+            u16 speciesDef = gBattleMons[battlerDef].species;
+            if ((speciesDef == SPECIES_KRABBY)
+             && GetBattleMovePriority(battlerAtk, aiData->abilities[battlerAtk], move) > 0)
+            {
+                ADJUST_SCORE(5);
+            }
         }
     }
 
@@ -6456,7 +6505,6 @@ static s32 AI_ForceSetupFirstTurn(enum BattlerId battlerAtk, enum BattlerId batt
     case EFFECT_TRICK_ROOM:
     case EFFECT_WONDER_ROOM:
     case EFFECT_MAGIC_ROOM:
-    case EFFECT_TAILWIND:
     case EFFECT_DRAGON_DANCE:
     case EFFECT_TIDY_UP:
     case EFFECT_STICKY_WEB:
@@ -7220,19 +7268,216 @@ void ResetDynamicAiFunctions(void)
     gDynamicAiSwitchFunc = NULL;
 }
 
-// 相手が即死コンボの脅威であり、自分が対策する必要があるか判定する関数
-static bool32 IsDeathSongThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData)
+
+// 頑丈ヌケニンに対する無効な単発攻撃の減点処理
+static void AI_CheckSturdyShedinjaBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, s32 *score)
 {
-    // 自分が「ぼうおん」or「DEATH_SONG」0r 「化学変化ガス」なら効かないので警戒不要
-    if (aiData->abilities[battlerAtk] == ABILITY_SOUNDPROOF
-        || aiData->abilities[battlerAtk] == ABILITY_DEATH_SINGER
-        || aiData->abilities[battlerAtk] == ABILITY_NEUTRALIZING_GAS)
-        return FALSE;
+    struct AiLogicData *aiData = gAiLogicData;
+    u16 speciesDef = gBattleMons[battlerDef].species;
 
-    // 相手が「DEATH_SONG」を持っており、「ほろびのうた」を覚えている場合のみ脅威
-    if (aiData->abilities[battlerDef] == ABILITY_DEATH_SINGER)
-        return TRUE;
+    if (speciesDef != SPECIES_SHEDINJA && speciesDef != SPECIES_NINJASK)
+        return;
+    if (AI_IsAbilityOnSide(battlerAtk, ABILITY_NEUTRALIZING_GAS))
+        return;
 
-    return FALSE;
+    // 連続技・型破り・変化技「以外」の単発攻撃技は頑丈で耐えられるため大幅減点
+    if (!IsMultiHitMove(move) 
+     && GetMoveStrikeCount(move) <= 1 
+     && !DoesBattlerIgnoreAbilityChecks(battlerAtk, aiData->abilities[battlerAtk], move)
+     && GetBattleMoveCategory(move) != DAMAGE_CATEGORY_STATUS)
+    {
+        ADJUST_SCORE_PTR(-20);
+    }
+}
+
+// 頑丈ヌケニンに対する有効打の加点処理
+static void AI_HandleSturdyShedinja(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, s32 *score)
+{
+    struct AiLogicData *aiData = gAiLogicData;
+    u16 speciesDef = gBattleMons[battlerDef].species;
+
+    if (speciesDef != SPECIES_SHEDINJA && speciesDef != SPECIES_NINJASK)
+        return;
+
+    // 1. 連続技または型破り攻撃（直接ヒットで突破可能）
+    if (IsMultiHitMove(move) || GetMoveStrikeCount(move) > 1)
+    {
+        ADJUST_SCORE_PTR(10);
+    }
+    else if (!gBattleMons[battlerAtk].volatiles.substitute
+        && DoesBattlerIgnoreAbilityChecks(battlerAtk, aiData->abilities[battlerAtk], move))
+    {
+        ADJUST_SCORE_PTR(10);
+    }
+    // 2. 相手に「実際に通る」二次ダメージ技（どく/やけど/バインド/天候/設置/宿り木/あくむ/しおづけ等）
+    else if (CanApplySecondaryDamage(battlerAtk, battlerDef, move, aiData))
+    {
+        ADJUST_SCORE_PTR(7); // ヌケニンを倒せる手段として最高評価！
+    }
+    else if (GetAIEffectGroupFromMove(battlerAtk, move) & AI_EFFECT_CHANGE_ABILITY)
+    {
+        ADJUST_SCORE_PTR(7); // 特性消去・変更技
+    }
+}
+
+// 相手がクラブ・キングラーの場合、特性変更技のスコアを+5
+static void AI_HandleKrabbyKinglerAbilityChange(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, s32 *score)
+{
+    u16 speciesDef = gBattleMons[battlerDef].species;
+    struct AiLogicData *aiData = gAiLogicData;
+
+    if (speciesDef == SPECIES_KRABBY || speciesDef == SPECIES_KINGLER)
+    {
+        if (GetAIEffectGroupFromMove(battlerAtk, move) & AI_EFFECT_CHANGE_ABILITY)
+        {
+            // ★ 改善：先制・みがわり・技の有効性をすべて確認して安全な場合のみ加点
+            enum Move predictedMoveSpeedCheck = GetIncomingMoveSpeedCheck(battlerAtk, battlerDef, aiData);
+            bool32 isFaster = AI_IsFaster(battlerAtk, battlerDef, move, predictedMoveSpeedCheck, CONSIDER_PRIORITY);
+            u32 moveIndex = GetMoveIndex(battlerAtk, move);
+
+            if (isFaster
+             && !DoesSubstituteBlockMove(battlerAtk, battlerDef, move)
+             && !IsMoveUnusable(moveIndex, move, aiData->moveLimitations[battlerAtk]))
+            {
+                ADJUST_SCORE_PTR(5); 
+            }
+        }
+    }
+}
+
+// 滅びの歌の脅威がある時、無意味な技（積み・回復）を減点する処理
+static void AI_CheckDeathSongBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score)
+{
+    if (!IsDeathSongThreat(battlerAtk, battlerDef, aiData))
+        return;
+
+    enum BattleMoveEffects moveEffect = GetMoveEffect(move);
+
+    // 1. 積み技（能力上昇系）は一切意味がないため超大幅減点
+    if (IsStatRaisingEffect(moveEffect) || moveEffect == EFFECT_BELLY_DRUM || moveEffect == EFFECT_SHELL_SMASH)
+    {
+        ADJUST_SCORE_PTR(-20);
+    }
+    // 2. 回復技も意味がないため超大幅減点
+    else if (IsHealingMove(move) || moveEffect == EFFECT_REST)
+    {
+        ADJUST_SCORE_PTR(-20);
+    }
+    else if (IsStatLoweringEffect(moveEffect))
+    {
+        ADJUST_SCORE_PTR(-20);
+    }
+}
+
+static void AI_HandleDeathSongThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score)
+{
+    if (!IsDeathSongThreat(battlerAtk, battlerDef, aiData))
+        return;
+
+    enum BattleMoveEffects moveEffect = GetMoveEffect(move);
+    enum Move predictedMoveSpeedCheck = GetIncomingMoveSpeedCheck(battlerAtk, battlerDef, aiData);
+    bool32 isAiFaster = AI_IsFaster(battlerAtk, battlerDef, move, predictedMoveSpeedCheck, CONSIDER_PRIORITY);
+    u32 moveIndex = GetMoveIndex(battlerAtk, move);
+
+    if (isAiFaster)
+    {
+        // ★ 改善：先制して歌うのを防ぐ技は、みがわりに防がれず、自分が封じられていない場合のみ加点
+        if (!DoesSubstituteBlockMove(battlerAtk, battlerDef, move)
+         && !IsMoveUnusable(moveIndex, move, aiData->moveLimitations[battlerAtk]))
+        {
+            // 【先制できる場合】歌われる前に阻止する！
+            if (GetAIEffectGroupFromMove(battlerAtk, move) & AI_EFFECT_CHANGE_ABILITY)
+            {
+                ADJUST_SCORE_PTR(5); // 特性消去・変更技
+            }
+            else if (moveEffect == EFFECT_IMPRISON && HasMoveWithEffect(battlerAtk, EFFECT_PERISH_SONG))
+            {
+                ADJUST_SCORE_PTR(5); // ふういん
+            }
+            else if (IsFlinchGuaranteed(battlerAtk, battlerDef, move)
+                  || (GetMoveNonVolatileStatus(move) == MOVE_EFFECT_SLEEP && moveEffect != EFFECT_YAWN))
+            {
+                ADJUST_SCORE_PTR(4); // 確定ひるみ・即時睡眠
+            }
+            else if (GetMoveNonVolatileStatus(move) == MOVE_EFFECT_PARALYSIS
+                  || IsConfusionMoveEffect(moveEffect)
+                  || moveEffect == EFFECT_ATTRACT)
+            {
+                ADJUST_SCORE_PTR(4); // 麻痺・混乱・メロメロ
+            }
+        }
+    }
+    else
+    {
+        // ★【後攻になる場合】逃げ技やみちづれが、かなしばり等で封じられていない場合のみ加点
+        if (!IsMoveUnusable(moveIndex, move, aiData->moveLimitations[battlerAtk]))
+        {
+            if (IsSwitchOutEffect(moveEffect) || moveEffect == EFFECT_DESTINY_BOND)
+                ADJUST_SCORE_PTR(5);
+        }
+    }
+}
+
+// ★追加：新しい脅威特性に対する無駄な行動（積み・回復・デバフ）を減点するメソッド
+static void AI_CheckNewAbilityThreatBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score)
+{
+    // 相手が新たな脅威特性でないなら何もしない
+    if (!IsNewAbilityThreat(battlerAtk, battlerDef, aiData))
+        return;
+
+    enum BattleMoveEffects moveEffect = GetMoveEffect(move);
+
+    // ターン消費になる積み技（自己強化）を避ける
+    if (IsStatRaisingEffect(moveEffect) || moveEffect == EFFECT_BELLY_DRUM || moveEffect == EFFECT_SHELL_SMASH)
+    {
+        ADJUST_SCORE_PTR(-20);
+    }
+    // 早期解決が求められる状況での回復技を避ける
+    else if (IsHealingMove(move) || moveEffect == EFFECT_REST)
+    {
+        ADJUST_SCORE_PTR(-20);
+    }
+    // 相手の能力を下げるデバフ技を避ける
+    else if (IsStatLoweringEffect(moveEffect))
+    {
+        ADJUST_SCORE_PTR(-20);
+    }
+}
+
+// ★ 自身が指定のポケモン/特性の場合、ミイラ・さまようたましいを持つ相手への接触技を減点する処理
+static void AI_CheckContactAbilityBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score)
+{
+    u16 speciesAtk = gBattleMons[battlerAtk].species;
+    enum Ability abilityAtk = aiData->abilities[battlerAtk];
+    enum Ability abilityDef = aiData->abilities[battlerDef];
+
+    // 1. 防御側（def）の特性が「さまようたましい」または「ミイラ」か判定
+    if (abilityDef != ABILITY_WANDERING_SPIRIT
+        && abilityDef != ABILITY_MUMMY
+        && abilityDef != ABILITY_LINGERING_AROMA)
+        return;
+
+    // 2. 攻撃側（atk）の種族判定
+    bool32 isTargetSpecies = (speciesAtk == SPECIES_SHEDINJA
+                           || speciesAtk == SPECIES_NINJASK
+                           || speciesAtk == SPECIES_KRABBY
+                           || speciesAtk == SPECIES_KINGLER);
+
+    // 3. 攻撃側（atk）の特性判定
+    bool32 isTargetAbility = (abilityAtk == ABILITY_DEATH_SINGER
+                           || abilityAtk == ABILITY_AURORA_BARRIER
+                           || abilityAtk == ABILITY_PARASITISM
+                           || abilityAtk == ABILITY_MISTY_BREATH);
+
+    // 攻撃側が対象の種族・特性のどちらにも当てはまらない場合は処理しない
+    if (!isTargetSpecies && !isTargetAbility)
+        return;
+
+    // 4. AI専用の総合判定関数で「実際に接触判定が発生するか」をチェック
+    // （とくせい：えんきょりしゃげき、もちもの：ぼうごパッド、パンチグローブ等も自動考慮されます）
+    if (AI_MoveMakesContact(battlerAtk, battlerDef, abilityAtk, aiData->holdEffects[battlerAtk], move))
+    {
+        ADJUST_SCORE_PTR(-20);
+    }
 }
 

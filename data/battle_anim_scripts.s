@@ -27681,7 +27681,7 @@ MistCloud:
 gBattleAnimMove_Haze::
 	waitforvisualfinish
 	playsewithpan SE_M_HAZE, 0
-	createvisualtask AnimTask_HazeScrollingFog, 5
+	createvisualtask AnimTask_HazeScrollingFog, 5, 1
 	delay 30
 	createvisualtask AnimTask_BlendBattleAnimPal, 10, F_PAL_BATTLERS_2, 2, 0, 16, RGB_BLACK
 	delay 90
@@ -38865,6 +38865,77 @@ YellowWaterBubblesEffectLong:
 	playsewithpan SE_M_BUBBLE3, SOUND_PAN_TARGET
 	return
 
+gBattleAnimMove_RainbowBubble::
+	loadspritegfx ANIM_TAG_BUBBLE
+	loadspritegfx ANIM_TAG_SMALL_BUBBLES
+	loadspritegfx ANIM_TAG_GREEN_LIGHT_WALL  @ 緑パレット
+	loadspritegfx ANIM_TAG_RED_LIGHT_WALL    @ ピンクパレット
+	loadspritegfx ANIM_TAG_ORANGE_LIGHT_WALL @ 黄パレット
+	loadspritegfx ANIM_TAG_DRAGON_ASCENT_FOE @ 水パレット
+
+	monbg ANIM_TARGET
+	setalpha 14, 5
+	playsewithpan SE_M_TAIL_WHIP, SOUND_PAN_ATTACKER
+	createvisualtask AnimTask_SquishAndSweatDroplets, 2, ANIM_ATTACKER, 1    @ 自分のポケモンよいっしょってする動作
+	delay 15
+	createsprite gYellowWaterBubbleProjectileSpriteTemplate, ANIM_ATTACKER, 2, 18, 0, 15, -15, 10, 128, 100
+	playsewithpan SE_M_BUBBLE, SOUND_PAN_ATTACKER
+	waitplaysewithpan SE_M_BUBBLE2, SOUND_PAN_TARGET, 100
+	delay 6
+	createsprite gGreenWaterBubbleProjectileSpriteTemplate, ANIM_ATTACKER, 2, 18, 0, 35, 37, 40, 128, 100
+	playsewithpan SE_M_BUBBLE, SOUND_PAN_ATTACKER
+	waitplaysewithpan SE_M_BUBBLE2, SOUND_PAN_TARGET, 100
+	delay 6
+	createsprite gPinkWaterBubbleProjectileSpriteTemplate, ANIM_ATTACKER, 2, 18, 0, 10, -37, 30, 128, 100
+	playsewithpan SE_M_BUBBLE, SOUND_PAN_ATTACKER
+	waitplaysewithpan SE_M_BUBBLE2, SOUND_PAN_TARGET, 100
+	delay 6
+	createsprite gSkyWaterBubbleProjectileSpriteTemplate, ANIM_ATTACKER, 2, 18, 0, 30, 10, 15, 128, 100
+	playsewithpan SE_M_BUBBLE, SOUND_PAN_ATTACKER
+	waitplaysewithpan SE_M_BUBBLE2, SOUND_PAN_TARGET, 100
+	delay 6
+	createsprite gWaterBubbleProjectileSpriteTemplate, ANIM_ATTACKER, 2, 18, 0, 20, 33, 20, 128, 100
+	playsewithpan SE_M_BUBBLE, SOUND_PAN_ATTACKER
+	waitplaysewithpan SE_M_BUBBLE2, SOUND_PAN_TARGET, 100
+	delay 6
+	createsprite gYellowWaterBubbleProjectileSpriteTemplate, ANIM_ATTACKER, 2, 18, 0, 25, -30, 10, 128, 100
+	playsewithpan SE_M_BUBBLE, SOUND_PAN_ATTACKER
+	waitplaysewithpan SE_M_BUBBLE2, SOUND_PAN_TARGET, 100
+	waitforvisualfinish
+	createvisualtask AnimTask_ShakeMon, 2, ANIM_TARGET, 5, 0, 15, 3
+	call RainbowBubblesEffectLong
+	delay 10
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_TARGET, 1, 0, 12, 2   @ 相手ポケモンShakeする
+	waitforvisualfinish
+	clearmonbg ANIM_TARGET
+	blendoff
+	end
+RainbowBubblesEffectLong:
+	createsprite gGreenWaterBubbleSpriteTemplate, ANIM_ATTACKER, 2, 10, 10, 1
+	playsewithpan SE_M_BUBBLE3, SOUND_PAN_TARGET
+	delay 6
+	createsprite gPinkWaterBubbleSpriteTemplate, ANIM_ATTACKER, 2, -28, -10, 1
+	playsewithpan SE_M_BUBBLE3, SOUND_PAN_TARGET
+	delay 6
+	createsprite gSkyWaterBubbleSpriteTemplate, ANIM_ATTACKER, 2, 20, -20, 1
+	playsewithpan SE_M_BUBBLE3, SOUND_PAN_TARGET
+	delay 6
+	createsprite gYellowWaterBubbleSpriteTemplate, ANIM_ATTACKER, 2, -20, 15, 1
+	playsewithpan SE_M_BUBBLE3, SOUND_PAN_TARGET
+	delay 6
+	createsprite gWaterBubbleSpriteTemplate, ANIM_ATTACKER, 2, 0, 0, 1
+	playsewithpan SE_M_BUBBLE3, SOUND_PAN_TARGET
+	delay 6
+	createsprite gGreenWaterBubbleSpriteTemplate, ANIM_ATTACKER, 2, 27, 8, 1
+	playsewithpan SE_M_BUBBLE3, SOUND_PAN_TARGET
+	delay 6
+	createsprite gPinkWaterBubbleSpriteTemplate, ANIM_ATTACKER, 2, -20, -20, 1
+	playsewithpan SE_M_BUBBLE3, SOUND_PAN_TARGET
+	delay 6
+	createsprite gSkyWaterBubbleSpriteTemplate, ANIM_ATTACKER, 2, 16, -8, 1
+	playsewithpan SE_M_BUBBLE3, SOUND_PAN_TARGET
+	return
+
 gBattleAnimMove_BugBreath::
 	loadspritegfx ANIM_TAG_NEW_BUBBLE
 	loadspritegfx ANIM_TAG_NEW_SMALL_BUBBLE
@@ -40959,6 +41030,73 @@ DarkShurikenProjectile:
 	createsprite gPoisonShurikenSpriteTemplate, ANIM_TARGET, 2, 16, 0, 0, 0, 15, 10
 	return
 
+gBattleAnimGeneral_AuroraBarrier::
+	loadspritegfx ANIM_TAG_SPARKLE_4
+	loadspritegfx ANIM_TAG_BLUE_LIGHT_WALL
+	loadspritegfx ANIM_TAG_SPARKLE_3
+	loadspritegfx ANIM_TAG_GREEN_LIGHT_WALL
+	
+	setalpha 0, 16
+	waitplaysewithpan SE_M_REFLECT, SOUND_PAN_ATTACKER, 15
+	createsprite gLightScreenWallSpriteTemplate, ANIM_ATTACKER, 1, 40, 0, ANIM_TAG_GREEN_LIGHT_WALL
+	delay 10
+	call SpecialScreenSparkle
+	waitforvisualfinish
+	delay 1
+	
+	waitplaysewithpan SE_M_REFLECT, SOUND_PAN_ATTACKER, 15
+	createsprite gReflectWallSpriteTemplate, ANIM_ATTACKER, 1, 40, 0, ANIM_TAG_BLUE_LIGHT_WALL
+	delay 20
+	createsprite gReflectSparkleSpriteTemplate, ANIM_ATTACKER, 2, 30, 0, ANIM_ATTACKER, TRUE
+	delay 7
+	createsprite gReflectSparkleSpriteTemplate, ANIM_ATTACKER, 2, 19, -12, ANIM_ATTACKER, TRUE
+	delay 7
+	createsprite gReflectSparkleSpriteTemplate, ANIM_ATTACKER, 2, 10, 20, ANIM_ATTACKER, TRUE
+	waitforvisualfinish
+	delay 1
+	blendoff
+	end
+
+@ 寄生成功時の処理
+gBattleAnimGeneral_Parasitized::
+	createvisualtask AnimTask_GetBattlersFromArg, 5
+	delay 0
+	loadspritegfx ANIM_TAG_GHOSTLY_SPIRIT
+	loadspritegfx ANIM_TAG_BLUE_STAR
+	loadspritegfx ANIM_TAG_ORBS
+	monbg ANIM_DEF_PARTNER
+	simple_palette_blend selector=F_PAL_BG, delay=1, initial_blend_y=0, target_blend_y=4, color=RGB(13, 31, 12)
+	waitforvisualfinish
+	playsewithpan SE_M_PSYBEAM, SOUND_PAN_ATTACKER
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_TARGET, 3, 0, 8, 3
+	blend_color_cycle selector=F_PAL_TARGET, delay=2, num_blends=2, initial_blend_y=0, target_blend_y=16, color=RGB(2, 1, 6)
+	waitforvisualfinish
+	delay 5
+	playsewithpan SE_M_NIGHTMARE, SOUND_PAN_TARGET
+	createsprite gCurseGhostSpriteTemplate, ANIM_TARGET, 2
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_TARGET, 2, 0, 14, 1
+	waitforvisualfinish
+	delay 15
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_TARGET, 0, 3, 28, 1
+	call GigaDrainAbsorbEffect
+	waitforvisualfinish
+	call HealingEffect
+	waitforvisualfinish
+	simple_palette_blend selector=F_PAL_BG, delay=1, initial_blend_y=4, target_blend_y=0, color=RGB(13, 31, 12)
+	waitforvisualfinish
+	clearmonbg ANIM_DEF_PARTNER
+	end
+
+@ 爆発パウダートラップにかかった時のアニメーション
+gBattleAnimGeneral_PowderExplosion::
+	loadspritegfx ANIM_TAG_EXPLOSION
+	createvisualtask AnimTask_BlendBattleAnimPal, 10, F_PAL_ATTACKER, 1, 0, 9, RGB_RED
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_ATTACKER, 3, 0, 38, 1
+	call SelfDestructExplode
+	call SelfDestructExplode
+	waitforvisualfinish
+	createvisualtask AnimTask_BlendBattleAnimPal, 10, F_PAL_ATTACKER, 1, 9, 0, RGB_RED
+	end
 
 gBattleAnimMove_SoundTest1::
 	playsewithpan SE_M_THUNDERBOLT, SOUND_PAN_ATTACKER

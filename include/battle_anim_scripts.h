@@ -1105,6 +1105,7 @@ extern const u8 gBattleAnimMove_DrainTouch[];   // 闇
 extern const u8 gBattleAnimMove_AngelKiss[];    // フェアリー 
 
 // 虹系
+extern const u8 gBattleAnimMove_RainbowBubble[];
 extern const u8 gBattleAnimMove_RainbowBubbleBeam[];
 extern const u8 gBattleAnimMove_RainbowStorm[];
 
@@ -1120,6 +1121,11 @@ extern const u8 gBattleAnimMove_MantisSlash[];
 
 // 闇系
 extern const u8 gBattleAnimMove_SonicSoulSlash[];
+
+// 特性アニメ
+extern const u8 gBattleAnimGeneral_AuroraBarrier[];
+extern const u8 gBattleAnimGeneral_Parasitized[];
+extern const u8 gBattleAnimGeneral_PowderExplosion[];
 
 // 音再生系
 extern const u8 gBattleAnimMove_SoundTest1[];

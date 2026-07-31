@@ -1407,7 +1407,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .baseSpeed     = 70,
         .baseSpAttack  = P_UPDATED_STATS >= GEN_6 ? 90 : 80,
         .baseSpDefense = 80,
-        .types = MON_TYPES(TYPE_FLYING, TYPE_BUG),
+        .types = MON_TYPES(TYPE_ROCK, TYPE_BUG),
         .catchRate = 45,
         .expYield = BUTTERFREE_EXP_YIELD,
         .evYield_SpAttack = 2,
@@ -1418,7 +1418,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_BUG),
-        .abilities = { ABILITY_SOUNDPROOF, ABILITY_NONE, ABILITY_SOUNDPROOF },
+        .abilities = {  ABILITY_WIND_POWER, ABILITY_NONE,  ABILITY_WIND_POWER},
         .bodyColor = BODY_COLOR_WHITE,
         .speciesName = _("Lumifree"),
         .cryId = CRY_BUTTERFREE,
@@ -16195,11 +16195,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_BUG),
-    #if P_UPDATED_ABILITIES >= GEN_4
-        .abilities = { ABILITY_SWARM, ABILITY_TECHNICIAN, ABILITY_STEADFAST },
-    #else
-        .abilities = { ABILITY_SWARM, ABILITY_NONE, ABILITY_STEADFAST },
-    #endif
+        .abilities = { ABILITY_WIND_POWER, ABILITY_WIND_POWER, ABILITY_WIND_POWER },
         .bodyColor = BODY_COLOR_GREEN,
         .speciesName = _("Kniver"),
         .cryId = CRY_SCYTHER,

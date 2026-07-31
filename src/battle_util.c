@@ -209,7 +209,7 @@ static const struct BattleWeatherInfo sBattleWeatherInfo[BATTLE_WEATHER_COUNT] =
     {
         .flag = B_WEATHER_FOG,
         .rock = HOLD_EFFECT_NONE,
-        .abilityStartMessage = B_MSG_STARTED_DRIZZLE, // Placeholder
+        .abilityStartMessage = B_MSG_STARTED_MISTY_BREATH, // Placeholder
         .moveStartMessage = B_MSG_STARTED_FOG,
         .endMessage = B_MSG_WEATHER_END_FOG,
         .continuesMessage = B_MSG_WEATHER_TURN_FOG,
@@ -2500,7 +2500,7 @@ bool32 CanAbilityAbsorbMove(struct BattleContext *ctx)
         break;
     case ABILITY_WIND_RIDER:
         if (IsWindMove(ctx->move))
-            battleScript = AbsorbedByStatIncreaseAbility(ctx->battlerDef, ctx->abilityDef, STAT_ATK, 1);
+            battleScript = AbsorbedByStatIncreaseAbility(ctx->battlerDef, ctx->abilityDef, STAT_EVASION, 1);
         break;
     case ABILITY_FLASH_FIRE:
         if (ctx->moveType == TYPE_FIRE && (B_FLASH_FIRE_FROZEN >= GEN_5 || !(gBattleMons[ctx->battlerDef].status1 & STATUS1_FREEZE)))
@@ -3400,6 +3400,20 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
                 effect++;
             }
             break;
+        case ABILITY_MISTY_BREATH:
+            if (!shouldAbilityTrigger)
+                break;
+            if (TryChangeBattleWeather(battler, BATTLE_WEATHER_FOG, gLastUsedAbility))
+            {
+                BattleScriptCall(BattleScript_WeatherAbilityActivates);
+                effect++;
+            }
+            else if (gBattleWeather & B_WEATHER_PRIMAL_ANY && HasWeatherEffect())
+            {
+                BattleScriptCall(BattleScript_BlockedByPrimalWeather);
+                effect++;
+            }
+            break;
         case ABILITY_SAND_STREAM:
             if (!shouldAbilityTrigger)
                 break;
@@ -3532,6 +3546,44 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
                     BattleScriptCall(BattleScript_BattlerAbilityStatRaiseOnSwitchIn);
                     effect++;
                 }
+            }
+            break;
+        case ABILITY_ROUND_BODY:
+            // 化学ガスで特性無効化されていたら処理をしない
+            if (!shouldAbilityTrigger)
+                break;
+
+            // まるくなる状態が付与されていなければセット
+            if (!gBattleMons[battler].volatiles.defenseCurl)
+                gBattleMons[battler].volatiles.defenseCurl = TRUE;
+
+            // 防御ランクがまだ上がるなら上げる
+            if (CompareStat(battler, STAT_DEF, MAX_STAT_STAGE, CMP_LESS_THAN, gLastUsedAbility))
+            {
+                SET_STATCHANGER(STAT_DEF, 1, FALSE);
+                BattleScriptCall(BattleScript_BattlerAbilityStatRaiseOnSwitchIn);
+                effect++;
+            }
+            break;
+        case ABILITY_AURORA_BARRIER:
+            // 化学ガスで特性無効化されていたら処理をしない
+            if (!shouldAbilityTrigger)
+                break;
+            {
+                enum BattleSide side = GetBattlerSide(battler);
+                // ひかりのねんど (HOLD_EFFECT_LIGHT_CLAY) を持っている場合は 8 ターン、それ以外は 5 ターン
+                u8 turns = (GetBattlerHoldEffect(battler) == HOLD_EFFECT_LIGHT_CLAY) ? 8 : 5;
+
+                // 1. 壁のフラグを直接ONにする（既に展開されていても上書き）
+                gSideStatuses[side] |= (SIDE_STATUS_REFLECT | SIDE_STATUS_LIGHTSCREEN);
+
+                // 2. ターン数を最新（最大値）に上書き・更新する
+                gSideTimers[side].reflectTimer = turns;
+                gSideTimers[side].lightscreenTimer = turns;
+
+                // 3. バトルスクリプト（発動エフェクトやメッセージ）を呼び出す
+                BattleScriptCall(BattleScript_BattlerAbilityAuroraBarrier);
+                effect++;
             }
             break;
         case ABILITY_DAUNTLESS_SHIELD:
@@ -3742,8 +3794,7 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
                 }
                 break;
             case ABILITY_SHED_SKIN:
-                if ((gBattleMons[battler].status1 & STATUS1_ANY)
-                 && (GetConfig(B_ABILITY_TRIGGER_CHANCE) == GEN_4 ? RandomPercentage(RNG_SHED_SKIN, 30) : RandomChance(RNG_SHED_SKIN, 1, 3)))
+                if ((gBattleMons[battler].status1 & STATUS1_ANY) && (Random() % 100 < 50))
                 {
                 ABILITY_HEAL_MON_STATUS:
                     if (gBattleMons[battler].status1 & (STATUS1_POISON | STATUS1_TOXIC_POISON))
@@ -4314,13 +4365,11 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
              && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, GetBattlerAbility(gBattlerAttacker), GetBattlerHoldEffect(gBattlerAttacker), move)
              && !gBattleMons[gBattlerAttacker].volatiles.perishSong)
             {
-                if (!gBattleMons[battler].volatiles.perishSong)
-                {
-                    gBattleMons[battler].volatiles.perishSong = TRUE;
-                    gBattleMons[battler].volatiles.perishSongTimer = 3;
-                }
+                // 仕様変更
+                // 直接触られた場合は相手にのみ滅びの歌残り1ターン付与
+                // 自分には付与しない
                 gBattleMons[gBattlerAttacker].volatiles.perishSong = TRUE;
-                gBattleMons[gBattlerAttacker].volatiles.perishSongTimer = 3;
+                gBattleMons[gBattlerAttacker].volatiles.perishSongTimer = 1;
                 BattleScriptCall(BattleScript_PerishBodyActivates);
                 effect++;
             }
@@ -4347,9 +4396,25 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
             }
             break;
         case ABILITY_WIND_POWER:
-            if (!IsWindMove(gCurrentMove))
-                break;
-            // fall through
+            if (!gBattleStruct->unableToUseMove
+             && IsBattlerAlive(gBattlerTarget))
+            {
+                // 条件1：自分側に「おいかぜ」が吹いていて、まだチャージされていない場合
+                if (gSideTimers[GetBattlerSide(gBattlerTarget)].tailwindTimer != 0
+                 && gBattleMons[gBattlerTarget].volatiles.chargeTimer == 0)
+                {
+                    BattleScriptCall(BattleScript_WindPowerActivatedByTailWind);
+                    effect++;
+                }
+                // 条件2：相手から風技を受けてダメージを負った場合（元の処理）
+                else if (IsWindMove(gCurrentMove)
+                      && IsBattlerTurnDamaged(gBattlerTarget, EXCLUDING_SUBSTITUTES))
+                {
+                    BattleScriptCall(BattleScript_WindPowerActivates);
+                    effect++;
+                }
+            }
+            break;
         case ABILITY_ELECTROMORPHOSIS:
             if (!gBattleStruct->unableToUseMove
              && IsBattlerTurnDamaged(gBattlerTarget, EXCLUDING_SUBSTITUTES))
@@ -4634,22 +4699,7 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
                  || NumFaintedBattlersByAttacker(battler) == 0)
                     break;
 
-                if (GetBattlerPartyState(battler)->battleBondBoost || gBattleMons[battler].species != SPECIES_GRENINJA_BATTLE_BOND)
-                    break;
 
-                if (GetConfig(B_BATTLE_BOND) < GEN_9)
-                {
-                    // Can't use TryBattleFormChange as we can't test form change const data changes.
-                    gLastUsedAbility = ability;
-                    GetBattlerPartyState(battler)->battleBondBoost = TRUE;
-                    PREPARE_SPECIES_BUFFER(gBattleTextBuff1, gBattleMons[battler].species);
-                    GetBattlerPartyState(battler)->changedSpecies = gBattleMons[battler].species;
-                    gBattleMons[battler].species = SPECIES_GRENINJA_ASH;
-                    BattleScriptCall(BattleScript_BattleBondActivatesOnMoveEndAttacker);
-                    effect = TRUE;
-                }
-                else
-                {
                     u32 numStatBuffs = 0;
                     if (CompareStat(battler, STAT_ATK, MAX_STAT_STAGE, CMP_LESS_THAN, ability))
                     {
@@ -4678,7 +4728,6 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
                         BattleScriptCall(BattleScript_EffectBattleBondStatIncrease);
                         effect = TRUE;
                     }
-                }
             }
             break;
         default:
@@ -5979,7 +6028,7 @@ bool32 IsBattlerProtected(struct BattleContext *ctx)
      && gProtectStructs[BATTLE_PARTNER(ctx->battlerDef)].protected == PROTECT_NONE)
         return FALSE;
 
-    if (GetMoveEffect(ctx->move) == EFFECT_CURSE && !IS_BATTLER_OF_TYPE(ctx->battlerAtk, TYPE_GHOST))
+    if (GetMoveEffect(ctx->move) == EFFECT_CURSE && !IS_BATTLER_OF_TYPE(ctx->battlerAtk, TYPE_DARK))
         return FALSE;
 
     if (gProtectStructs[ctx->battlerDef].protected != PROTECT_MAX_GUARD && !MoveIgnoresProtect(ctx->move))
@@ -6221,17 +6270,22 @@ static const u8 sFlailHpScaleToPowerTable[] =
 };
 
 // format: min. weight (hectograms), base power
+// 100  = 10kg
+// 1000 = 100kg
 static const u16 sWeightToDamageTable[] =
 {
-    100, 20,
-    250, 40,
-    500, 60,
-    1000, 80,
-    2000, 100,
+    100, 40,
+    250, 60,
+    500, 80,
+    1000, 100,
+    2000, 120,
+    2500, 140,
+    3000, 160,
+    3500, 180,
     0xFFFF, 0xFFFF
 };
 
-static const u8 sSpeedDiffPowerTable[] = {40, 60, 80, 120, 150};
+static const u8 sSpeedDiffPowerTable[] = {40, 80, 120, 160, 200};
 static const u8 sHeatCrashPowerTable[] = {40, 40, 60, 80, 100, 120};
 static const u8 sTrumpCardPowerTable[] = {200, 80, 60, 50, 40};
 
@@ -6497,7 +6551,7 @@ static inline u32 CalcMoveBasePower(struct BattleContext *ctx)
         if (sWeightToDamageTable[i] != 0xFFFF)
             basePower = sWeightToDamageTable[i + 1];
         else
-            basePower = 120;
+            basePower = 200;
         break;
     case EFFECT_HEAT_CRASH:
         weight = GetBattlerWeight(battlerAtk) / GetBattlerWeight(battlerDef);
@@ -6530,8 +6584,8 @@ static inline u32 CalcMoveBasePower(struct BattleContext *ctx)
             else
             {
                 basePower = ((25 * GetBattlerTotalSpeedStat(battlerDef, ctx->abilityDef, ctx->holdEffectDef)) / attackerSpeed) + 1;
-                if (basePower > 150)
-                    basePower = 150;
+                if (basePower > 200)
+                    basePower = 200;
             }
             break;
         }
@@ -6704,9 +6758,9 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct BattleContext *ctx)
     // グラスフィールド：くさタイプの技を1.3倍にする
     if (IsGrassyTerrainAffected(battlerAtk, ctx->abilityAtk, ctx->holdEffectAtk, ctx->fieldStatuses) && moveType == TYPE_GRASS)
         modifier = uq4_12_multiply(modifier, UQ_4_12(1.3));
-    // グラスフィールド：炎タイプのダメージを1.2倍にする
-    if (gFieldStatuses & STATUS_FIELD_GRASSY_TERRAIN && moveType == TYPE_FIRE)
-        modifier = uq4_12_multiply(modifier, UQ_4_12(1.2));
+    // グラスフィールド：炎タイプのダメージを1.3倍にする（ただし、相手がくさタイプの場合は除く）
+    if (gFieldStatuses & STATUS_FIELD_GRASSY_TERRAIN && moveType == TYPE_FIRE && !IS_BATTLER_OF_TYPE(battlerDef, TYPE_GRASS))
+        modifier = uq4_12_multiply(modifier, UQ_4_12(1.3));
     // ミストフィールド：フェアリータイプの技を1.3倍にする
     if (IsMistyTerrainAffected(battlerDef, ctx->abilityDef, ctx->holdEffectDef, ctx->fieldStatuses) && moveType == TYPE_FAIRY)
         modifier = uq4_12_multiply(modifier, UQ_4_12(1.3));
@@ -6744,7 +6798,7 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct BattleContext *ctx)
         break;
     case ABILITY_IRON_FIST:
         if (IsPunchingMove(move))
-           modifier = uq4_12_multiply(modifier, UQ_4_12(1.2));
+           modifier = uq4_12_multiply(modifier, UQ_4_12(1.3));
         break;
     case ABILITY_SHEER_FORCE:
         if (MoveIsAffectedBySheerForce(move))
@@ -7107,8 +7161,8 @@ static inline u32 CalcAttackStat(struct BattleContext *ctx)
         }
         break;
     case ABILITY_FLOWER_GIFT:
-        if (gBattleMons[battlerAtk].species == SPECIES_CHERRIM_SUNSHINE && IsBattlerWeatherAffected(battlerAtk, B_WEATHER_SUN) && IsBattleMovePhysical(move))
-            modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
+        if (IsBattlerWeatherAffected(battlerAtk, B_WEATHER_SUN))
+            modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.2));
         break;
     case ABILITY_HUSTLE:
         if (IsBattleMovePhysical(move))
@@ -7365,10 +7419,6 @@ static inline u32 CalcDefenseStat(struct BattleContext *ctx)
                 RecordAbilityBattle(battlerDef, ABILITY_GRASS_PELT);
         }
         break;
-    case ABILITY_FLOWER_GIFT:
-        if (gBattleMons[battlerDef].species == SPECIES_CHERRIM_SUNSHINE && IsBattlerWeatherAffected(battlerDef, B_WEATHER_SUN) && !usesDefStat)
-            modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
-        break;
     case ABILITY_PROTOSYNTHESIS:
         {
             enum Stat defHighestStat = GetParadoxBoostedStatId(battlerDef);
@@ -7512,11 +7562,25 @@ static uq4_12_t GetWeatherDamageModifier(struct BattleContext *ctx)
             return UQ_4_12(1.0);
         return (ctx->moveType == TYPE_FIRE) ? UQ_4_12(0.75) : UQ_4_12(1.5);
     }
+    /*
+     * 【カスタム仕様】晴れ時のダメージ補正
+     * ・みずタイプの技：0.75倍
+     * ・ほのおタイプの技：通常は1.5倍（※ただし、くさタイプへの攻撃時は1.0倍）
+     */
     if (ctx->weather & B_WEATHER_SUN)
     {
-        if (ctx->moveType != TYPE_FIRE && ctx->moveType != TYPE_WATER)
-            return UQ_4_12(1.0);
-        return (ctx->moveType == TYPE_WATER) ? UQ_4_12(0.75) : UQ_4_12(1.5);
+        if (ctx->moveType == TYPE_WATER)
+            return UQ_4_12(0.75);
+        
+        if (ctx->moveType == TYPE_FIRE)
+        {
+            if (IS_BATTLER_OF_TYPE(ctx->battlerDef, TYPE_GRASS))
+                return UQ_4_12(1.0);
+            
+            return UQ_4_12(1.5);
+        }
+        
+        return UQ_4_12(1.0);
     }
     if (ctx->weather & B_WEATHER_SANDSTORM)
     {
@@ -9631,7 +9695,7 @@ static u32 CanBattlerHitBothFoesInTerrain(enum BattlerId battler, enum Move move
 enum MoveTarget GetBattlerMoveTargetType(enum BattlerId battler, enum Move move)
 {
     enum BattleMoveEffects effect = GetMoveEffect(move);
-    if (effect == EFFECT_CURSE && !IS_BATTLER_OF_TYPE(battler, TYPE_GHOST))
+    if (effect == EFFECT_CURSE && !IS_BATTLER_OF_TYPE(battler, TYPE_DARK))
         return TARGET_USER;
     if (CanBattlerHitBothFoesInTerrain(battler, move, effect))
         return TARGET_BOTH;
@@ -9741,8 +9805,19 @@ bool32 AreBattlersOfOppositeGender(enum BattlerId battler1, enum BattlerId battl
 {
     u32 gender1 = GetBattlerGender(battler1);
     u32 gender2 = GetBattlerGender(battler2);
+    // どちらかが「性別不明」の場合はメロメロにならない
+    if (gender1 == MON_GENDERLESS || gender2 == MON_GENDERLESS)
+        return FALSE;
 
-    return (gender1 != MON_GENDERLESS && gender2 != MON_GENDERLESS && gender1 != gender2);
+    // 異性の場合は100%成功（従来の挙動）
+    if (gender1 != gender2)
+        return TRUE;
+
+    // 同性（gender1 == gender2）の場合、20%（1/5）の確率で成功
+    if (Random() % 100 < 20)
+        return TRUE;
+
+    return FALSE;
 }
 
 bool32 AreBattlersOfSameGender(enum BattlerId battler1, enum BattlerId battler2)
@@ -10589,10 +10664,12 @@ u32 GetTotalAccuracy(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum 
     switch (defAbility)
     {
     case ABILITY_SAND_VEIL:
+    case ABILITY_SAND_STREAM:
         if (gBattleWeather & B_WEATHER_SANDSTORM && HasWeatherEffect())
             calc = (calc * 80) / 100; // 1.2 sand veil loss
         break;
     case ABILITY_SNOW_CLOAK:
+    case ABILITY_SNOW_WARNING:
         if ((gBattleWeather & B_WEATHER_ICY_ANY) && HasWeatherEffect())
             calc = (calc * 80) / 100; // 1.2 snow cloak loss
         break;
@@ -10679,13 +10756,13 @@ u32 GetTotalAccuracy(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum 
     // -----  砂  -----
     if (HasWeatherEffect() && (gBattleWeather & B_WEATHER_SANDSTORM))
     {
-        // 攻撃側がじめんタイプなら命中率ダウンの効果を受けない
-        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_GROUND))
+        // 攻撃側が岩タイプなら命中率ダウンの効果を受けない
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_ROCK))
         {
-            if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GROUND))
-                calc = (calc * 80) / 100; // じめんタイプへの攻撃は命中率80%になる
+            if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_ROCK))
+                calc = (calc * 80) / 100; // 岩タイプへの攻撃は命中率80%になる
             else
-                calc = (calc * 90) / 100; // じめんタイプ以外のタイプへの攻撃は90%になる
+                calc = (calc * 90) / 100; // 岩タイプ以外のタイプへの攻撃は90%になる
         }
     }
 
@@ -10728,13 +10805,13 @@ u32 GetTotalAccuracy(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum 
         // ------  ミストフィールド  ------
     if (gFieldStatuses & STATUS_FIELD_MISTY_TERRAIN)
     {
-        // くさタイプは命中率ダウン効果を受けない
-        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_GRASS))
+        // フェアリータイプは命中率ダウン効果を受けない
+        if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_FAIRY))
         {
-            if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GRASS))
-                calc = (calc * 80) / 100; // 草タイプへの攻撃は命中率80%になる
-            else if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_BUG))
-                calc = (calc * 90) / 100; // 虫タイプへの攻撃は命中率90%になる
+            if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_FAIRY))
+                calc = (calc * 80) / 100; // フェアリータイプへの攻撃は命中率80%になる
+            else if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_NORMAL))
+                calc = (calc * 90) / 100; // ノーマルタイプへの攻撃は命中率90%になる
         }
     }
 

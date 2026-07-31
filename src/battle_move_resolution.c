@@ -959,7 +959,7 @@ static enum CancelerResult CancelerPPDeduction(struct BattleContext *ctx)
     else if (moveTarget != TARGET_OPPONENTS_FIELD)
     {
         if (ctx->battlerAtk != ctx->battlerDef && GetBattlerAbility(ctx->battlerDef) == ABILITY_PRESSURE)
-             ppToDeduct++;
+            ppToDeduct += 2;
     }
 
     // For item Metronome, echoed voice
@@ -1374,7 +1374,7 @@ static enum CancelerResult CancelerPowderStatus(struct BattleContext *ctx)
     if (TryActivatePowderStatus(ctx->move))
     {
         if (!IsAbilityAndRecord(ctx->battlerAtk, ctx->abilityAtk, ABILITY_MAGIC_GUARD))
-            SetPassiveDamageAmount(ctx->battlerAtk, GetNonDynamaxMaxHP(ctx->battlerAtk) / 4);
+            SetPassiveDamageAmount(ctx->battlerAtk, GetNonDynamaxMaxHP(ctx->battlerAtk));
 
         // This might be incorrect
         if (GetActiveGimmick(ctx->battlerAtk) != GIMMICK_Z_MOVE
@@ -1904,9 +1904,9 @@ static void SetRandomMultiHitCounter()
     if (GetBattlerHoldEffect(gBattlerAttacker) == HOLD_EFFECT_LOADED_DICE)
         gMultiHitCounter = RandomUniform(RNG_LOADED_DICE, 4, 5);
     else if (GetConfig(B_MULTI_HIT_CHANCE) >= GEN_5)
-        gMultiHitCounter = RandomWeighted(RNG_HITS, 0, 0, 7, 7, 3, 3); // 35%: 2 hits, 35%: 3 hits, 15% 4 hits, 15% 5 hits.
+        gMultiHitCounter = RandomWeighted(RNG_HITS, 0, 0, 20, 35, 25, 20); // 20%: 2 hits, 35%: 3 hits, 25% 4 hits, 20% 5 hits.
     else
-        gMultiHitCounter = RandomWeighted(RNG_HITS, 0, 0, 3, 3, 1, 1); // 37.5%: 2 hits, 37.5%: 3 hits, 12.5% 4 hits, 12.5% 5 hits.
+        gMultiHitCounter = RandomWeighted(RNG_HITS, 0, 0, 20, 35, 25, 20); // 20%: 2 hits, 35%: 3 hits, 25% 4 hits, 20% 5 hits.
 }
 
 static enum CancelerResult CancelerMultihitMoves(struct BattleContext *ctx)

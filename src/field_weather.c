@@ -192,6 +192,7 @@ static const u8 ALIGNED(2) sBasePaletteColorMapTypes[32] =
 };
 
 const u16 ALIGNED(4) gFogPalette[] = INCGFX_U16("graphics/weather/fog.pal", ".gbapal");
+const u16 ALIGNED(4) gFogDarkPalette[] = INCGFX_U16("graphics/weather/fog_dark.pal", ".gbapal");
 
 void StartWeather(void)
 {

@@ -3078,7 +3078,7 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
         else if (!gBattleMons[gEffectBattler].volatiles.healBlock)
         {
             gBattleMons[gEffectBattler].volatiles.healBlock = TRUE;
-            gBattleMons[gEffectBattler].volatiles.healBlockTimer = 5;
+            gBattleMons[gEffectBattler].volatiles.healBlockTimer = 3;
             BattleScriptPush(battleScript);
             gBattlescriptCurrInstr = BattleScript_EffectPsychicNoise;
         }
@@ -3200,7 +3200,7 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
 
             if (i != MAX_MON_MOVES && gBattleMons[gBattlerTarget].pp[i] != 0)
             {
-                u32 ppToDeduct = 3;
+                u32 ppToDeduct = 5;
 
                 if (gBattleMons[gBattlerTarget].pp[i] < ppToDeduct)
                     ppToDeduct = gBattleMons[gBattlerTarget].pp[i];
@@ -9173,7 +9173,7 @@ static void Cmd_settailwind(void)
     if (!(gSideStatuses[side] & SIDE_STATUS_TAILWIND))
     {
         gSideStatuses[side] |= SIDE_STATUS_TAILWIND;
-        gSideTimers[side].tailwindTimer = (GetConfig(B_TAILWIND_TURNS) >= GEN_5 ? 4 : 3);
+        gSideTimers[side].tailwindTimer = 5;
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
     else
@@ -9398,17 +9398,44 @@ static void Cmd_trysetperishsong(void)
 
     s32 notAffectedCount = 0;
 
-    for (enum BattlerId i = 0; i < gBattlersCount; i++)
+    // デフォルトの遷移先（成功時）をあらかじめ設定
+    gBattlescriptCurrInstr = cmd->nextInstr;
+
+    // 特性ポップアップが正しく順番（0番→1番…）で再生されるよう、逆順（後ろのバトラー）からループしてスタックに積みます
+    for (s32 i = (s32)gBattlersCount - 1; i >= 0; i--)
     {
-        if (gBattleMons[i].volatiles.perishSong
-            || IsBattlerUnaffectedByMove(i)
-            || BlocksPrankster(gCurrentMove, gBattlerAttacker, i, TRUE)
-            || gBattleMons[i].volatiles.semiInvulnerable == STATE_COMMANDER)
+        enum Ability ability = GetBattlerAbility(i);
+
+        if (!IsBattlerAlive(i))
         {
+            notAffectedCount++;
+            continue;
+        }
+
+        // 既にほろび状態 / 技無効 / 悪戯心ガード / シャドースチール等 / 音技無効特性（ぼうおん, DEATH_SINGER）
+        if (gBattleMons[i].volatiles.perishSong
+         || IsBattlerUnaffectedByMove(i)
+         || BlocksPrankster(gCurrentMove, gBattlerAttacker, i, TRUE)
+         || gBattleMons[i].volatiles.semiInvulnerable == STATE_COMMANDER
+         || ability == ABILITY_SOUNDPROOF
+         || ability == ABILITY_DEATH_SINGER)
+        {
+            // 特性「ぼうおん」または「DEATH_SINGER」で防がれた場合
+            if (ability == ABILITY_SOUNDPROOF || ability == ABILITY_DEATH_SINGER)
+            {
+                RecordAbilityBattle(i, ability);
+                gLastUsedAbility = ability;
+                gBattlerAbility = gBattleScripting.battler = i;
+                
+                // 特性ポップアップと「〇〇の ぼうおんで かきけされた！」等のメッセージを表示
+                BattleScriptCall(BattleScript_SoundproofProtected);
+            }
+
             notAffectedCount++;
         }
         else
         {
+            // ほろびのうた状態を付与
             gBattleMons[i].volatiles.perishSong = TRUE;
 
             if (GetBattlerAbility(gBattlerAttacker) == ABILITY_DEATH_SINGER)
@@ -9422,10 +9449,9 @@ static void Cmd_trysetperishsong(void)
         }
     }
 
+    // 場にいる全員が無効（防がれた／既にほろび状態等）だった場合は失敗スクリプトへ遷移
     if (notAffectedCount == gBattlersCount)
         gBattlescriptCurrInstr = cmd->failInstr;
-    else
-        gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
 static void Cmd_jumpifconfusedandstatmaxed(void)

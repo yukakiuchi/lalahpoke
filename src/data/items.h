@@ -9713,7 +9713,7 @@ const struct ItemInfo gItemsInfo[] =
         .price = 100,
     #endif
         .holdEffect = HOLD_EFFECT_QUICK_CLAW,
-        .holdEffectParam = 20,
+        .holdEffectParam = 30,
         .description = COMPOUND_STRING(
             "A hold item that\n"
             "occasionally allows\n"

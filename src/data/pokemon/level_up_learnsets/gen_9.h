@@ -193,7 +193,7 @@ static const struct LevelUpMove sMetapodLevelUpLearnset[] = {
 static const struct LevelUpMove sButterfreeLevelUpLearnset[] = {
     LEVEL_UP_MOVE( 0, MOVE_GUST),
     LEVEL_UP_MOVE( 1, MOVE_AAA),
-    LEVEL_UP_MOVE( 1, MOVE_HARDEN),
+    LEVEL_UP_MOVE( 1, MOVE_POWDER),
     LEVEL_UP_MOVE( 1, MOVE_TACKLE),
     LEVEL_UP_MOVE( 1, MOVE_STRING_SHOT),
     LEVEL_UP_MOVE( 1, MOVE_BUG_BITE),
@@ -3592,7 +3592,7 @@ static const struct LevelUpMove sMrRimeLevelUpLearnset[] = {
 
 #if P_FAMILY_SCYTHER
 static const struct LevelUpMove sScytherLevelUpLearnset[] = {
-    LEVEL_UP_MOVE( 1, MOVE_LEER),
+    LEVEL_UP_MOVE( 1, MOVE_EMBER),
     LEVEL_UP_MOVE( 1, MOVE_QUICK_ATTACK),
     LEVEL_UP_MOVE( 4, MOVE_FURY_CUTTER),
     LEVEL_UP_MOVE( 8, MOVE_FALSE_SWIPE),

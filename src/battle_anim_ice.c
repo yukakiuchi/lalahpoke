@@ -1125,7 +1125,11 @@ void AnimTask_HazeScrollingFog(u8 taskId)
     GetBattleAnimBg1Data(&animBg);
     LoadBgTiles(animBg.bgId, gWeatherFogHorizontalTiles, 0x800, animBg.tilesOffset);
     AnimLoadCompressedBgTilemapHandleContest(&animBg, gBattleAnimFogTilemap, FALSE);
-    LoadPalette(&gFogPalette, BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
+    // 引数（gBattleAnimArgs[0]）が 1 の場合は gFogDarkPalette、それ以外は既存の gFogPalette を使用
+    if (gBattleAnimArgs[0] == 1)
+        LoadPalette(&gFogDarkPalette, BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
+    else
+        LoadPalette(&gFogPalette, BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
 
     gTasks[taskId].func = AnimTask_HazeScrollingFog_Step;
 }

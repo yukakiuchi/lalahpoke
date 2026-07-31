@@ -534,6 +534,10 @@ extern const u8 BattleScript_BleedCannotBeHealed[];              //「出血に�
 extern const u8 BattleScript_WishButBleedCannotBeHealed[];       // ねがいごとで「出血によって回復できない」ということを表示させる処理
 extern const u8 BattleScript_AbsorbNoEffect[];                   // 出血時、ドレイン技は回復ができないというメッセージを表示させる
 
+// 特性追加
+extern const u8 BattleScript_BattlerAbilityAuroraBarrier[];       // Switch inでひかりのかべとリフレクターを貼る、ターン更新可能
+extern const u8 BattleScript_LeechSeedTurnKO[];                   // 寄生が成功した時のスクリプト
+extern const u8 BattleScript_WindPowerActivatedByTailWind[];      // 追い風が毎ターンwind_powerの特性を電気チャージさせる処理
 // zmoves
 extern const u8 BattleScript_ZMoveActivateDamaging[];
 extern const u8 BattleScript_ZMoveActivateStatus[];

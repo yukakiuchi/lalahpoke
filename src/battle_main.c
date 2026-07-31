@@ -6183,11 +6183,10 @@ void ScriptSetTotemBoost(struct ScriptContext *ctx)
 
 bool32 IsWildMonSmart(void)
 {
-#if B_SMART_WILD_AI_FLAG != 0
-    return (FlagGet(B_SMART_WILD_AI_FLAG));
-#else
-    return FALSE;
-#endif
+    // デフォルトで野生のポケモンはAI知能が解禁される
+    // 野生のポケモンはそいつのレベルに応じてAI知能が段々賢くなる
+    // 詳しくはstatic u64 GetWildAiFlags(void)を参照して
+    return TRUE;
 }
 
 s32 Factorial(s32 n)

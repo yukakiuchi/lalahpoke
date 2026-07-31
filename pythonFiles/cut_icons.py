@@ -5,8 +5,8 @@ import subprocess
 from PIL import Image
 
 # ------------------ 設定 ------------------
-SOURCE_DIR = "/Users/yu/Desktop/kara"
-OUTPUT_DIR = "/Users/yu/Desktop/your_output_folder"
+SOURCE_DIR = "/Users/yu/Desktop/cut"
+OUTPUT_DIR = "/Users/yu/Desktop/cut"
 TILE_SIZE = 32
 # ------------------------------------------
 
