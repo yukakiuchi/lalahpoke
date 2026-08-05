@@ -55,7 +55,7 @@ CONFIG_VARS = [
 ]
 
 
-UPDATE_PNG                = True
+UPDATE_PNG                = False
 UPDATE_ALL_SPECIES_INFO   = True
 UPDATE_ID_SORT            = True
 UPDATE_ANIM_FRONT         = True
@@ -289,8 +289,8 @@ def update_pokemon_moves():
             move_data_parts = raw_move_value.split(",", 1)
             level_number = move_data_parts[0].strip()
             move_name = move_data_parts[1].strip()
-
-            move_entry_lines.append(f"    LEVEL_UP_MOVE({level_number}, {move_name}),")
+            formatted_level_number = f"{int(level_number):>2}"
+            move_entry_lines.append(f"    LEVEL_UP_MOVE({formatted_level_number}, {move_name}),")
 
         move_entry_lines.append("    LEVEL_UP_END")
 
