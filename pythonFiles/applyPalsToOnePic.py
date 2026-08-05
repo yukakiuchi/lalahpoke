@@ -8,7 +8,8 @@ from PIL import Image
 
 # --- 設定 ---
 # 1. プロジェクトのルートパス (expandフォルダの場所)
-project_root = "/Users/yu/Desktop/expand/build/assets/graphics/battle_anims/sprites" 
+# project_root = "/Users/yu/Desktop/expand/build/assets/graphics/battle_anims/backgrounds"
+project_root = "/Users/yu/Desktop/expand/build/assets/graphics/battle_anims/sprites"
 # 2. 元にする画像が入っているディレクトリ
 source_dir = "/Users/yu/Desktop/ccc/"
 # 3. 出力先 (デスクトップのフォルダ)
@@ -86,6 +87,10 @@ def scan_and_apply():
                     
                     # --- パレットのファイル名（拡張子なし）をそのまま使用 ---
                     base_name, _ = os.path.splitext(filename)
+                    if base_name == "natural_gift_ring.pal":
+                        base_name = "ANIM_TAG_ANCHOR"
+                    elif base_name == "avalanche_rocks.pal":
+                        base_name = "ANIM_TAG_DRAGON_ASCENT_FOE"
                     # 「apple.png.gbapal」などの場合に「.png」が残らないよう調整
                     if base_name.endswith(".png"):
                         base_name = base_name[:-4]

@@ -9713,7 +9713,7 @@ const struct ItemInfo gItemsInfo[] =
         .price = 100,
     #endif
         .holdEffect = HOLD_EFFECT_QUICK_CLAW,
-        .holdEffectParam = 20,
+        .holdEffectParam = 30,
         .description = COMPOUND_STRING(
             "A hold item that\n"
             "occasionally allows\n"
@@ -9781,6 +9781,7 @@ const struct ItemInfo gItemsInfo[] =
         .iconPalette = gItemIconPalette_MentalHerb,
     },
 
+    // おうじゃのしるし
     [ITEM_KINGS_ROCK] =
     {
         .name = ITEM_NAME("King's Rock"),
@@ -9792,7 +9793,7 @@ const struct ItemInfo gItemsInfo[] =
         .price = 100,
     #endif
         .holdEffect = HOLD_EFFECT_FLINCH,
-        .holdEffectParam = 10,
+        .holdEffectParam = 12, // ひるむ確率
         .description = sKingsRockDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_HELD_ITEM,
@@ -9875,7 +9876,7 @@ const struct ItemInfo gItemsInfo[] =
         .price = 200,
     #endif
         .holdEffect = HOLD_EFFECT_FOCUS_BAND,
-        .holdEffectParam = 10,
+        .holdEffectParam = 35,
         .description = COMPOUND_STRING(
             "A hold item that\n"
             "occasionally\n"

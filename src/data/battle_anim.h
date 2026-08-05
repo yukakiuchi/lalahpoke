@@ -1261,6 +1261,7 @@ const struct BattleAnimation gBattleAnimTable[ANIM_TAG_COUNT] =
     BATTLE_ANIMATION(ANIM_TAG_PAIN_SPLIT, gBattleAnimSpriteGfx_PainSplit, 0x0180, gBattleAnimSpritePal_PainSplit),
     BATTLE_ANIMATION(ANIM_TAG_CONFETTI, gBattleAnimSpriteGfx_Confetti, 0x0180, gBattleAnimSpritePal_Confetti),
     BATTLE_ANIMATION(ANIM_TAG_GREEN_STAR, B_NEW_MORNING_SUN_STAR_PARTICLE == TRUE ? gBattleAnimSpriteGfx_NewGreenStar : gBattleAnimSpriteGfx_GreenStar, 0x0200, B_NEW_MORNING_SUN_STAR_PARTICLE == TRUE ? gBattleAnimSpritePal_NewGreenStar : gBattleAnimSpritePal_GreenStar),
+    BATTLE_ANIMATION(ANIM_TAG_NEW_GREEN_STAR, gBattleAnimSpriteGfx_NewGreenStar, 0x0200, gBattleAnimSpritePal_NewGreenStar),
     BATTLE_ANIMATION(ANIM_TAG_PINK_CLOUD, gBattleAnimSpriteGfx_PinkCloud, 0x0200, gBattleAnimSpritePal_PinkCloud),
     BATTLE_ANIMATION(ANIM_TAG_SWEAT_DROP, gBattleAnimSpriteGfx_SweatDrop, 0x0020, gBattleAnimSpritePal_SweatDrop),
     BATTLE_ANIMATION(ANIM_TAG_GUARD_RING, gBattleAnimSpriteGfx_GuardRing, 0x0400, gBattleAnimSpritePal_GuardRing),
@@ -1417,7 +1418,7 @@ const struct BattleAnimation gBattleAnimTable[ANIM_TAG_COUNT] =
     BATTLE_ANIMATION(ANIM_TAG_IVY_CUDGEL_GRASS, gBattleAnimSpriteGfx_IvyCudgel, 0x800, gBattleAnimSpritePal_IvyCudgelGrass),
     BATTLE_ANIMATION(ANIM_TAG_IVY_CUDGEL_FIRE, gBattleAnimSpriteGfx_IvyCudgel, 0x800, gBattleAnimSpritePal_IvyCudgelFire),
     BATTLE_ANIMATION(ANIM_TAG_IVY_CUDGEL_ROCK, gBattleAnimSpriteGfx_IvyCudgel, 0x800, gBattleAnimSpritePal_IvyCudgelRock),
-    BATTLE_ANIMATION(ANIM_TAG_IVY_CUDGEL_WATER, gBattleAnimSpriteGfx_IvyCudgel, 0x800, gBattleAnimSpritePal_IvyCudgelWater),
+    BATTLE_ANIMATION(ANIM_TAG_IVY_CUDGEL_WATER, gBattleAnimSpriteGfx_IvyCudgel, 0x800, gBattleAnimSpritePal_IvyCudgel),
     BATTLE_ANIMATION(ANIM_TAG_TERA_CRYSTAL, gBattleAnimSpriteGfx_TeraCrystal, 0x800, gBattleAnimSpritePal_TeraCrystal),
     BATTLE_ANIMATION(ANIM_TAG_TERA_SHATTER, gBattleAnimSpriteGfx_TeraShatter, 0x0180, gBattleAnimSpritePal_TeraShatter),
     BATTLE_ANIMATION(ANIM_TAG_DREEPY_SHINY, gBattleAnimSpriteGfx_DreepyMissile, 0x200, gBattleAnimSpritePal_DreepyMissileShiny),
@@ -1432,6 +1433,28 @@ const struct BattleAnimation gBattleAnimTable[ANIM_TAG_COUNT] =
     BATTLE_ANIMATION(ANIM_TAG_TATSUGIRI_CURLY, gBattleAnimSpriteGfx_TatsugiriCurly, 0x200, gBattleAnimSpritePal_TatsugiriCurly),
     BATTLE_ANIMATION(ANIM_TAG_TATSUGIRI_DROOPY, gBattleAnimSpriteGfx_TatsugiriDroopy, 0x200, gBattleAnimSpritePal_TatsugiriDroopy),
     BATTLE_ANIMATION(ANIM_TAG_TATSUGIRI_STRETCHY, gBattleAnimSpriteGfx_TatsugiriStretchy, 0x200, gBattleAnimSpritePal_TatsugiriStretchy),
+
+    // 8x8   : 0x0020
+    // 16x16 : 0x0080 [16x48 : 0x0180], [16x128 : 0x0400], [16x40 : 0x0140]
+    // 32x32 : 0x0200
+    // 64x64 : 0x0800
+    BATTLE_ANIMATION(ANIM_TAG_PURPLE_GENERAL_PAL, gBattleAnimSpriteGfx_Anchor, 0x200, gBattleAnimSpritePal_PurpleGeneralPal),
+    BATTLE_ANIMATION(ANIM_TAG_PURPLE_BACKGROUND_PAL, gBattleAnimSpriteGfx_Anchor, 0x200, gBattleAnimSpritePal_PurpleBackgroundPal),
+    BATTLE_ANIMATION(ANIM_TAG_DARK_SAND_PAL, gBattleAnimSpriteGfx_Anchor, 0x200, gBattleAnimSpritePal_DarkSandPal),
+    BATTLE_ANIMATION(ANIM_TAG_DARK_GUST_PAL, gBattleAnimSpriteGfx_Anchor, 0x200, gBattleAnimSpritePal_DarkGustPal),
+    BATTLE_ANIMATION(ANIM_TAG_BUBBLE_SCRATCH_PAL, gBattleAnimSpriteGfx_Anchor, 0x200, gBattleAnimSpritePal_BubbleScratchPal),
+    BATTLE_ANIMATION(ANIM_TAG_SMALL_FEATHER, gBattleAnimSpriteGfx_SmallFeather, 0x0080, gBattleAnimSpritePal_SmallFeather),
+    BATTLE_ANIMATION(ANIM_TAG_FALLING_FEATHER, gBattleAnimSpriteGfx_FallingFeather, 0x0080, gBattleAnimSpritePal_FallingFeather),
+    BATTLE_ANIMATION(ANIM_TAG_YELLOW_SCRATCH_PAL, gBattleAnimSpriteGfx_FallingFeather, 0x0080, gBattleAnimBgPalette_RockWrecker),
+    BATTLE_ANIMATION(ANIM_TAG_BUG_PAL, gBattleAnimSpriteGfx_FallingFeather, 0x0080, gBattleAnimSpritePal_BugPal),
+    BATTLE_ANIMATION(ANIM_TAG_MOON_BALL, gBattleAnimSpriteGfx_MoonBall, 0x0200, gBattleAnimSpritePal_MoonBall),
+    BATTLE_ANIMATION(ANIM_TAG_BUTTERFLY, gBattleAnimSpriteGfx_Butterfly, 0x0080, gBattleAnimSpritePal_Butterfly),
+    BATTLE_ANIMATION(ANIM_TAG_BUTTERFLY_POWDER, gBattleAnimSpriteGfx_ButterflyPowder, 0x0020, gBattleAnimSpritePal_Butterfly),
+    BATTLE_ANIMATION(ANIM_TAG_BUTTERFLY_MIXED, gBattleAnimSpriteGfx_ButterflyMixed, 0x0200, gBattleAnimSpritePal_ButterflyMixed),
+    BATTLE_ANIMATION(ANIM_TAG_NEW_BUBBLE, gBattleAnimSpriteGfx_NewBubble, 0x0180, gBattleAnimSpritePal_NewBubble),
+    BATTLE_ANIMATION(ANIM_TAG_NEW_SMALL_BUBBLE, gBattleAnimSpriteGfx_NewSmallBubble, 0x0140, gBattleAnimSpritePal_NewBubble),
+    BATTLE_ANIMATION(ANIM_TAG_NEW_POISON_BUBBLE, gBattleAnimSpriteGfx_NewPoisonBubble, 0x0400, gBattleAnimSpritePal_NewPoisonBubble),
+    BATTLE_ANIMATION(ANIM_TAG_PINK_PAL, gBattleAnimSpriteGfx_ButterflyPowder, 0x0020, gBattleAnimSpritePal_HighSpeedPinkPal),
 };
 
 const struct BattleAnimBackground gBattleAnimBackgroundTable[] =
@@ -1521,4 +1544,9 @@ const struct BattleAnimBackground gBattleAnimBackgroundTable[] =
     [BG_RAINBOW_PLAYER]            = {gBattleAnimBgImage_RainbowPlayer,           gBattleAnimBGPalette_Rainbow,                 gBattleAnimBgTilemap_RainbowPlayer},
     [BG_RAINBOW_OPPONENT]          = {gBattleAnimBgImage_RainbowOpponent,         gBattleAnimBGPalette_Rainbow,                 gBattleAnimBgTilemap_RainbowOpponent},
     [BG_SWAMP]                     = {gBattleAnimBgImage_Swamp,                   gBattleAnimBGPalette_Swamp,                   gBattleAnimBgTilemap_Swamp},
+    [BG_DARK_FIRE]                 = {gBattleAnimBgImage_Dark,                    gBattleAnimSpritePal_RedExplosion,            gBattleAnimBgTilemap_Dark},
+    [BG_DARK_HIGHSPEED_OPPONENT]   = {gBattleAnimBgImage_Highspeed,               gBattleAnimSpritePal_HighSpeedPurplePal,     gBattleAnimBgTilemap_HighspeedOpponent},
+    [BG_DARK_HIGHSPEED_PLAYER]     = {gBattleAnimBgImage_Highspeed,               gBattleAnimSpritePal_HighSpeedPurplePal,     gBattleAnimBgTilemap_HighspeedPlayer},
+    [BG_PINK_HIGHSPEED_OPPONENT]   = {gBattleAnimBgImage_Highspeed,               gBattleAnimSpritePal_HighSpeedPinkPal,     gBattleAnimBgTilemap_HighspeedOpponent},
+    [BG_PINK_HIGHSPEED_PLAYER]     = {gBattleAnimBgImage_Highspeed,               gBattleAnimSpritePal_HighSpeedPinkPal,     gBattleAnimBgTilemap_HighspeedPlayer},
 };

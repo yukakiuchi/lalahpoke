@@ -6718,14 +6718,16 @@ u32 GetFormChangeTargetSpecies_Internal(struct FormChangeContext ctx)
         case FORM_CHANGE_BATTLE_MEGA_EVOLUTION_ITEM:
         case FORM_CHANGE_BATTLE_PRIMAL_REVERSION:
         case FORM_CHANGE_BATTLE_ULTRA_BURST:
-            if (ctx.heldItem == formChanges[i].param1)
+            if ((ctx.heldItem == formChanges[i].param1 || formChanges[i].param1 == ITEM_NONE)
+             && ctx.level >= GetMegaEvolutionMinLevel(ctx.currentSpecies))
                 targetSpecies = formChanges[i].targetSpecies;
             break;
         case FORM_CHANGE_BATTLE_MEGA_EVOLUTION_MOVE:
-            if (ctx.moves[0] == formChanges[i].param1
+            if ((ctx.moves[0] == formChanges[i].param1
                 || ctx.moves[1] == formChanges[i].param1
                 || ctx.moves[2] == formChanges[i].param1
                 || ctx.moves[3] == formChanges[i].param1)
+             && ctx.level >= GetMegaEvolutionMinLevel(ctx.currentSpecies))
                 targetSpecies = formChanges[i].targetSpecies;
             break;
         case FORM_CHANGE_BATTLE_SWITCH_OUT:

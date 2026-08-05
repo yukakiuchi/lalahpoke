@@ -5,8 +5,8 @@ from PIL import Image
 from collections import defaultdict
 
 # ------------------ 設定 ------------------
-INPUT_DIR = "/Users/yu/Desktop/please_cut"
-OUTPUT_DIR = "/Users/yu/Desktop/DreamDexCombined"
+INPUT_DIR = "/Users/yu/Desktop/com"
+OUTPUT_DIR = "/Users/yu/Desktop/fewCombine"
 # ------------------------------------------
 
 def open_folder_and_exit(target_dir):

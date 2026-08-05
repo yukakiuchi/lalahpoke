@@ -137,6 +137,7 @@ struct Weather
 extern struct Weather gWeather;
 extern struct Weather *const gWeatherPtr;
 extern const u16 gFogPalette[];
+extern const u16 gFogDarkPalette[];
 
 // field_weather_effect.c
 extern const u8 gWeatherFogHorizontalTiles[];

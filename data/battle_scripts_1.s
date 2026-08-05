@@ -1729,11 +1729,18 @@ BattleScript_AttackSpAttackUpEnd:
 BattleScript_EffectAttackAccUp::
 	attackcanceler
 	jumpifstat BS_ATTACKER, CMP_LESS_THAN, STAT_ATK, MAX_STAT_STAGE, BattleScript_AttackAccUpDoMoveAnim
+	jumpifstat BS_ATTACKER, CMP_LESS_THAN, STAT_SPATK, MAX_STAT_STAGE, BattleScript_AttackAccUpDoMoveAnim
 	jumpifstat BS_ATTACKER, CMP_EQUAL, STAT_ACC, MAX_STAT_STAGE, BattleScript_CantRaiseMultipleStats
 BattleScript_AttackAccUpDoMoveAnim::
 	attackanimation
 	waitanimation
 	setstatchanger STAT_ATK, 1, FALSE
+	statbuffchange BS_ATTACKER, STAT_CHANGE_ALLOW_PTR, BattleScript_AttackAccUpTrySpAtk, BIT_SPATK | BIT_ACC
+	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_CHANGE, BattleScript_AttackAccUpTrySpAtk
+	printfromtable gStatUpStringIds
+	waitmessage B_WAIT_TIME_LONG
+BattleScript_AttackAccUpTrySpAtk::
+	setstatchanger STAT_SPATK, 1, FALSE
 	statbuffchange BS_ATTACKER, STAT_CHANGE_ALLOW_PTR, BattleScript_AttackAccUpTryAcc, BIT_ACC
 	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_CHANGE, BattleScript_AttackAccUpTryAcc
 	printfromtable gStatUpStringIds
@@ -2716,6 +2723,10 @@ BattleScript_EffectAttackUp2::
 	setstatchanger STAT_ATK, 2, FALSE
 	goto BattleScript_EffectStatUp
 
+BattleScript_EffectAttackUp3::
+	setstatchanger STAT_ATK, 3, FALSE
+	goto BattleScript_EffectStatUp
+
 BattleScript_EffectDefenseUp2::
 	setstatchanger STAT_DEF, 2, FALSE
 	goto BattleScript_EffectStatUp
@@ -3152,7 +3163,7 @@ BattleScript_EffectMinimize::
 	attackcanceler
 	setvolatile BS_ATTACKER, VOLATILE_MINIMIZE
 	jumpifgenconfiglowerthan CONFIG_B_MINIMIZE_EVASION, GEN_5, BattleScript_EffectMinimizeGen4
-	setstatchanger STAT_EVASION, 2, FALSE
+	setstatchanger STAT_EVASION, 3, FALSE
 	goto BattleScript_EffectStatUpAfterAtkCanceler
 BattleScript_EffectMinimizeGen4:
 	setstatchanger STAT_EVASION, 1, FALSE
@@ -3161,7 +3172,7 @@ BattleScript_EffectMinimizeGen4:
 BattleScript_EffectCurse::
 	jumpiftype BS_ATTACKER, TYPE_GHOST, BattleScript_GhostCurse
 	attackcanceler
-	jumpiftype BS_ATTACKER, TYPE_GHOST, BattleScript_DoGhostCurse
+	jumpiftype BS_ATTACKER, TYPE_DARK, BattleScript_DoGhostCurse
 	jumpifstat BS_ATTACKER, CMP_GREATER_THAN, STAT_SPEED, MIN_STAT_STAGE, BattleScript_CurseTrySpeed
 	jumpifstat BS_ATTACKER, CMP_NOT_EQUAL, STAT_ATK, MAX_STAT_STAGE, BattleScript_CurseTrySpeed
 	jumpifstat BS_ATTACKER, CMP_EQUAL, STAT_DEF, MAX_STAT_STAGE, BattleScript_ButItFailed
@@ -3239,9 +3250,9 @@ BattleScript_IdentifiedFoe:
 
 BattleScript_EffectPerishSong::
 	attackcanceler
-	trysetperishsong BattleScript_ButItFailed
 	attackanimation
 	waitanimation
+	trysetperishsong BattleScript_ButItFailed
 	printstring STRINGID_FAINTINTHREE
 	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_MoveEnd
@@ -4647,6 +4658,30 @@ BattleScript_LeechSeedTurnDrain:
 	tryactivateitem BS_ATTACKER, ACTIVATION_ON_HP_THRESHOLD
 	return
 
+BattleScript_LeechSeedTurnKO::
+	call BattleScript_AbilityPopUp
+	playanimation BS_ATTACKER, B_ANIM_LEECH_SEED_PARASITIZED, sB_ANIM_ARG1
+	
+	@ アニメーション終了後、逆転してしまったアタッカーとターゲットを戻す
+	@ この時点で、BS_ATTACKER＝自分（回復）、BS_TARGET＝相手（ダメージ）
+	swapattackerwithtarget
+	
+	@ 1. 先に相手（BS_TARGET）のHPを減らし、KO（瀕死）処理を行う
+	healthbarupdate BS_TARGET, PASSIVE_HP_UPDATE
+	datahpupdate BS_TARGET, PASSIVE_HP_UPDATE
+	tryactivateitem BS_TARGET, ACTIVATION_ON_HP_THRESHOLD
+	printstring STRINGID_TARGETPARASITIZED @ 吸い尽くされたメッセージを表示
+	tryfaintmon BS_TARGET                  @ ここで相手が倒れる
+	waitmessage B_WAIT_TIME_LONG
+	
+	@ 2. 次に自分（BS_ATTACKER）のHPを回復させる
+	healthbarupdate BS_ATTACKER, PASSIVE_HP_UPDATE
+	datahpupdate BS_ATTACKER, PASSIVE_HP_UPDATE
+	printfromtable gLeechSeedStringIds      @ 回復時のメッセージ（〜から 体力を すいとった！）を表示
+	waitmessage B_WAIT_TIME_LONG
+	tryfaintmon BS_ATTACKER                @ 念のための生存チェック
+	end2
+
 BattleScript_BideStoringEnergy::
 	printstring STRINGID_PKMNSTORINGENERGY
 	waitmessage B_WAIT_TIME_LONG
@@ -5838,8 +5873,7 @@ BattleScript_MoveUsedIsConfusedRet::
 BattleScript_MoveUsedPowder::
 	pause B_WAIT_TIME_SHORT
 	cancelmultiturnmoves
-	volatileanimation BS_ATTACKER, VOLATILE_POWDER
-	waitanimation
+	playanimation BS_SCRIPTING, B_ANIM_POWDER_EXPLOSION
 	effectivenesssound
 	hitanimation BS_ATTACKER
 	waitstate
@@ -6267,13 +6301,26 @@ BattleScript_IntimidateLoop:
 	jumpifvolatile BS_TARGET, VOLATILE_SUBSTITUTE, BattleScript_IntimidateLoopIncrement
 	jumpifintimidateabilityprevented
 BattleScript_IntimidateEffect:
+	setbyte gBattleCommunication, 0
 	copybyte sBATTLER, gBattlerAttacker
 	setstatchanger STAT_ATK, 1, TRUE
-	statbuffchange BS_TARGET, STAT_CHANGE_NOT_PROTECT_AFFECTED | STAT_CHANGE_ALLOW_PTR, BattleScript_IntimidateLoopIncrement
-	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_CHANGE, BattleScript_IntimidateWontDecrease
+	statbuffchange BS_TARGET, STAT_CHANGE_NOT_PROTECT_AFFECTED | STAT_CHANGE_ALLOW_PTR, BattleScript_IntimidateTrySpAtk, BIT_SPATK
+	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_CHANGE, BattleScript_IntimidateTrySpAtk
+	addbyte gBattleCommunication, 1
 	printstring STRINGID_PKMNCUTSATTACKWITH
-BattleScript_IntimidateEffect_WaitString:
 	waitmessage B_WAIT_TIME_LONG
+BattleScript_IntimidateTrySpAtk:
+	setstatchanger STAT_SPATK, 1, TRUE
+	statbuffchange BS_TARGET, STAT_CHANGE_NOT_PROTECT_AFFECTED | STAT_CHANGE_ALLOW_PTR, BattleScript_IntimidateCheckSuccess
+	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_CHANGE, BattleScript_IntimidateCheckSuccess
+	addbyte gBattleCommunication, 1
+	printfromtable gStatDownStringIds
+	waitmessage B_WAIT_TIME_LONG
+BattleScript_IntimidateCheckSuccess:
+	jumpifbytenotequal gBattleCommunication, 0, BattleScript_IntimidateEffect_WaitString
+	printstring STRINGID_STATSWONTDECREASE
+	waitmessage B_WAIT_TIME_LONG
+BattleScript_IntimidateEffect_WaitString:
 	saveattacker
 	savetarget
 	copybyte sBATTLER, gBattlerTarget
@@ -6296,15 +6343,14 @@ BattleScript_IntimidatePrevented::
 	printstring STRINGID_PKMNPREVENTSSTATLOSSWITH
 	goto BattleScript_IntimidateEffect_WaitString
 
-BattleScript_IntimidateWontDecrease:
-	printstring STRINGID_STATSWONTDECREASE
-	goto BattleScript_IntimidateEffect_WaitString
-
 BattleScript_IntimidateInReverse::
 	copybyte sBATTLER, gBattlerTarget
 	call BattleScript_AbilityPopUpTarget
 	pause B_WAIT_TIME_SHORT
-	modifybattlerstatstage BS_TARGET, STAT_ATK, INCREASE, 1, BattleScript_IntimidateLoopIncrement, ANIM_ON
+	modifybattlerstatstage BS_TARGET, STAT_ATK, INCREASE, 1, BattleScript_IntimidateInReverseSpAtk, ANIM_ON
+BattleScript_IntimidateInReverseSpAtk:
+	modifybattlerstatstage BS_TARGET, STAT_SPATK, INCREASE, 1, BattleScript_IntimidateInReverseEnd, ANIM_ON
+BattleScript_IntimidateInReverseEnd:
 	call BattleScript_TryIntimidateHoldEffects
 	goto BattleScript_IntimidateLoopIncrement
 
@@ -8433,3 +8479,27 @@ BattleScript_ItemDropped::
 
 End_Battle_From_Item_Drop::
 	end2
+
+BattleScript_BattlerAbilityAuroraBarrier::
+	call BattleScript_AbilityPopUpScripting
+	playanimation BS_SCRIPTING, B_ANIM_AURORER_BARRIER
+	waitanimation
+	printstring STRINGID_ABILITYAURORABARRIERMSG
+	waitmessage B_WAIT_TIME_LONG
+	return
+
+BattleScript_WindPowerActivatedByTailWind::
+	call BattleScript_AbilityPopUp
+	setvolatile BS_TARGET, VOLATILE_CHARGE_TIMER, 2
+	printstring STRINGID_TAILWINDCHARGEDPKMNWITHPOWER
+	waitmessage B_WAIT_TIME_LONG
+	return
+
+BattleScript_MoveEffectAttract::
+    volatileanimation BS_EFFECT_BATTLER, VOLATILE_INFATUATION
+    waitanimation
+    printstring STRINGID_PKMNFELLINLOVE
+    waitmessage B_WAIT_TIME_LONG
+    return
+
+

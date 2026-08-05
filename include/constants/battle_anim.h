@@ -49,7 +49,7 @@
 #define ANIM_TAG_LIGHTNING                  (ANIM_SPRITES_START + 37)
 #define ANIM_TAG_CLAW_SLASH_2               (ANIM_SPRITES_START + 38) // unused
 #define ANIM_TAG_CLAW_SLASH                 (ANIM_SPRITES_START + 39)
-#define ANIM_TAG_SCRATCH_3                  (ANIM_SPRITES_START + 40) // unused
+#define ANIM_TAG_SCRATCH_3                  (ANIM_SPRITES_START + 40)
 #define ANIM_TAG_SCRATCH_2                  (ANIM_SPRITES_START + 41) // unused
 #define ANIM_TAG_BUBBLE_BURST_2             (ANIM_SPRITES_START + 42) // unused
 #define ANIM_TAG_ICE_CHUNK                  (ANIM_SPRITES_START + 43)
@@ -130,7 +130,7 @@
 #define ANIM_TAG_TEETH                      (ANIM_SPRITES_START + 118) // unused
 #define ANIM_TAG_BONE_2                     (ANIM_SPRITES_START + 119) // unused
 #define ANIM_TAG_WHITE_BAG                  (ANIM_SPRITES_START + 120) // unused
-#define ANIM_TAG_UNKNOWN                    (ANIM_SPRITES_START + 121) // unused
+#define ANIM_TAG_UNKNOWN                    (ANIM_SPRITES_START + 121)
 #define ANIM_TAG_PURPLE_CORAL               (ANIM_SPRITES_START + 122) // unused
 #define ANIM_TAG_PURPLE_DROPLET             (ANIM_SPRITES_START + 123) // unused
 #define ANIM_TAG_SHOCK_2                    (ANIM_SPRITES_START + 124) // unused
@@ -424,7 +424,25 @@
 #define ANIM_TAG_TATSUGIRI_DROOPY           (ANIM_SPRITES_START + 410)
 #define ANIM_TAG_TATSUGIRI_STRETCHY         (ANIM_SPRITES_START + 411)
 #define ANIM_TAG_SAFARI_BAIT                (ANIM_SPRITES_START + 412)
-#define ANIM_TAG_COUNT                      GET_TRUE_SPRITE_INDEX(ANIM_TAG_SAFARI_BAIT + 1)
+#define ANIM_TAG_PURPLE_GENERAL_PAL         (ANIM_SPRITES_START + 413)
+#define ANIM_TAG_PURPLE_BACKGROUND_PAL      (ANIM_SPRITES_START + 414)
+#define ANIM_TAG_DARK_SAND_PAL              (ANIM_SPRITES_START + 415)
+#define ANIM_TAG_DARK_GUST_PAL              (ANIM_SPRITES_START + 416)
+#define ANIM_TAG_SMALL_FEATHER              (ANIM_SPRITES_START + 417)
+#define ANIM_TAG_FALLING_FEATHER            (ANIM_SPRITES_START + 418)
+#define ANIM_TAG_BUBBLE_SCRATCH_PAL         (ANIM_SPRITES_START + 419)
+#define ANIM_TAG_YELLOW_SCRATCH_PAL         (ANIM_SPRITES_START + 420)
+#define ANIM_TAG_BUG_PAL                    (ANIM_SPRITES_START + 421)
+#define ANIM_TAG_MOON_BALL					(ANIM_SPRITES_START + 422)
+#define ANIM_TAG_NEW_GREEN_STAR             (ANIM_SPRITES_START + 423)
+#define ANIM_TAG_BUTTERFLY                  (ANIM_SPRITES_START + 424)
+#define ANIM_TAG_BUTTERFLY_POWDER           (ANIM_SPRITES_START + 425)
+#define ANIM_TAG_BUTTERFLY_MIXED            (ANIM_SPRITES_START + 426)
+#define ANIM_TAG_NEW_BUBBLE                 (ANIM_SPRITES_START + 427)
+#define ANIM_TAG_NEW_SMALL_BUBBLE           (ANIM_SPRITES_START + 428)
+#define ANIM_TAG_NEW_POISON_BUBBLE          (ANIM_SPRITES_START + 429)
+#define ANIM_TAG_PINK_PAL                   (ANIM_SPRITES_START + 430)
+#define ANIM_TAG_COUNT                      GET_TRUE_SPRITE_INDEX(ANIM_TAG_PINK_PAL + 1)
 
 // battlers
 enum AnimBattler
@@ -539,7 +557,12 @@ enum AnimBattler
 #define BG_RAINBOW_PLAYER 81
 #define BG_RAINBOW_OPPONENT 82
 #define BG_SWAMP 83
-#define BG_COUNT 84
+#define BG_DARK_FIRE 84
+#define BG_DARK_HIGHSPEED_OPPONENT 85
+#define BG_DARK_HIGHSPEED_PLAYER 86
+#define BG_PINK_HIGHSPEED_OPPONENT 87
+#define BG_PINK_HIGHSPEED_PLAYER 88
+#define BG_COUNT 89
 
 // table ids for general animations (sBattleAnims_General)
 #define B_ANIM_STATS_CHANGE             0
@@ -605,7 +628,10 @@ enum AnimBattler
 #define B_ANIM_SAFARI_REACTION          60
 #define B_ANIM_FORM_CHANGE_INSTANT      61
 #define B_ANIM_FORM_CHANGE_DISGUISE     62
-#define NUM_B_ANIMS_GENERAL             63
+#define B_ANIM_AURORER_BARRIER          63
+#define B_ANIM_LEECH_SEED_PARASITIZED   64
+#define B_ANIM_POWDER_EXPLOSION         65
+#define NUM_B_ANIMS_GENERAL             66
 
 // special animations table (sBattleAnims_Special)
 #define B_ANIM_LVL_UP                   0
@@ -675,6 +701,7 @@ enum AnimBattler
 #define ANIM_SURF_PAL_SURF           0
 #define ANIM_SURF_PAL_MUDDY_WATER    1
 #define ANIM_SURF_PAL_SLUDGE_WAVE    2
+#define ANIM_SURF_PAL_ELECTRIC_WATER 3
 
 // Order Up palettes for Commander
 #define ANIM_ORDER_UP_NONE           0
@@ -691,10 +718,6 @@ enum SpeciesGfxChange
     SPECIES_GFX_CHANGE_ILLUSION_OFF,
     SPECIES_GFX_CHANGE_GHOST_UNVEIL,
 };
-
-// Surf wave palettes
-#define ANIM_SURF_PAL_SURF           0
-#define ANIM_SURF_PAL_MUDDY_WATER    1
 
 // Flags given to various functions to indicate which palettes to consider.
 // Handled by UnpackSelectedBattlePalettes

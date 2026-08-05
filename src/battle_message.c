@@ -363,6 +363,7 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_PKMNWAITSFORTARGET]                   = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} waits for a target to make a move!"),
     [STRINGID_PKMNSNATCHEDMOVE]                     = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX} snatched {B_SCR_NAME_WITH_PREFIX2}'s move!"),
     [STRINGID_PKMNMADEITRAIN]                       = COMPOUND_STRING("{B_SCR_NAME_WITH_PREFIX}'s {B_SCR_ABILITY} made it rain!"), //not in gen 5+, ability popup
+    [STRINGID_PKMNMADEFOG]                          = COMPOUND_STRING("{B_SCR_NAME_WITH_PREFIX}'s {B_SCR_ABILITY} made it fog!"), //not in gen 5+, ability popup
     [STRINGID_PKMNPROTECTEDBY]                      = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX} was protected by {B_DEF_ABILITY}!"), //not in gen 5+, ability popup
     [STRINGID_PKMNPREVENTSUSAGE]                    = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX}'s {B_DEF_ABILITY} prevents {B_ATK_NAME_WITH_PREFIX2} from using {B_CURRENT_MOVE}!"), //I don't see this in SV text
     [STRINGID_PKMNRESTOREDHPUSING]                  = COMPOUND_STRING("{B_SCR_NAME_WITH_PREFIX} restored HP using its {B_SCR_ABILITY}!"), //not in gen 5+, ability popup
@@ -690,7 +691,7 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_SCREENCLEANERENTERS]                  = COMPOUND_STRING("All screens on the field were cleansed!"),
     [STRINGID_FETCHEDPOKEBALL]                      = COMPOUND_STRING("{B_SCR_NAME_WITH_PREFIX} found a {B_LAST_ITEM}!"),
     [STRINGID_ASANDSTORMKICKEDUP]                   = COMPOUND_STRING("A sandstorm kicked up!"),
-    [STRINGID_PKMNSWILLPERISHIN3TURNS]              = COMPOUND_STRING("Both Pokémon will perish in three turns!"),  //don't think this message is displayed anymore
+    [STRINGID_PKMNSWILLPERISHIN3TURNS]              = COMPOUND_STRING("Foe's Pokémon will perish in one turn!"),
     [STRINGID_AURAFLAREDTOLIFE]                     = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX}'s aura flared to life!"),
     [STRINGID_ASONEENTERS]                          = COMPOUND_STRING("{B_SCR_NAME_WITH_PREFIX} has two Abilities!"),
     [STRINGID_CURIOUSMEDICINEENTERS]                = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX}'s stat changes were removed!"),
@@ -759,6 +760,7 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_ATTACKERLOSTELECTRICTYPE]             = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} used up all its electricity!"),
     [STRINGID_ATTACKERSWITCHEDSTATWITHTARGET]       = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} switched {B_BUFF1} with its target!"),
     [STRINGID_BEINGHITCHARGEDPKMNWITHPOWER]         = COMPOUND_STRING("Being hit by {B_CURRENT_MOVE} charged {B_DEF_NAME_WITH_PREFIX2} with power!"),
+    [STRINGID_TAILWINDCHARGEDPKMNWITHPOWER]         = COMPOUND_STRING("Being with Tailwind, it charged {B_DEF_NAME_WITH_PREFIX2} with power!"),
     [STRINGID_SUNLIGHTACTIVATEDABILITY]             = COMPOUND_STRING("The harsh sunlight activated {B_SCR_NAME_WITH_PREFIX2}'s Protosynthesis!"),
     [STRINGID_STATWASHEIGHTENED]                    = COMPOUND_STRING("{B_SCR_NAME_WITH_PREFIX}'s {B_BUFF1} was heightened!"),
     [STRINGID_ELECTRICTERRAINACTIVATEDABILITY]      = COMPOUND_STRING("The Electric Terrain activated {B_SCR_NAME_WITH_PREFIX2}'s Quark Drive!"),
@@ -889,6 +891,8 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_PKMNSTARTEDBLEEDING]                  = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX} started bleeding!"),                                          // 出血し始めたというメッセージ
     [STRINGID_PKMBLEEDINGCONTINUING]                = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX} is bleeding again\nThe wound remains unsealed!"),             // 出血し続けているというメッセージ
     [STRINGID_PKMNBLEEDSTOPPED]                     = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} stopped bleeding!"),                                          // 出血が止まったというメッセージ
+    [STRINGID_ABILITYAURORABARRIERMSG]              = COMPOUND_STRING("Light Screen and Reflect appeared around {B_SCR_NAME_WITH_PREFIX}!"),                  // ひかりのかべとリフレクターが現れたというメッセージ
+    [STRINGID_TARGETPARASITIZED]                    = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX} was parasitized!"),
 };
 
 const u16 gTrainerUsedItemStringIds[] =
@@ -1018,7 +1022,7 @@ const u16 gMoveWeatherChangeStringIds[] =
     [B_MSG_STARTED_SUNLIGHT]  = STRINGID_SUNLIGHTGOTBRIGHT,
     [B_MSG_STARTED_HAIL]      = STRINGID_STARTEDHAIL,
     [B_MSG_STARTED_SNOW]      = STRINGID_STARTEDSNOW,
-    [B_MSG_STARTED_FOG]       = STRINGID_FOGCREPTUP, // Unused, can use for custom moves that set fog
+    [B_MSG_STARTED_FOG]       = STRINGID_FOGCREPTUP,
 };
 
 const u16 gAbilityWeatherChangeStringId[] =
@@ -1031,6 +1035,7 @@ const u16 gAbilityWeatherChangeStringId[] =
     [B_MSG_STARTED_DESOLATE_LAND]  = STRINGID_EXTREMELYHARSHSUNLIGHT,
     [B_MSG_STARTED_PRIMORDIAL_SEA] = STRINGID_HEAVYRAIN,
     [B_MSG_STARTED_STRONG_WINDS]   = STRINGID_MYSTERIOUSAIRCURRENT,
+    [B_MSG_STARTED_MISTY_BREATH]   = STRINGID_PKMNMADEFOG,
 };
 
 const u16 gWeatherEndsStringIds[B_MSG_WEATHER_END_COUNT] =

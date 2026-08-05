@@ -118,6 +118,14 @@ const struct SpriteTemplate gSparkElectricitySpriteTemplate =
     .callback = AnimSparkElectricity,
 };
 
+const struct SpriteTemplate gBlueSparkElectricitySpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARK_2,
+    .paletteTag = ANIM_TAG_BLUE_BURST,
+    .oam = &gOamData_AffineNormal_ObjNormal_16x16,
+    .callback = AnimSparkElectricity,
+};
+
 const struct SpriteTemplate gZapCannonBallSpriteTemplate =
 {
     .tileTag = ANIM_TAG_BLACK_BALL_2,

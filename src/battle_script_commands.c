@@ -3078,7 +3078,7 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
         else if (!gBattleMons[gEffectBattler].volatiles.healBlock)
         {
             gBattleMons[gEffectBattler].volatiles.healBlock = TRUE;
-            gBattleMons[gEffectBattler].volatiles.healBlockTimer = 5;
+            gBattleMons[gEffectBattler].volatiles.healBlockTimer = 3;
             BattleScriptPush(battleScript);
             gBattlescriptCurrInstr = BattleScript_EffectPsychicNoise;
         }
@@ -3200,7 +3200,7 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
 
             if (i != MAX_MON_MOVES && gBattleMons[gBattlerTarget].pp[i] != 0)
             {
-                u32 ppToDeduct = 3;
+                u32 ppToDeduct = 5;
 
                 if (gBattleMons[gBattlerTarget].pp[i] < ppToDeduct)
                     ppToDeduct = gBattleMons[gBattlerTarget].pp[i];
@@ -3680,6 +3680,51 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
             gBattlescriptCurrInstr = BattleScript_BeatUpAttackMessage;
         }
         break;
+    case MOVE_EFFECT_ATTRACT:
+    {
+        u8 genderAtk = GetMonGender(GetBattlerMon(battlerAtk));
+        u8 genderDef = GetMonGender(GetBattlerMon(effectBattler));
+        enum BattlerId aromaVeilBattler = IsAbilityOnSide(effectBattler, ABILITY_AROMA_VEIL);
+
+        // 1. すでにメロメロ状態、またはどちらかが性別不明（MON_GENDERLESS）の場合は無効
+        if (gBattleMons[effectBattler].volatiles.infatuation
+         || genderAtk == MON_GENDERLESS
+         || genderDef == MON_GENDERLESS)
+        {
+            gBattlescriptCurrInstr = battleScript;
+        }
+        // 2. 同性同士（♂×♂、♀×♀）の場合、30%の確率を引けなければ無効（70%で無効化）
+        // ※ RandomPercentage(RNG_..., 30) が使えない場合は (Random() % 100 >= 30) で代用できます
+        else if (genderAtk == genderDef && !(Random() % 100 <= 30))
+        {
+            gBattlescriptCurrInstr = battleScript;
+        }
+        // 3. 特性「アロマベール」による保護
+        else if (aromaVeilBattler)
+        {
+            gBattlerAbility = aromaVeilBattler - 1;
+            gLastUsedAbility = ABILITY_AROMA_VEIL;
+            RecordAbilityBattle(gBattlerAbility, ABILITY_AROMA_VEIL);
+            BattleScriptPush(battleScript);
+            gBattlescriptCurrInstr = BattleScript_AromaVeilProtectsRet;
+        }
+        // 4. 特性「どんかん」による無効化
+        else if (abilities[effectBattler] == ABILITY_OBLIVIOUS)
+        {
+            gLastUsedAbility = ABILITY_OBLIVIOUS;
+            RecordAbilityBattle(effectBattler, ABILITY_OBLIVIOUS);
+            BattleScriptPush(battleScript);
+            gBattlescriptCurrInstr = BattleScript_NotAffectedAbilityPopUp;
+        }
+        // 5. メロメロ状態の付与成功（異性は100%通過、同性は上記30%を通過した場合）
+        else
+        {
+            gBattleMons[effectBattler].volatiles.infatuation = INFATUATED_WITH(battlerAtk);
+            BattleScriptPush(battleScript);
+            gBattlescriptCurrInstr = BattleScript_MoveEffectAttract;
+        }
+        break;
+    }
     default:
         break;
     }
@@ -9173,7 +9218,7 @@ static void Cmd_settailwind(void)
     if (!(gSideStatuses[side] & SIDE_STATUS_TAILWIND))
     {
         gSideStatuses[side] |= SIDE_STATUS_TAILWIND;
-        gSideTimers[side].tailwindTimer = (GetConfig(B_TAILWIND_TURNS) >= GEN_5 ? 4 : 3);
+        gSideTimers[side].tailwindTimer = 5;
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
     else
@@ -9398,26 +9443,60 @@ static void Cmd_trysetperishsong(void)
 
     s32 notAffectedCount = 0;
 
-    for (enum BattlerId i = 0; i < gBattlersCount; i++)
+    // デフォルトの遷移先（成功時）をあらかじめ設定
+    gBattlescriptCurrInstr = cmd->nextInstr;
+
+    // 特性ポップアップが正しく順番（0番→1番…）で再生されるよう、逆順（後ろのバトラー）からループしてスタックに積みます
+    for (s32 i = (s32)gBattlersCount - 1; i >= 0; i--)
     {
-        if (gBattleMons[i].volatiles.perishSong
-            || IsBattlerUnaffectedByMove(i)
-            || BlocksPrankster(gCurrentMove, gBattlerAttacker, i, TRUE)
-            || gBattleMons[i].volatiles.semiInvulnerable == STATE_COMMANDER)
+        enum Ability ability = GetBattlerAbility(i);
+
+        if (!IsBattlerAlive(i))
         {
+            notAffectedCount++;
+            continue;
+        }
+
+        // 既にほろび状態 / 技無効 / 悪戯心ガード / シャドースチール等 / 音技無効特性（ぼうおん, DEATH_SINGER）
+        if (gBattleMons[i].volatiles.perishSong
+         || IsBattlerUnaffectedByMove(i)
+         || BlocksPrankster(gCurrentMove, gBattlerAttacker, i, TRUE)
+         || gBattleMons[i].volatiles.semiInvulnerable == STATE_COMMANDER
+         || ability == ABILITY_SOUNDPROOF
+         || ability == ABILITY_DEATH_SINGER)
+        {
+            // 特性「ぼうおん」または「DEATH_SINGER」で防がれた場合
+            if (ability == ABILITY_SOUNDPROOF || ability == ABILITY_DEATH_SINGER)
+            {
+                RecordAbilityBattle(i, ability);
+                gLastUsedAbility = ability;
+                gBattlerAbility = gBattleScripting.battler = i;
+                
+                // 特性ポップアップと「〇〇の ぼうおんで かきけされた！」等のメッセージを表示
+                BattleScriptCall(BattleScript_SoundproofProtected);
+            }
+
             notAffectedCount++;
         }
         else
         {
+            // ほろびのうた状態を付与
             gBattleMons[i].volatiles.perishSong = TRUE;
-            gBattleMons[i].volatiles.perishSongTimer = 3;
+
+            if (GetBattlerAbility(gBattlerAttacker) == ABILITY_DEATH_SINGER)
+            {
+                gBattleMons[i].volatiles.perishSongTimer = 0;
+            }
+            else
+            {
+                gBattleMons[i].volatiles.perishSongTimer = 3;
+            }
         }
     }
 
+    // 場にいる全員が無効（防がれた／既にほろび状態等）だった場合は失敗スクリプトへ遷移
     if (notAffectedCount == gBattlersCount)
         gBattlescriptCurrInstr = cmd->failInstr;
-    else
-        gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
 static void Cmd_jumpifconfusedandstatmaxed(void)
@@ -9643,6 +9722,12 @@ static void Cmd_recoverbasedonsunlight(void)
                 recoverAmount = 20 * GetNonDynamaxMaxHP(gBattlerAttacker) / 30;
             else // not sunny weather
                 recoverAmount = GetNonDynamaxMaxHP(gBattlerAttacker) / 4;
+
+            // サイコフィールドが展開されていれば、つきのひかりの回復量を 75% に上書き
+            if (GetMoveEffect(gCurrentMove) == EFFECT_MOONLIGHT && (gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN))
+            {
+                recoverAmount = 3 * GetNonDynamaxMaxHP(gBattlerAttacker) / 4;
+            }
         }
         else // B_TIME_OF_DAY_HEALING_MOVES == GEN_2
         {
@@ -12875,7 +12960,9 @@ void BS_JumpIfBlockedBySoundproof(void)
 {
     NATIVE_ARGS(u8 battler, const u8 *jumpInstr);
     enum BattlerId battler = GetBattlerForBattleScript(cmd->battler);
-    if (IsSoundMove(gCurrentMove) && GetBattlerAbility(battler) == ABILITY_SOUNDPROOF)
+    if (IsSoundMove(gCurrentMove) 
+        && (GetBattlerAbility(battler) == ABILITY_SOUNDPROOF 
+         || GetBattlerAbility(battler) == ABILITY_DEATH_SINGER))
     {
         gLastUsedAbility = ABILITY_SOUNDPROOF;
         gBattlescriptCurrInstr = cmd->jumpInstr;

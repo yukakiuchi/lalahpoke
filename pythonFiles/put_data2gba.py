@@ -1,8 +1,8 @@
 # =======================================================================================
 # 💡
-# あなたは私の「優しい開発バディ（相棒）」です。直感的な解説、タイポの優しい指摘、
-# そして良いコードには全力でハイタッチする熱量で adaptive にサポートしてください！
-# 最重要! AIさんへ: このファイルの中のコメントは消さないで出力させてね
+# 最重要! AIさんへ: このファイルの中のコメントは消さないこと
+# スペースや改行もインデントのためや見やすいようにしてるから消さないで
+# コードを書くときは変数名はlとか省略せずしっかり言葉で書く
 # エラーがある場合は確信がある場合はそのまま説明して確信でない場合は原因となりそうな箇所にデバッグコードを
 # 書くようにお願いします。もし変更箇所が1~2箇所だけならピンポイントでその箇所を教えてこう書くと教える
 # もし3~4箇所以上必要な場合はまとまった処理ごとにコピペできるように修正を表示する
@@ -20,26 +20,33 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 ########################### 設定 ###############################
-CSV_FILE_PATH = "/Users/yu/Desktop/sprites.csv"
+SPECIS_CSV_FILE_PATH = "/Users/yu/Desktop/sprites.csv"
+MOVES_CSV_FILE_PATH = "/Users/yu/Desktop/moves.csv"
 ORIGINAL_SPECIES_INFO_DIR = "/Users/yu/Desktop/Original_expantion_data/PokeData/species_info"
 ORIGINAL_SPECIES_IDS_FILE_PATH = "/Users/yu/Desktop/Original_expantion_data/PokeData/id_setting/species.h"
 ORIGINAL_ANIM_FRONT_FILE_PATH = "/Users/yu/Desktop/Original_expantion_data/PokeData/anim_sprite_setting/pokemon.h"
 ORIGINAL_POKEMON_PNG_DIR = "/Users/yu/Desktop/Original_expantion_data/PokeGraphics"
 ORIGINAL_NATIONAL_POKEDEX_FILE_PATH = "/Users/yu/Desktop/Original_expantion_data/NationalPokedex/pokedex.h"
+ORIGINAL_MOVES_FILE_PATH= "/Users/yu/Desktop/Original_expantion_data/Moves/gen_9_moves.h"
 CURRENT_POKEMON_PNG_DIR = "/Users/yu/Desktop/expand/graphics/pokemon"
 CURRENT_SPECIES_INFO_DIR = "/Users/yu/Desktop/expand/src/data/pokemon/species_info"
 CURRENT_SPECIES_ID_FILE_PATH = "/Users/yu/Desktop/expand/include/constants/species.h"
 CURRENT_ANIM_FRONT_SETTING_FILE_PATH = "/Users/yu/Desktop/expand/src/data/graphics/pokemon.h"
 CURRENT_NATIONAL_DEX_FILE_PATH = "/Users/yu/Desktop/expand/include/constants/pokedex.h"
+CURRENT_MOVES_FILE_PATH = "/Users/yu/Desktop/expand/src/data/pokemon/level_up_learnsets/gen_9.h"
+
 
 START_ID = 1
-END_ID = 290
+END_ID = 272
 
 CONFIG_VARS = [
     "UPDATE_SPRITES",
     "UPDATE_ICONS",
     "UPDATE_ICON_PALS",
     "UPDATE_TYPE",
+    "UPDATE_ABILITIES",
+    "UPDATE_EVOLUTIONS",
+    "UPDATE_MOVES",
     "UPDATE_ANIM_FRONT",
     "UPDATE_ID_SORT",
     "UPDATE_B_SPRITE_OFFSET",
@@ -48,7 +55,7 @@ CONFIG_VARS = [
 ]
 
 
-UPDATE_PNG                  = True
+UPDATE_PNG                = True
 UPDATE_ALL_SPECIES_INFO   = True
 UPDATE_ID_SORT            = True
 UPDATE_ANIM_FRONT         = True
@@ -58,8 +65,11 @@ UPDATE_NATIONAL_DEX       = True
 if UPDATE_ALL_SPECIES_INFO == True:
     UPDATE_ICON_PALS       = True
     UPDATE_TYPE            = True
+    UPDATE_ABILITIES       = True
+    UPDATE_EVOLUTIONS      = True
     UPDATE_B_SPRITE_OFFSET = True
     UPDATE_DISPLAY_NAME    = True
+    UPDATE_MOVES           = True
 
 if UPDATE_PNG         == True:
     UPDATE_SPRITES        = True
@@ -71,8 +81,8 @@ ALLOWED_TYPES =[
     "WATER", "GRASS", "ELECTRIC", "ICE", "DARK", "FAIRY", "RAINBOW"]
 
 REQUIRED_CSV_HEADERS = [
-    "id","original_name_code","display_name", "sprite_url","icon_url", "pal","type",
-    "backPicYOffset","frontPicYOffset","enemyMonElevation","Shadow"]
+    "id","original_name_code","display_name", "sprite_url","icon_url", "pal",
+    "type", "abilities", "evo_requirements", "backPicYOffset","frontPicYOffset","enemyMonElevation","Shadow"]
 
 # 画像処理の時の特殊なフォルダ分け設定（SPECIES名: フォルダ名）
 # 指定がない場合は既存の自動ルールが適用されます
@@ -104,6 +114,8 @@ MAX_PICS_DOWNLOAD_RETRIES = 3
 ##########################################################
 # --- 画像キャッシュ用変数と関数 ---
 task_dict = {}
+moves_task_dictionary = {}
+cache_moves_file_content = ""
 poke_graphics_cache = {}
 cache_gen_x_families_h_files = {}
 cache_species_h = {}
@@ -121,7 +133,7 @@ def check_csv_n_create_tasks():
     # -------- 1. CSVのヘッダーチェック -------
     # コード数を減らすためCSVのカラムの中身が空っぽかどうかのチェックは行わないから自分で確認して
     try:
-        with open(CSV_FILE_PATH, newline="", encoding="utf-8") as f:
+        with open(SPECIS_CSV_FILE_PATH, newline="", encoding="utf-8") as f:
             csv_reader = csv.DictReader(f)     # header情報を取得するため、中身は文字コードであまり読めない
             csv_header = csv_reader.fieldnames # ヘッダーをパイソンで読めるような形にする
             csv_data = list(csv_reader)
@@ -132,7 +144,7 @@ def check_csv_n_create_tasks():
             sys.exit(1)
 
     except FileNotFoundError:
-        print(f"❌ エラー: 指定されたファイルが見つかりません: {CSV_FILE_PATH}")
+        print(f"❌ エラー: 指定されたファイルが見つかりません: {SPECIS_CSV_FILE_PATH}")
         sys.exit(1)
     # --------- 2. 指定したidの行データのみを抜き取る -------
     for row in csv_data:
@@ -141,6 +153,185 @@ def check_csv_n_create_tasks():
             task_dict[poke_id] = row
     return
     # ------------------------------------------------
+
+# 1. 修得技CSVの検証とデータ読み込み
+def check_moves_csv_and_validate():
+    print("\n" + "✨" * 40)
+    print("     修得技CSV (moves.csv) の検証と読み込みを開始します")
+    print("✨" * 40 + "\n")
+
+    if not os.path.exists(MOVES_CSV_FILE_PATH):
+        print(f"❌ エラー: 指定された修得技ファイルが見つかりません: {MOVES_CSV_FILE_PATH}")
+        sys.exit(1)
+
+    invalid_entries = []
+
+    try:
+        with open(MOVES_CSV_FILE_PATH, newline="", encoding="utf-8") as moves_file_object:
+            csv_reader = csv.DictReader(moves_file_object)
+            for row in csv_reader:
+                poke_id = int(row["id"])
+                if START_ID <= poke_id <= END_ID:
+                    original_name_code = row.get("original_name_code", "").strip()
+                    
+                    # moves_1 から moves_16 までのカラムの妥当性をチェック
+                    for move_index in range(1, 17):
+                        column_name = f"moves_{move_index}"
+                        raw_move_value = row.get(column_name, "").strip()
+                        
+                        if not raw_move_value:
+                            continue
+
+                        # カンマが含まれていない場合（レベル表記がない場合）
+                        if "," not in raw_move_value:
+                            invalid_entries.append({
+                                "id": poke_id,
+                                "original_name_code": original_name_code,
+                                "column": column_name,
+                                "value": raw_move_value,
+                                "reason": "レベル指定（カンマ）が含まれていません"
+                            })
+                            continue
+
+                        # カンマ前後のパースチェック
+                        move_data_parts = raw_move_value.split(",", 1)
+                        level_string = move_data_parts[0].strip()
+                        move_name = move_data_parts[1].strip()
+
+                        if not level_string.isdigit():
+                            invalid_entries.append({
+                                "id": poke_id,
+                                "original_name_code": original_name_code,
+                                "column": column_name,
+                                "value": raw_move_value,
+                                "reason": f"レベル数値 '{level_string}' が正しくありません"
+                            })
+                            continue
+
+                        if not move_name:
+                            invalid_entries.append({
+                                "id": poke_id,
+                                "original_name_code": original_name_code,
+                                "column": column_name,
+                                "value": raw_move_value,
+                                "reason": "技名が指定されていません"
+                            })
+                            continue
+
+                    moves_task_dictionary[poke_id] = row
+
+    except Exception as error_message:
+        print(f"❌ 修得技CSVの読み込み中にエラーが発生しました: {error_message}")
+        sys.exit(1)
+
+    if invalid_entries:
+        print("❌ 以下の修得技CSVデータ内に不正なフォーマットが発見されたため処理を停止します:\n")
+        for entry in invalid_entries:
+            print(f"   - [ID: {entry['id']}] {entry['original_name_code']} | カラム: {entry['column']} | 値: '{entry['value']}' | 原因: {entry['reason']}")
+        print("\n修得技CSVデータを確認・修正の上、再度実行してください。")
+        sys.exit(1)
+
+    print(f"✅ 修得技CSVの検証完了: 対象 {len(moves_task_dictionary)} 件のデータを正常に取得しました。")
+
+
+# 2. 修得技（gen_9_moves.h）ファイルのメモリキャッシュ化
+def cache_moves_file():
+    global cache_moves_file_content
+    if os.path.exists(ORIGINAL_MOVES_FILE_PATH):
+        print(f"📦 ORIGINAL_MOVES_FILEをメモリにキャッシュ中...\n📁({ORIGINAL_MOVES_FILE_PATH})")
+        with open(ORIGINAL_MOVES_FILE_PATH, "r", encoding="utf-8", errors="ignore") as moves_file_object:
+            cache_moves_file_content = moves_file_object.read()
+        print("✅ キャッシュ完了: 修得技ファイル")
+    else:
+        print(f"⚠️ {ORIGINAL_MOVES_FILE_PATH} が見つからないため、修得技ファイルのキャッシュに失敗しました。")
+
+
+# 3. キャッシュに対する修得技上書きおよび実ファイル適用
+def update_pokemon_moves():
+    global cache_moves_file_content
+    print("\n" + "✨" * 40)
+    print("     修得技 (gen_9.h) の上書き処理を開始します")
+    print("✨" * 40 + "\n")
+
+    if not cache_moves_file_content:
+        print("⚠️ 修得技のキャッシュデータが存在しないため、処理をスキップします。")
+        return
+
+    working_content = cache_moves_file_content
+    changed_pokemon_logs = []
+    failed_species_list = []
+
+    for pokemon_id, row_data in moves_task_dictionary.items():
+        original_name_code = row_data.get("original_name_code", "").strip()
+        
+        # SPECIES_WO_CHIEN -> wochien（アンダースコア消去・小文字化）
+        clean_species_name = original_name_code.replace("SPECIES_", "").replace("_", "")
+
+        # 大文字小文字を区別しない正規表現パターンを作成
+        search_pattern = re.compile(
+            rf"(static\s+const\s+struct\s+LevelUpMove\s+s{clean_species_name}LevelUpLearnset\s*\[\s*\]\s*=\s*\{{)(.*?)(\}};\n?)",
+            re.DOTALL | re.IGNORECASE
+        )
+
+        match_result = search_pattern.search(working_content)
+        if not match_result:
+            failed_species_list.append(f"ID:{pokemon_id} ({original_name_code} -> s{clean_species_name}LevelUpLearnset[])")
+            continue
+
+        # 新しい修得技ブロックの行を生成
+        move_entry_lines = []
+        for move_index in range(1, 17):
+            column_name = f"moves_{move_index}"
+            raw_move_value = row_data.get(column_name, "").strip()
+            if not raw_move_value:
+                continue
+
+            move_data_parts = raw_move_value.split(",", 1)
+            level_number = move_data_parts[0].strip()
+            move_name = move_data_parts[1].strip()
+
+            move_entry_lines.append(f"    LEVEL_UP_MOVE({level_number}, {move_name}),")
+
+        move_entry_lines.append("    LEVEL_UP_END")
+
+        new_block_content = "\n" + "\n".join(move_entry_lines) + "\n"
+        
+        # ブロック全体の置き換え処理
+        header_text = match_result.group(1)
+        footer_text = match_result.group(3)
+        replaced_full_block = f"{header_text}{new_block_content}{footer_text}"
+
+        working_content = working_content[:match_result.start()] + replaced_full_block + working_content[match_result.end():]
+        changed_pokemon_logs.append(f"ID:{pokemon_id} ({original_name_code}) の修得技を上書き更新")
+
+    # 全ポケモンの置換完了後、キャッシュを最新に更新
+    cache_moves_file_content = working_content
+
+    # 完成したキャッシュ内容と実ファイル（CURRENT_MOVES_FILE_PATH）の比較・適用
+    needs_write = True
+    if os.path.exists(CURRENT_MOVES_FILE_PATH):
+        with open(CURRENT_MOVES_FILE_PATH, "r", encoding="utf-8", errors="ignore") as current_moves_file_object:
+            if current_moves_file_object.read() == cache_moves_file_content:
+                needs_write = False
+
+    if needs_write:
+        destination_directory = os.path.dirname(CURRENT_MOVES_FILE_PATH)
+        if destination_directory and not os.path.exists(destination_directory):
+            os.makedirs(destination_directory, exist_ok=True)
+
+        with open(CURRENT_MOVES_FILE_PATH, "w", encoding="utf-8") as current_moves_file_object:
+            current_moves_file_object.write(cache_moves_file_content)
+        
+        print("📝 修得技データを適用しました:")
+        for log_message in changed_pokemon_logs:
+            print(f"   - {log_message}")
+        print(f"\n💾 変更を適用しました: {os.path.basename(CURRENT_MOVES_FILE_PATH)}")
+    else:
+        print("💾 変更はありません (すでに最新の状態です)")
+
+    if failed_species_list:
+        print(f"\n❌ 以下の修得技データブロックが見つからずスキップされました:\n" + "\n".join(failed_species_list))
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 def load_poke_graphics_cache():
     """PokeGraphicsフォルダの全ファイルをメモリに一括読み込み"""
@@ -467,8 +658,17 @@ def cache_species_info_files():
         print(f"✅ キャッシュ完了: {len(cache_gen_x_families_h_files)} ファイル")
     else:
         print(f"⚠️ {ORIGINAL_SPECIES_INFO_DIR} が見つからないため、種族情報の編集処理は開始できませんでした。")
-
     return
+
+def cache_moves_file():
+    global cache_moves_file_content
+    if os.path.exists(ORIGINAL_MOVES_FILE_PATH):
+        print(f"📦 ORIGINAL_MOVES_FILEをメモリにキャッシュ中...\n📁({ORIGINAL_MOVES_FILE_PATH})")
+        with open(ORIGINAL_MOVES_FILE_PATH, "r", encoding="utf-8", errors="ignore") as moves_file_object:
+            cache_moves_file_content = moves_file_object.read()
+        print("✅ キャッシュ完了: 修得技ファイル")
+    else:
+        print(f"⚠️ {ORIGINAL_MOVES_FILE_PATH} が見つからないため、修得技ファイルのキャッシュに失敗しました。")
 
 def stop_task():
     print(f"❌ 問題が発生したため処理を中止しました。")
@@ -489,17 +689,21 @@ def update_species_info():
         print("     pal番号の上書き処理を開始します")
     if UPDATE_TYPE:
         print("     typeの上書き処理を開始します")
+    if UPDATE_ABILITIES:
+        print("     abilitiesの上書き処理を開始します")
+    if UPDATE_EVOLUTIONS:
+        print("     evolutionsの上書き処理を開始します")
     if UPDATE_B_SPRITE_OFFSET:
         print("     戦闘画面のポケモン画像の位置の値の上書き処理を開始します")
     print("✨" * 40 + "\n")
 
     for poke_id, row in task_dict.items():
-        pal = row["pal"]
-        raw_species_name = row["original_name_code"]
-        type_raw = row["type"].strip()
-        csv_display_name = row["display_name"].strip()
-        if csv_display_name == "SPECIES_SQUAWKABILLY":
-            csv_display_name = "SPECIES_SQUAWKABILLY_GREEN"
+        pal                         = row["pal"]
+        raw_species_name            = row["original_name_code"]
+        type_raw                    = row["type"].strip()
+        csv_display_name            = row["display_name"].strip()
+        csv_abilities               = row["abilities"].strip()
+        csv_evolution_requirements  = row["evo_requirements"].strip()
 
         if UPDATE_TYPE:
             types = [t.strip().upper() for t in type_raw.split(",")] # pythonが読み取れる形にする。配列形式にする
@@ -532,10 +736,34 @@ def update_species_info():
             # 1. まず該当種族のブロック範囲を特定する
             # 行ベースで分割し、[SPECIES_...] から } までを範囲とする
             lines = cache_gen_x_content.splitlines()
+
+            # 事前にこのポケモンのブロック内に .evolutions = が存在するかチェック
+            has_evolution_in_species_block = False
+            species_block_start_line_index = -1
+
+            for line_index, line_content in enumerate(lines):
+                if start_marker in line_content:
+                    species_block_start_line_index = line_index
+                    break
+
+            if species_block_start_line_index != -1:
+                for line_content in lines[species_block_start_line_index:]:
+                    if line_content.strip().startswith("},"):
+                        break
+                    if ".evolutions =" in line_content:
+                        has_evolution_in_species_block = True
+                        break
+
             new_lines = []
             in_block = False
             replaced_type = False
             replaced_pal = False
+            replaced_abilities = False
+            found_abilities_in_block = False
+            has_replaced_evolution = False
+            is_inside_evolution_block = False
+            evolution_parenthesis_depth = 0
+            evolution_preprocessor_depth = 0
             replaced_offset = False
             found_back_pic_for_elevation = False
             elevation_handled = False
@@ -556,6 +784,24 @@ def update_species_info():
                         changed_pokemon_logs[raw_species_name] = []
                         changed_pokemon_logs[raw_species_name].append(f"ID           : {poke_id}")
 
+                    # --- 進化（.evolutions）ブロック削除・通過の処理 (パターンB対応) ---
+                    if is_inside_evolution_block:
+                        if line.strip().startswith(".") or line.strip().startswith("},"):
+                            is_inside_evolution_block = False
+                        else:
+                            stripped_line = line.strip()
+                            if stripped_line.startswith("#if"):
+                                evolution_preprocessor_depth += 1
+                            elif stripped_line.startswith("#endif"):
+                                evolution_preprocessor_depth = max(0, evolution_preprocessor_depth - 1)
+
+                            evolution_parenthesis_depth += line.count("(") - line.count(")")
+
+                            if evolution_parenthesis_depth <= 0 and evolution_preprocessor_depth == 0:
+                                is_inside_evolution_block = False
+                            continue
+
+                    # 種族名の変更
                     if UPDATE_DISPLAY_NAME and ".speciesName" in line:
                         search_result = re.search(r"=\s*(.*?)\s*,", line)
                         old_value = search_result.group(1)
@@ -565,6 +811,7 @@ def update_species_info():
                         replaced_pal = True
                         continue
 
+                    # iconパレット番号の変更
                     if UPDATE_ICON_PALS and ".iconPalIndex" in line:
                         search_result = re.search(r"=\s*(.*?)\s*,", line)
                         old_value = search_result.group(1)
@@ -574,6 +821,7 @@ def update_species_info():
                         replaced_pal = True
                         continue
 
+                    # タイプの変更
                     if UPDATE_TYPE and ".types" in line:
                         search_result = re.search(r"MON_TYPES\((.*?)\)", line)
                         old_value = search_result.group(1)
@@ -583,6 +831,52 @@ def update_species_info():
                         replaced_type = True
                         continue
 
+                    # 特性変更
+                    # If文で世代によってabilitiesが何個もパターンがあるがそういうパターンは全部csvに上書きさせる
+                    # だからログでABILITYが二回以上表示されるが想定内の挙動である
+                    if UPDATE_ABILITIES and ".abilities" in line:
+                        search_result = re.search(r"=\s*(.*?)$", line)
+                        old_value = search_result.group(1) if search_result else line.strip()
+                        line = f"{indent}{csv_abilities}"
+                        new_lines.append(line)
+                        changed_pokemon_logs[raw_species_name].append(f"ABILITIES    : {old_value} →  {csv_abilities}")
+                        replaced_abilities = True
+                        found_abilities_in_block = True
+                        continue
+
+                    # 進化（.evolutions）の変更・置換処理
+                    if UPDATE_EVOLUTIONS and ".evolutions =" in line:
+                        has_replaced_evolution = True
+                        is_inside_evolution_block = True
+                        evolution_parenthesis_depth = line.count("(") - line.count(")")
+                        evolution_preprocessor_depth = 0
+
+                        if line.strip().startswith("#if"):
+                            evolution_preprocessor_depth += 1
+
+                        if csv_evolution_requirements == "NO_EVOLUTION":
+                            changed_pokemon_logs[raw_species_name].append(f"EVOLUTIONS   : 既存の進化データを削除")
+                            if evolution_parenthesis_depth <= 0 and evolution_preprocessor_depth == 0:
+                                is_inside_evolution_block = False
+                            continue
+                        else:
+                            line = f"{indent}.evolutions = EVOLUTION({{{csv_evolution_requirements}}}),"
+                            new_lines.append(line)
+                            changed_pokemon_logs[raw_species_name].append(f"EVOLUTIONS   : 更新")
+                            if evolution_parenthesis_depth <= 0 and evolution_preprocessor_depth == 0:
+                                is_inside_evolution_block = False
+                            continue
+
+                    # .evolutions が元から存在しない場合、.levelUpLearnset の直下に追加する処理
+                    elif UPDATE_EVOLUTIONS and not has_evolution_in_species_block and csv_evolution_requirements != "NO_EVOLUTION" and ".levelUpLearnset" in line:
+                        new_lines.append(line)
+                        new_lines.append(f"{indent}.evolutions = EVOLUTION({{{csv_evolution_requirements}}}),")
+                        changed_pokemon_logs[raw_species_name].append(f"EVOLUTIONS   : .levelUpLearnset の下に新規追加")
+                        has_replaced_evolution = True
+                        has_evolution_in_species_block = True
+                        continue
+
+                    # 戦闘画面の画像の位置の変更
                     if UPDATE_B_SPRITE_OFFSET:
                         if ".backPicYOffset" in line and "=" in line:
                             search_result = re.search(r"=\s*(.*?)\s*,", line)
@@ -633,22 +927,26 @@ def update_species_info():
 
                 new_lines.append(line)
 
-            replaced_in_this_file = replaced_type or replaced_pal or replaced_offset
+            replaced_in_this_file = replaced_type or replaced_pal or replaced_offset or replaced_abilities or has_replaced_evolution
 
             if replaced_in_this_file:
                 cache_gen_x_families_h_files[cache_gen_x_file_name] = "\n".join(new_lines)
                 file_full_path = os.path.join(CURRENT_SPECIES_INFO_DIR, cache_gen_x_file_name)
                 target_files_path.add(file_full_path)
                 
-                
                 changed_pokemon_logs[raw_species_name].append("-" * 40)
+
+                if UPDATE_ABILITIES and not found_abilities_in_block:
+                    failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 対象ブロック内に `.abilities =` の行が見つかりませんでした。")
+                if UPDATE_EVOLUTIONS and csv_evolution_requirements != "NO_EVOLUTION" and not has_replaced_evolution:
+                    failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 進化情報を追加しようとしましたが `.evolutions =` も `.levelUpLearnset` も見つかりませんでした。")
 
                 found = True
                 break
                 
         if not found:
             failed_types.append(f"ID:{poke_id} ({raw_species_name} のデータ行が見つかりませんでした)")
-
+# ------------ 種族値を上書きする処理ここまで ---------------
 
 # ------------------------------------------------------------------ ルート処理終了 ------------------------------------------------------------------ #
 
@@ -1088,14 +1386,21 @@ if __name__ == "__main__":
     # 1. CSVを検証し、処理に必要な指定されたid of 行のみが入ったCSVのデータを抜き取る
     check_csv_n_create_tasks()
     cache_species_info_files()
+    
+    if UPDATE_MOVES:
+        check_moves_csv_and_validate()
+        cache_moves_file()
 
     # 2. 準備したデータを使って、画像処理を行なっていく
     if UPDATE_SPRITES or UPDATE_ICONS:
         download_n_process_graphics()
 
     # 3. 種族情報更新ブロック
-    if UPDATE_ICON_PALS or UPDATE_TYPE or UPDATE_B_SPRITE_OFFSET or UPDATE_DISPLAY_NAME:
+    if UPDATE_ICON_PALS or UPDATE_TYPE or UPDATE_B_SPRITE_OFFSET or UPDATE_DISPLAY_NAME or UPDATE_ABILITIES  or UPDATE_EVOLUTIONS:
         update_species_info()
+
+    if UPDATE_MOVES:
+        update_pokemon_moves()
 
     if UPDATE_ID_SORT:
         sort_species_id()

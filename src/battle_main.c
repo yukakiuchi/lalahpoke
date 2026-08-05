@@ -4014,7 +4014,8 @@ void BattleTurnPassed(void)
         gBattleStruct->monToSwitchIntoId[battler] = PARTY_SIZE;
         gBattleMons[battler].volatiles.electrified = FALSE;
         gBattleMons[battler].volatiles.flinched = FALSE;
-        gBattleMons[battler].volatiles.powder = FALSE;
+        // パウダートラップはターン経過では消えない
+        // gBattleMons[battler].volatiles.powder = FALSE;
 
         if (gBattleStruct->battlerState[battler].stompingTantrumTimer > 0)
             gBattleStruct->battlerState[battler].stompingTantrumTimer--;
@@ -6023,16 +6024,17 @@ enum Type GetDynamicMoveType(struct Pokemon *mon, enum Move move, enum BattlerId
         }
         break;
     case EFFECT_IVY_CUDGEL:
-        switch (species)
-        {
-        case SPECIES_OGERPON_WELLSPRING:
-        case SPECIES_OGERPON_WELLSPRING_TERA:
-        case SPECIES_OGERPON_HEARTHFLAME:
-        case SPECIES_OGERPON_HEARTHFLAME_TERA:
-        case SPECIES_OGERPON_CORNERSTONE:
-        case SPECIES_OGERPON_CORNERSTONE_TERA:
-            return GetSpeciesType(species, 1);
-        }
+        // switch (species)
+        // {
+        // case SPECIES_OGERPON_WELLSPRING:
+        // case SPECIES_OGERPON_WELLSPRING_TERA:
+        // case SPECIES_OGERPON_HEARTHFLAME:
+        // case SPECIES_OGERPON_HEARTHFLAME_TERA:
+        // case SPECIES_OGERPON_CORNERSTONE:
+        // case SPECIES_OGERPON_CORNERSTONE_TERA:
+        //     return GetSpeciesType(species, 1);
+        // }
+        return TYPE_WATER;
         break;
     case EFFECT_NATURAL_GIFT:
         if (GetItemPocket(heldItem) == POCKET_BERRIES)
@@ -6097,7 +6099,7 @@ enum Type GetDynamicMoveType(struct Pokemon *mon, enum Move move, enum BattlerId
           && species == SPECIES_MORPEKO_HANGRY
           && ability != ABILITY_NORMALIZE)
     {
-        return TYPE_DARK;
+        return TYPE_ELECTRIC;
     }
     else if (moveType == TYPE_NORMAL
           && ability != ABILITY_NORMALIZE
@@ -6183,11 +6185,10 @@ void ScriptSetTotemBoost(struct ScriptContext *ctx)
 
 bool32 IsWildMonSmart(void)
 {
-#if B_SMART_WILD_AI_FLAG != 0
-    return (FlagGet(B_SMART_WILD_AI_FLAG));
-#else
-    return FALSE;
-#endif
+    // デフォルトで野生のポケモンはAI知能が解禁される
+    // 野生のポケモンはそいつのレベルに応じてAI知能が段々賢くなる
+    // 詳しくはstatic u64 GetWildAiFlags(void)を参照して
+    return TRUE;
 }
 
 s32 Factorial(s32 n)

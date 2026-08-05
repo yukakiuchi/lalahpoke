@@ -713,6 +713,10 @@ enum StringID
     STRINGID_FIELDINFLICTSPOKESTATUS,       // 場による状態異常の付与
     STRINGID_FIELDHEALEDPOKESTATUS,         // 場による状態異常の回復
     STRINGID_GRASSYTERRAINROOT,             // グラスフィールドによる「ねをはる」状態付与
+    STRINGID_ABILITYAURORABARRIERMSG,       // 特性オーロラバリアが発動した時のメッセージ
+    STRINGID_TARGETPARASITIZED,             // 寄生されたメッセージ
+    STRINGID_PKMNMADEFOG,                   // 特性発動時に霧が発生したのメッセージ
+    STRINGID_TAILWINDCHARGEDPKMNWITHPOWER,  // 特性wind_powerでおいかぜによるでんきチャージが完了したメッセージ
     STRINGID_COUNT
 };
 
@@ -781,6 +785,7 @@ enum AbilityWeatherChangeStringID
     B_MSG_STARTED_DESOLATE_LAND,
     B_MSG_STARTED_PRIMORDIAL_SEA,
     B_MSG_STARTED_STRONG_WINDS,
+    B_MSG_STARTED_MISTY_BREATH,
 };
 
 // gWeatherEndsStringIds

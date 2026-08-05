@@ -232,6 +232,7 @@ enum __attribute__((packed)) BattleMoveEffects
     EFFECT_LAST_RESORT,
     EFFECT_SHELL_SMASH,
     EFFECT_SHIFT_GEAR,
+    EFFECT_ATTACK_UP_3,
     EFFECT_DEFENSE_UP_3,
     EFFECT_NOBLE_ROAR,
     EFFECT_VENOM_DRENCH,

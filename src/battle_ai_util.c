@@ -24,7 +24,8 @@
 #include "constants/items.h"
 
 static u32 GetAIEffectGroup(enum BattleMoveEffects effect);
-static u32 GetAIEffectGroupFromMove(enum BattlerId battler, enum Move move);
+u32 GetAIEffectGroupFromMove(enum BattlerId battler, enum Move move);
+bool32 IsNewAbilityThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
 
 // Functions
 enum Ability AI_GetMoldBreakerSanitizedAbility(enum BattlerId battlerAtk, enum Ability abilityAtk, enum Ability abilityDef, enum HoldEffect holdEffectDef, enum Move move)
@@ -2969,6 +2970,7 @@ bool32 IsAttackBoostMoveEffect(enum BattleMoveEffects effect)
     {
     case EFFECT_ATTACK_UP:
     case EFFECT_ATTACK_UP_2:
+    case EFFECT_ATTACK_UP_3:
     case EFFECT_ATTACK_ACCURACY_UP:
     case EFFECT_ATTACK_SPATK_UP:
     case EFFECT_DRAGON_DANCE:
@@ -2989,6 +2991,7 @@ bool32 IsStatRaisingEffect(enum BattleMoveEffects effect)
     {
     case EFFECT_ATTACK_UP:
     case EFFECT_ATTACK_UP_2:
+    case EFFECT_ATTACK_UP_3:
     case EFFECT_DEFENSE_UP:
     case EFFECT_DEFENSE_UP_2:
     case EFFECT_DEFENSE_UP_3:
@@ -4299,7 +4302,7 @@ static u32 GetAIEffectGroup(enum BattleMoveEffects effect)
     return aiEffect;
 }
 
-static u32 GetAIEffectGroupFromMove(enum BattlerId battler, enum Move move)
+u32 GetAIEffectGroupFromMove(enum BattlerId battler, enum Move move)
 {
     u32 aiEffect = GetAIEffectGroup(GetMoveEffect(move));
 
@@ -6135,6 +6138,24 @@ void AbilityChangeScore(enum BattlerId battlerAtk, enum BattlerId battlerDef, en
             currentAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityDef, aiData);
             transferredAbilityScore = BattlerBenefitsFromAbilityScore(battlerDef, abilityAtk, aiData);
             ADJUST_SCORE_PTR(currentAbilityScore - transferredAbilityScore);
+
+            // 相手が新しく定義した脅威特性を持っている場合、特性を書き換える技に＋5加算
+            if (IsNewAbilityThreat(battlerAtk, battlerDef, aiData))
+            {
+                // 相手の次の行動を予測し、こちらが先制（isFaster）できるか判定
+                enum Move predictedMoveSpeedCheck = GetIncomingMoveSpeedCheck(battlerAtk, battlerDef, aiData);
+                bool32 isFaster = AI_IsFaster(battlerAtk, battlerDef, move, predictedMoveSpeedCheck, CONSIDER_PRIORITY);
+
+                // 技の登録スロットインデックスを取得
+                u32 moveIndex = GetMoveIndex(battlerAtk, move);
+
+                if (isFaster                                                                                    // ① 先制できるか
+                 && !DoesSubstituteBlockMove(battlerAtk, battlerDef, move)                                      // ② みがわりに防がれないか
+                 && !IsMoveUnusable(moveIndex, move, aiData->moveLimitations[battlerAtk]))                      // ③ ちょうはつ・アンコール等で封じられていないか
+                {
+                    ADJUST_SCORE_PTR(5); // すべての条件を満たした場合のみ＋5点
+                }
+            }
         }
     }
 }
@@ -6451,5 +6472,164 @@ bool32 IsPartyMonOnFieldOrChosenToSwitch(u32 partyIndex, enum BattlerId battlerI
     if (partyIndex == gBattleStruct->monToSwitchIntoId[battlerIn1]
             || partyIndex == gBattleStruct->monToSwitchIntoId[battlerIn2])
         return TRUE;
+    return FALSE;
+}
+
+// 相手が即死コンボ（DEATH_SINGER）の脅威であり、自分が対策する必要があるか判定
+bool32 IsDeathSongThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData)
+{
+    // 自分が「ぼうおん」「DEATH_SINGER」「かがくへんかガス」なら効かないので警戒不要
+    if (aiData->abilities[battlerAtk] == ABILITY_SOUNDPROOF
+     || aiData->abilities[battlerAtk] == ABILITY_DEATH_SINGER
+     || AI_IsAbilityOnSide(battlerAtk, ABILITY_NEUTRALIZING_GAS))
+        return FALSE;
+
+    // 相手が「DEATH_SINGER」を持っている場合、脅威と判定
+    if (aiData->abilities[battlerDef] == ABILITY_DEATH_SINGER)
+        return TRUE;
+
+    return FALSE;
+}
+
+// 危険なハメコンボを事前にちょうはつで防ぐ判定
+bool32 ShouldTauntToPreventDangers(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData)
+{
+    // 1. スキルスワップの阻止
+    // 相手がスキルスワップを覚えており、かつ「まだ戦闘で使っていない」場合のみ挑発
+    if (HasMoveWithEffect(battlerDef, EFFECT_SKILL_SWAP)
+     && !HasBattlerSideUsedMoveWithEffect(battlerDef, EFFECT_SKILL_SWAP))
+        return TRUE;
+
+    // 2. こだわりアイテム持ちのトリックの阻止
+    // 相手がこだわり持ち＋トリックを覚えており、かつ「まだ戦闘で使っていない」場合のみ挑発
+    if (IsHoldEffectChoice(aiData->holdEffects[battlerDef])
+     && HasMoveWithEffect(battlerDef, EFFECT_TRICK)
+     && !HasBattlerSideUsedMoveWithEffect(battlerDef, EFFECT_TRICK))
+        return TRUE;
+
+    return FALSE;
+}
+
+// 相手（battlerDef）に対して実際に成功する二次ダメージ・スリップダメージ技か判定する関数
+bool32 CanApplySecondaryDamage(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData)
+{
+    enum Ability abilityAtk = aiData->abilities[battlerAtk];
+    enum Ability abilityDef = aiData->abilities[battlerDef];
+    enum MoveEffect nonVolatileStatus = GetMoveNonVolatileStatus(move);
+    enum BattleMoveEffects effect = GetMoveEffect(move);
+    u32 moveIndex = GetMoveIndex(battlerAtk, move);
+
+    if (IsBattleMoveStatus(move) && DoesSubstituteBlockMove(battlerAtk, battlerDef, move))
+        return FALSE;
+
+    if (IsMoveUnusable(moveIndex, move, aiData->moveLimitations[battlerAtk]))
+        return FALSE;
+
+    // 1. どく・もうどく
+    if (nonVolatileStatus == MOVE_EFFECT_POISON || nonVolatileStatus == MOVE_EFFECT_TOXIC)
+    {
+        if (CanBePoisoned(battlerAtk, battlerDef, abilityAtk, abilityDef))
+            return TRUE;
+    }
+
+    // 2. やけど
+    if (nonVolatileStatus == MOVE_EFFECT_BURN)
+    {
+        if (CanBeBurned(battlerAtk, battlerDef, abilityDef))
+            return TRUE;
+    }
+
+    // 3. Bleed (出血)
+    if (nonVolatileStatus == MOVE_EFFECT_BLEED && !gBattleMons[battlerDef].volatiles.bleed)
+    {
+        return TRUE;
+    }
+
+    // 4. バインド技
+    if (IsTrappingMove(move) && !gBattleMons[battlerDef].volatiles.wrapped)
+    {
+        return TRUE;
+    }
+
+    // 5. 定着ダメージを与える天候技（砂嵐・霰・雪）
+    if (effect == EFFECT_WEATHER || effect == EFFECT_WEATHER_AND_SWITCH)
+    {
+        u32 weather = GetMoveWeatherType(move);
+        if (weather == BATTLE_WEATHER_SANDSTORM || weather == BATTLE_WEATHER_HAIL || weather == BATTLE_WEATHER_SNOW)
+        {
+            return TRUE;
+        }
+    }
+
+    // やどりぎのたね
+    if (effect == EFFECT_LEECH_SEED 
+        && !IS_BATTLER_OF_TYPE(battlerDef, TYPE_GRASS) 
+        && !gBattleMons[battlerDef].volatiles.leechSeed
+        && aiData->holdEffects[battlerDef] != HOLD_EFFECT_SAFETY_GOGGLES)
+    {
+        return TRUE;
+    }
+
+    // ゴーストタイプの「のろい」
+    if (effect == EFFECT_CURSE 
+        && IS_BATTLER_OF_TYPE(battlerDef, TYPE_DARK) 
+        && !gBattleMons[battlerDef].volatiles.cursed)
+    {
+        return TRUE;
+    }
+
+    // 滅びの歌
+    if (effect == EFFECT_PERISH_SONG 
+        && abilityDef != ABILITY_SOUNDPROOF
+        && abilityDef != ABILITY_DEATH_SINGER
+        && abilityAtk == ABILITY_DEATH_SINGER
+        && !gBattleMons[battlerDef].volatiles.perishSong)
+    {
+        return TRUE;
+    }
+
+    // しおづけ
+    if (nonVolatileStatus == MOVE_EFFECT_SALT_CURE && !gBattleMons[battlerDef].volatiles.saltCure)
+    {
+        return TRUE;
+    }
+
+    // 追加効果
+    for (u32 i = 0; i < GetMoveAdditionalEffectCount(move); i++)
+    {
+        const struct AdditionalEffect *addEffect = GetMoveAdditionalEffectById(move, i);
+        if (addEffect->moveEffect == MOVE_EFFECT_SALT_CURE && !gBattleMons[battlerDef].volatiles.saltCure)
+            return TRUE;
+        if (addEffect->moveEffect == MOVE_EFFECT_WRAP && !gBattleMons[battlerDef].volatiles.wrapped)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+// 相手が特定の新規定義された脅威特性（上書き推奨）を実質有効に持っているか判定
+bool32 IsNewAbilityThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData)
+{
+    if (AI_IsAbilityOnSide(battlerAtk, ABILITY_NEUTRALIZING_GAS))
+        return FALSE;
+
+    if (gBattleMons[battlerDef].volatiles.gastroAcid 
+     || gBattleMons[battlerDef].volatiles.overwrittenAbility != ABILITY_NONE)
+        return FALSE;
+
+    enum Ability defAbility = aiData->abilities[battlerDef];
+
+    // DEATH_SINGER または ROUND_BODY は無条件で脅威と判定
+    if (defAbility == ABILITY_DEATH_SINGER || defAbility == ABILITY_ROUND_BODY)
+    {
+        return TRUE;
+    }
+    // PARASITISM（寄生）の場合、自分が「みず」または「むし」タイプであれば脅威と判定
+    else if (defAbility == ABILITY_PARASITISM)
+    {
+        if (IS_BATTLER_OF_TYPE(battlerAtk, TYPE_WATER) || IS_BATTLER_OF_TYPE(battlerAtk, TYPE_BUG))
+            return TRUE;
+    }
+
     return FALSE;
 }
