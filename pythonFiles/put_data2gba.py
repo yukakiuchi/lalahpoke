@@ -45,6 +45,7 @@ CONFIG_VARS = [
     "UPDATE_ICON_PALS",
     "UPDATE_TYPE",
     "UPDATE_ABILITIES",
+    "UPDATE_DESCRIPTIONS",
     "UPDATE_EVOLUTIONS",
     "UPDATE_MOVES",
     "UPDATE_ANIM_FRONT",
@@ -66,6 +67,7 @@ if UPDATE_ALL_SPECIES_INFO == True:
     UPDATE_ICON_PALS       = True
     UPDATE_TYPE            = True
     UPDATE_ABILITIES       = True
+    UPDATE_DESCRIPTIONS    = True
     UPDATE_EVOLUTIONS      = True
     UPDATE_B_SPRITE_OFFSET = True
     UPDATE_DISPLAY_NAME    = True
@@ -81,7 +83,7 @@ ALLOWED_TYPES =[
     "WATER", "GRASS", "ELECTRIC", "ICE", "DARK", "FAIRY", "RAINBOW"]
 
 REQUIRED_CSV_HEADERS = [
-    "id","original_name_code","display_name", "sprite_url","icon_url", "pal",
+    "id","original_name_code","display_name", "sprite_url","icon_url", "pal", "dex_description", 
     "type", "abilities", "evo_requirements", "backPicYOffset","frontPicYOffset","enemyMonElevation","Shadow"]
 
 # 画像処理の時の特殊なフォルダ分け設定（SPECIES名: フォルダ名）
@@ -691,6 +693,8 @@ def update_species_info():
         print("     typeの上書き処理を開始します")
     if UPDATE_ABILITIES:
         print("     abilitiesの上書き処理を開始します")
+    if UPDATE_DESCRIPTIONS:
+        print("     dex_descriptionの上書き処理を開始します")
     if UPDATE_EVOLUTIONS:
         print("     evolutionsの上書き処理を開始します")
     if UPDATE_B_SPRITE_OFFSET:
@@ -703,6 +707,7 @@ def update_species_info():
         type_raw                    = row["type"].strip()
         csv_display_name            = row["display_name"].strip()
         csv_abilities               = row["abilities"].strip()
+        csv_dex_description         = row["dex_description"].strip()
         csv_evolution_requirements  = row["evo_requirements"].strip()
 
         if UPDATE_TYPE:
@@ -754,19 +759,21 @@ def update_species_info():
                         has_evolution_in_species_block = True
                         break
 
-            new_lines = []
-            in_block = False
-            replaced_type = False
-            replaced_pal = False
-            replaced_abilities = False
-            found_abilities_in_block = False
-            has_replaced_evolution = False
-            is_inside_evolution_block = False
-            evolution_parenthesis_depth = 0
-            evolution_preprocessor_depth = 0
-            replaced_offset = False
-            found_back_pic_for_elevation = False
-            elevation_handled = False
+            new_lines                         = []
+            in_block                          = False
+            replaced_type                     = False
+            replaced_pal                      = False
+            replaced_abilities                = False
+            found_abilities_in_block          = False
+            has_replaced_evolution            = False
+            replaced_description              = False
+            is_inside_description_block       = False
+            is_inside_evolution_block         = False
+            evolution_parenthesis_depth       = 0
+            evolution_preprocessor_depth      = 0
+            replaced_offset                   = False
+            found_back_pic_for_elevation      = False
+            elevation_handled                 = False
             
             for line in lines:
 
@@ -800,6 +807,12 @@ def update_species_info():
                             if evolution_parenthesis_depth <= 0 and evolution_preprocessor_depth == 0:
                                 is_inside_evolution_block = False
                             continue
+
+                     # --- 説明文（.description）ブロック削除・通過の処理 ---
+                    if is_inside_description_block:
+                        if line.strip().endswith("),"):
+                            is_inside_description_block = False
+                        continue
 
                     # 種族名の変更
                     if UPDATE_DISPLAY_NAME and ".speciesName" in line:
@@ -842,6 +855,29 @@ def update_species_info():
                         changed_pokemon_logs[raw_species_name].append(f"ABILITIES    : {old_value} →  {csv_abilities}")
                         replaced_abilities = True
                         found_abilities_in_block = True
+                        continue
+
+                    # 説明文（.description）の変更
+                    if UPDATE_DESCRIPTIONS and ".description = COMPOUND_STRING(" in line:
+                        replaced_description = True
+                        is_inside_description_block = True
+                        
+                        # CSVの文字列から不要なダブルクォートを取り除き、改行で分割
+                        cleaned_description = csv_dex_description.replace('""', '').strip()
+                        split_description_lines = re.split(r'\\n|\n', cleaned_description)
+                        formatted_description_lines = [l.strip(' "') for l in split_description_lines if l.strip(' "')]
+                        
+                        new_lines.append(f"{indent}.description = COMPOUND_STRING(")
+                        for line_index, description_line_text in enumerate(formatted_description_lines):
+                            if line_index < len(formatted_description_lines) - 1:
+                                new_lines.append(f'{indent}    "{description_line_text}\\n"')
+                            else:
+                                new_lines.append(f'{indent}    "{description_line_text}"),')
+                        
+                        changed_pokemon_logs[raw_species_name].append(f"DESCRIPTION  : 更新")
+                        
+                        if line.strip().endswith("),"):
+                            is_inside_description_block = False
                         continue
 
                     # 進化（.evolutions）の変更・置換処理
@@ -927,8 +963,7 @@ def update_species_info():
 
                 new_lines.append(line)
 
-            replaced_in_this_file = replaced_type or replaced_pal or replaced_offset or replaced_abilities or has_replaced_evolution
-
+            replaced_in_this_file = replaced_type or replaced_pal or replaced_offset or replaced_abilities or has_replaced_evolution or replaced_description
             if replaced_in_this_file:
                 cache_gen_x_families_h_files[cache_gen_x_file_name] = "\n".join(new_lines)
                 file_full_path = os.path.join(CURRENT_SPECIES_INFO_DIR, cache_gen_x_file_name)
@@ -1396,7 +1431,7 @@ if __name__ == "__main__":
         download_n_process_graphics()
 
     # 3. 種族情報更新ブロック
-    if UPDATE_ICON_PALS or UPDATE_TYPE or UPDATE_B_SPRITE_OFFSET or UPDATE_DISPLAY_NAME or UPDATE_ABILITIES  or UPDATE_EVOLUTIONS:
+    if UPDATE_ICON_PALS or UPDATE_TYPE or UPDATE_B_SPRITE_OFFSET or UPDATE_DISPLAY_NAME or UPDATE_ABILITIES or UPDATE_EVOLUTIONS or UPDATE_DESCRIPTIONS:
         update_species_info()
 
     if UPDATE_MOVES:

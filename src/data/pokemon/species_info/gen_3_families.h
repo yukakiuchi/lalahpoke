@@ -2612,9 +2612,9 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_WATER_1, EGG_GROUP_FLYING),
     #if P_UPDATED_ABILITIES >= GEN_7
-        .abilities = { ABILITY_WIND_POWER, ABILITY_NONE, ABILITY_NONE },
+        .abilities = { ABILITY_DRIZZLE, ABILITY_NONE, ABILITY_NONE },
     #else
-        .abilities = { ABILITY_WIND_POWER, ABILITY_NONE, ABILITY_NONE },
+        .abilities = { ABILITY_DRIZZLE, ABILITY_NONE, ABILITY_NONE },
     #endif
         .bodyColor = BODY_COLOR_YELLOW,
         .speciesName = _("Pelistorm"),
@@ -7848,7 +7848,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
             gShinyOverworldPalette_Altaria
         )
         .levelUpLearnset = sAltariaLevelUpLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 40, SPECIES_DRIFBLIM}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 40, SPECIES_DRIFBLIM, CONDITIONS({IF_HOLD_ITEM, ITEM_DAWN_STONE})}),
         .teachableLearnset = sAltariaTeachableLearnset,
         .formSpeciesIdTable = sAltariaFormSpeciesIdTable,
         .formChangeTable = sAltariaFormChangeTable,
