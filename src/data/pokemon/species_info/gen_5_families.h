@@ -3643,10 +3643,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 3,
         .weight = 25,
         .description = COMPOUND_STRING(
-            "It chews up leaves and sews them with\n"
-            "sticky thread extruded from its mouth.\n"
-            "Since this Pokémon makes its own clothes,\n"
-            "it is a mascot for fashion designers."),
+            "A rare corn plant energized\n"
+            "by heat. Having no nerves\n"
+            "or legs, it stays calm even\n"
+            "if roasted or eaten whole."),
         .pokemonScale = 530,
         .pokemonOffset = 15,
         .trainerScale = 256,
@@ -4232,10 +4232,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 7,
         .weight = 66,
         .description = COMPOUND_STRING(
-            "It rides on the wind and slips into\n"
-            "people's homes. After it has turned a\n"
-            "room into a cotton-filled mess, it giggles\n"
-            "to itself and takes off."),
+            "Dense fluffy dandelions block\n"
+            "normal attacks completely.\n"
+            "Despite its look, the fur is\n"
+            "as heavy as an elephant step."),
         .pokemonScale = 365,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -7389,10 +7389,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 3,
         .weight = 10,
         .description = COMPOUND_STRING(
-            "Because their bodies are enveloped\n"
-            "in a special liquid, they are fine in any\n"
-            "environment, no matter how severe. They\n"
-            "can use telepathy to talk with others."),
+            "A fairy of fire and water.\n"
+            "Often eaten upon birth due\n"
+            "to high nutrients, it shows\n"
+            "no pain as it lacks nerves."),
         .pokemonScale = 530,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -7459,10 +7459,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 6,
         .weight = 80,
         .description = COMPOUND_STRING(
-            "When their brains, now divided in two,\n"
-            "are thinking the same thoughts,\n"
-            "these Pokémon exhibit their maximized\n"
-            "psychic power."),
+            "A survivor that avoided being\n"
+            "eaten. It cries at times, but\n"
+            "attacks bring no emotional\n"
+            "change as it lacks all nerves."),
         .pokemonScale = 422,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -7529,10 +7529,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 10,
         .weight = 201,
         .description = COMPOUND_STRING(
-            "They use psychic power to control their\n"
-            "arms, which are made of a special liquid.\n"
-            "When Reuniclus shake hands, a network\n"
-            "forms between their brains."),
+            "Divided cells form a shell.\n"
+            "It can soften or harden its\n"
+            "claws at will. Few survive\n"
+            "being eaten to reach this stage."),
         .pokemonScale = 305,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -7900,10 +7900,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 13,
         .weight = 575,
         .description = COMPOUND_STRING(
-            "Each of its two heads has a brain, and\n"
-            "when they are in agreement, it attacks\n"
-            "its enemies by exhaling a violent blizzard.\n"
-            "It makes snow clouds inside its body."),
+            "Grown too large for anyone to eat.\n"
+            "Nobody knows where it comes\n"
+            "from or where it goes. Someone\n"
+            "Pls Research for me! I have no time"),
         .pokemonScale = 272,
         .pokemonOffset = 3,
         .trainerScale = 256,
@@ -8704,10 +8704,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 2,
         .weight = 10,
         .description = COMPOUND_STRING(
-            "It lures Pokémon in with its pattern that\n"
-            "looks just like a Poké Ball, then releases\n"
-            "its poison spores. Why it resembles a\n"
-            "Poké Ball is unknown."),
+            "Reincarnated mushroom insect.\n"
+            "Tears fall from its eyes,\n"
+            "though bugs normally do not cry.\n"
+            "A very unusual newcomer."),
         .pokemonScale = 682,
         .pokemonOffset = 24,
         .trainerScale = 256,
@@ -10817,10 +10817,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 8,
         .weight = 253,
         .description = COMPOUND_STRING(
-            "When its body dries out, it weakens. So, to\n"
-            "prevent dehydration, it wraps itself in\n"
-            "layers of thin membrane. It is very light\n"
-            "and fights with ninja-like movements."),
+            "A small mantis Pokemon. Do\n"
+            "not underestimate its size.\n"
+            "Its razor arms cause deep\n"
+            "bleeding with a single scratch."),
         .pokemonScale = 366,
         .pokemonOffset = 9,
         .trainerScale = 257,
@@ -11444,10 +11444,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 5,
         .weight = 102,
         .description = COMPOUND_STRING(
-            "Ignoring their injuries, groups attack by\n"
-            "sinking the blades that cover their bodies\n"
-            "into their prey. If battling dulls them, it\n"
-            "sharpens them on stones by the river."),
+            "A mantis larva tainted by\n"
+            "poison. Dark breath spews from\n"
+            "its mouth, creating thick mist\n"
+            "that blinds all surroundings."),
         .pokemonScale = 432,
         .pokemonOffset = 15,
         .trainerScale = 256,
@@ -11519,10 +11519,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 16,
         .weight = 700,
         .description = COMPOUND_STRING(
-            "This pitiless Pokémon commands a group\n"
-            "of Pawniard to hound prey into immobility.\n"
-            "It battles to become the boss, but will be\n"
-            "driven from the group if it loses."),
+            "If hit by a poison star in mist,\n"
+            "clear fog or retreat fast.\n"
+            "Wandering blindly lets poison\n"
+            "spread through your body."),
         .pokemonScale = 259,
         .pokemonOffset = 1,
         .trainerScale = 296,
@@ -11591,10 +11591,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .height = 20,
         .weight = 1200,
         .description = COMPOUND_STRING(
-            "Though it commands a massive army\n"
-            "in battle, it's not skilled at\n"
-            "devising complex strategies. It just uses\n"
-            "brute strength to keep pushing."),
+            "An assassin vampire of insects.\n"
+            "Meeting it means having your\n"
+            "blood drained dry. Always bring\n"
+            "a Pokemon to clear the mist."),
         .pokemonScale = 356,
         .pokemonOffset = 17,
         .trainerScale = 256,

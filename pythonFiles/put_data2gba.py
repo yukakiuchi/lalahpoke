@@ -6,6 +6,21 @@
 # エラーがある場合は確信がある場合はそのまま説明して確信でない場合は原因となりそうな箇所にデバッグコードを
 # 書くようにお願いします。もし変更箇所が1~2箇所だけならピンポイントでその箇所を教えてこう書くと教える
 # もし3~4箇所以上必要な場合はまとまった処理ごとにコピペできるように修正を表示する
+# 【機能追加・コード修正時の厳格ルール】
+# 例外処理・サイレントエラーの完全防止:
+# コードの追加・変更を行う際は、正常系だけでなく「対象データや記述が存在しなかった場合」「フォーマットが想定と異なる場合」の例外処理（エラー検知・警告ログ出力・スキップ処理）が既存コードと同等に備わっているか必ず事前に検証すること。
+# 事前の不確実性・エッジケースの提示:
+# ユーザーから指示された処理に対し、データが存在しない場合や失敗するリスクのあるパターン（エッジケース）が懸念される場合は、コードを出す前に必ず質問・提案を行うこと。
+# ・コードは特に指示がない場合は
+# ピンポイントで変更箇所を下記の形式で伝える
+# ```
+# (既存のコード3行分)
+# // ここから
+# ... 変更処理 ...
+# // ここまで
+# (既存のコード3行分)
+# ```
+# ・変数名は省略せずしっかりとした単語にすること
 # =======================================================================================
 import csv
 import io
@@ -774,6 +789,8 @@ def update_species_info():
             replaced_offset                   = False
             found_back_pic_for_elevation      = False
             elevation_handled                 = False
+            cleaned_description               = csv_dex_description.replace('""', '').strip()
+            has_compound_string_description   = False
             
             for line in lines:
 
@@ -783,6 +800,16 @@ def update_species_info():
                 if start_marker in line:
                     in_block = True
                     elevation_handled = False
+
+                # この種族ブロック内に .description = COMPOUND_STRING( が存在するか事前に確認
+                    has_compound_string_description = False
+                    if species_block_start_line_index != -1:
+                        for check_line in lines[species_block_start_line_index:]:
+                            if check_line.strip().startswith("},"):
+                                break
+                            if ".description = COMPOUND_STRING(" in check_line:
+                                has_compound_string_description = True
+                                break
 
                 if in_block:
                     old_value = "(空白)"
@@ -810,9 +837,15 @@ def update_species_info():
 
                      # --- 説明文（.description）ブロック削除・通過の処理 ---
                     if is_inside_description_block:
-                        if line.strip().endswith("),"):
+                        stripped_line = line.strip()
+                        # 安全装置: 次のプロパティ(.)や構造体の終わり(})に到達した場合は強制的にブロックを抜ける
+                        if stripped_line.startswith(".") or stripped_line.startswith("}"):
                             is_inside_description_block = False
-                        continue
+                        elif ")" in stripped_line:
+                            is_inside_description_block = False
+                            continue
+                        else:
+                            continue
 
                     # 種族名の変更
                     if UPDATE_DISPLAY_NAME and ".speciesName" in line:
@@ -858,27 +891,44 @@ def update_species_info():
                         continue
 
                     # 説明文（.description）の変更
-                    if UPDATE_DESCRIPTIONS and ".description = COMPOUND_STRING(" in line:
-                        replaced_description = True
-                        is_inside_description_block = True
-                        
-                        # CSVの文字列から不要なダブルクォートを取り除き、改行で分割
-                        cleaned_description = csv_dex_description.replace('""', '').strip()
-                        split_description_lines = re.split(r'\\n|\n', cleaned_description)
-                        formatted_description_lines = [l.strip(' "') for l in split_description_lines if l.strip(' "')]
-                        
-                        new_lines.append(f"{indent}.description = COMPOUND_STRING(")
-                        for line_index, description_line_text in enumerate(formatted_description_lines):
-                            if line_index < len(formatted_description_lines) - 1:
-                                new_lines.append(f'{indent}    "{description_line_text}\\n"')
-                            else:
-                                new_lines.append(f'{indent}    "{description_line_text}"),')
-                        
-                        changed_pokemon_logs[raw_species_name].append(f"DESCRIPTION  : 更新")
-                        
-                        if line.strip().endswith("),"):
-                            is_inside_description_block = False
-                        continue
+                    if UPDATE_DESCRIPTIONS and cleaned_description:
+                        # 優先順位1: .description = COMPOUND_STRING( 形式が存在する場合はそれを最優先で上書き（複数行置換）
+                        if has_compound_string_description and ".description = COMPOUND_STRING(" in line:
+                            replaced_description = True
+                            is_inside_description_block = True
+                            
+                            split_description_lines = re.split(r'\\n|\n', cleaned_description)
+                            formatted_description_lines = [l.strip(' "') for l in split_description_lines if l.strip(' "')]
+                            
+                            new_lines.append(f"{indent}.description = COMPOUND_STRING(")
+                            for line_index, description_line_text in enumerate(formatted_description_lines):
+                                if line_index < len(formatted_description_lines) - 1:
+                                    new_lines.append(f'{indent}    "{description_line_text}\\n"')
+                                else:
+                                    new_lines.append(f'{indent}    "{description_line_text}"),')
+                            
+                            changed_pokemon_logs[raw_species_name].append(f"DESCRIPTION  : 更新")
+                            
+                            if ")" in line:
+                                is_inside_description_block = False
+                            continue
+
+                        # 優先順位2: COMPOUND_STRING( が無い場合のみ、.description = (gPichuPokedexText等の単一行) を上書き
+                        elif not has_compound_string_description and ".description =" in line:
+                            replaced_description = True
+                            
+                            split_description_lines = re.split(r'\\n|\n', cleaned_description)
+                            formatted_description_lines = [l.strip(' "') for l in split_description_lines if l.strip(' "')]
+                            
+                            new_lines.append(f"{indent}.description = COMPOUND_STRING(")
+                            for line_index, description_line_text in enumerate(formatted_description_lines):
+                                if line_index < len(formatted_description_lines) - 1:
+                                    new_lines.append(f'{indent}    "{description_line_text}\\n"')
+                                else:
+                                    new_lines.append(f'{indent}    "{description_line_text}"),')
+                            
+                            changed_pokemon_logs[raw_species_name].append(f"DESCRIPTION  : 更新")
+                            continue
 
                     # 進化（.evolutions）の変更・置換処理
                     if UPDATE_EVOLUTIONS and ".evolutions =" in line:
@@ -975,6 +1025,8 @@ def update_species_info():
                     failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 対象ブロック内に `.abilities =` の行が見つかりませんでした。")
                 if UPDATE_EVOLUTIONS and csv_evolution_requirements != "NO_EVOLUTION" and not has_replaced_evolution:
                     failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 進化情報を追加しようとしましたが `.evolutions =` も `.levelUpLearnset` も見つかりませんでした。")
+                if UPDATE_DESCRIPTIONS and cleaned_description and not replaced_description:
+                    failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 対象ブロック内に `.description = COMPOUND_STRING(` の行が見つかりませんでした。")
 
                 found = True
                 break

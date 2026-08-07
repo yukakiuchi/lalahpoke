@@ -245,10 +245,10 @@ const struct SpeciesInfo gSpeciesInfoGen4[] =
         .height = 5,
         .weight = 62,
         .description = COMPOUND_STRING(
-            "Its fiery rear end is fueled by gas made\n"
-            "in its belly. Before going to sleep,\n"
-            "Chimchar extinguish the flame on their\n"
-            "tails to prevent fires."),
+            "It is childhood friends with\n"
+            "Birikey. Both train hard every\n"
+            "day, aiming to become great\n"
+            "warriors in the future."),
         .pokemonScale = 432,
         .pokemonOffset = 15,
         .trainerScale = 256,
@@ -319,10 +319,10 @@ const struct SpeciesInfo gSpeciesInfoGen4[] =
         .height = 9,
         .weight = 220,
         .description = COMPOUND_STRING(
-            "It carefully controls the intensity of\n"
-            "the flame on its tail, so as to keep its\n"
-            "foes at an adequate distance.\n"
-            "Its fiery tail is but one weapon."),
+            "Takes hits to return massive\n"
+            "damage. Developed its own unique\n"
+            "combat tactic, just like Pikakey\n"
+            "mastered its own strategy."),
         .pokemonScale = 338,
         .pokemonOffset = 9,
         .trainerScale = 256,
@@ -397,10 +397,10 @@ const struct SpeciesInfo gSpeciesInfoGen4[] =
         .height = 12,
         .weight = 550,
         .description = COMPOUND_STRING(
-            "Its crown of fire is indicative of its\n"
-            "fiery nature. It uses a special kind of\n"
-            "martial arts involving all of its limbs to\n"
-            "take on any opponent."),
+            "Its grand warrior look attracts\n"
+            "proposals regardless of gender,\n"
+            "but it seems to already have\n"
+            "a special someone in its heart."),
         .pokemonScale = 282,
         .pokemonOffset = 3,
         .trainerScale = 256,
@@ -2463,10 +2463,10 @@ const struct SpeciesInfo gSpeciesInfoGen4[] =
         .height = 12,
         .weight = 385,
         .description = COMPOUND_STRING(
-            "It houses its colony in cells in its body\n"
-            "and releases various pheromones to\n"
-            "make those grubs do its bidding.\n"
-            "There is only one in a colony."),
+            "King bee of Apice. Commands\n"
+            "allies in battle. Microscopic\n"
+            "ice hives coat its skin to\n"
+            "reduce damage from all attacks."),
         .pokemonScale = 282,
         .pokemonOffset = 4,
         .trainerScale = 256,
@@ -3349,10 +3349,10 @@ const struct SpeciesInfo gSpeciesInfoGen4[] =
         .height = 12,
         .weight = 150,
         .description = COMPOUND_STRING(
-            "Even while under careful observation,\n"
-            "large flocks of Drifblim flying at dusk\n"
-            "will inexplicably disappear from view.\n"
-            "No one knows where they go."),
+            "Reaching the starry night sky,\n"
+            "it gains heavenly strength.\n"
+            "It can now control any wind\n"
+            "completely at its will."),
         .pokemonScale = 282,
         .pokemonOffset = 4,
         .trainerScale = 256,
@@ -4069,10 +4069,10 @@ const struct SpeciesInfo gSpeciesInfoGen4[] =
         .height = 5,
         .weight = 19,
         .description = COMPOUND_STRING(
-            "It mimics the cries of other Pokémon to\n"
-            "trick them into thinking it's one of them.\n"
-            "This way they won't attack it. It can\n"
-            "also learn and speak human words."),
+            "Taunts Pokemon that look down\n"
+            "on it. Only green ones are seen\n"
+            "in the wild, but safe habitats\n"
+            "reveal various feather colors."),
         .pokemonScale = 432,
         .pokemonOffset = 15,
         .trainerScale = 256,

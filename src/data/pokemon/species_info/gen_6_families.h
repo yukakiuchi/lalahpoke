@@ -576,10 +576,10 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .height = 3,
         .weight = 70,
         .description = COMPOUND_STRING(
-            "It protects its skin by covering its body\n"
-            "in bubbles it secretes from its chest and\n"
-            "back. Beneath its happy-go-lucky air, it\n"
-            "keeps a watchful eye on its surroundings."),
+            "It protects its body with\n"
+            "delicate bubble foam. It looks\n"
+            "carefree, but it watches\n"
+            "its surroundings closely."),
         .pokemonScale = 530,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -649,10 +649,10 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .height = 6,
         .weight = 109,
         .description = COMPOUND_STRING(
-            "It can throw bubble-covered pebbles with\n"
-            "precise control, hitting empty cans up to\n"
-            "a hundred feet away. Frogadier's swiftness\n"
-            "is unparalleled."),
+            "It can throw bubble pebbles\n"
+            "with incredible accuracy,\n"
+            "hitting small empty cans\n"
+            "from fifty yards away."),
         .pokemonScale = 422,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -716,7 +716,11 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .categoryName = _("Ninja"),
         .height = 15,
         .weight = 400,
-        .description = gGreninjaPokedexText,
+        .description = COMPOUND_STRING(
+            "It creates throwing stars\n"
+            "out of compressed water.\n"
+            "When thrown at high speed,\n"
+            "they can slice through metal."),
         .pokemonScale = 268,
         .pokemonOffset = 2,
         .trainerScale = 271,
@@ -1109,10 +1113,10 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .height = 3,
         .weight = 17,
         .description = COMPOUND_STRING(
-            "This amiable Pokémon is easy to train.\n"
-            "But when battle is joined, it shows its\n"
-            "ferocious side. It's merciless to\n"
-            "intruders that enter its territory."),
+            "A bird wrapped in flames.\n"
+            "The fire sparks during fast\n"
+            "flight. It spills out when\n"
+            "it eats delicious food."),
         .pokemonScale = 530,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -1183,10 +1187,10 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .height = 7,
         .weight = 160,
         .description = COMPOUND_STRING(
-            "From its beak, it expels embers that set\n"
-            "the tall grass on fire. Then it pounces on\n"
-            "any bewildered Pokémon that pop out of\n"
-            "the grass."),
+            "A growing fire bird going\n"
+            "through a rebellious phase.\n"
+            "It burns flames on emotion.\n"
+            "Trainers must handle it well."),
         .pokemonScale = 365,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -1257,10 +1261,10 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .height = 12,
         .weight = 245,
         .description = COMPOUND_STRING(
-            "In the fever of an exciting battle, it\n"
-            "showers embers from the gaps between its\n"
-            "feathers and takes to the air. It finishes\n"
-            "its prey off with a colossal kick."),
+            "A mature bird with colorful\n"
+            "flames. Loyal to its trainer.\n"
+            "Females give eggs to humans\n"
+            "so they do not cook them."),
         .pokemonScale = 282,
         .pokemonOffset = 4,
         .trainerScale = 256,

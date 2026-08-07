@@ -30,10 +30,10 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .height = 3,
         .weight = 50,
         .description = COMPOUND_STRING(
-            "When it uses its special stick to strike up\n"
-            "a beat, the sound waves produced carry\n"
-            "revitalizing energy to the plants and\n"
-            "flowers in the area."),
+            "It is childhood friends with\n"
+            "Pichakey. Both train hard every\n"
+            "day, aiming to become great\n"
+            "warriors in the future."),
         .pokemonScale = 530,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -95,9 +95,10 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .height = 7,
         .weight = 140,
         .description = COMPOUND_STRING(
-            "The faster a Thwackey can beat out\n"
-            "a rhythm with its two sticks, the more\n"
-            "respect it wins from its peers."),
+            "It paralyzes foes with electric\n"
+            "scratches, then uses Smelling\n"
+            "Salts for double damage. It\n"
+            "mastered its own unique skill."),
         .pokemonScale = 365,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -158,9 +159,10 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .height = 21,
         .weight = 900,
         .description = COMPOUND_STRING(
-            "By drumming, it taps into the power of\n"
-            "its special tree stump. The roots of the\n"
-            "stump follow its direction in battle."),
+            "Its grand warrior look attracts\n"
+            "proposals regardless of gender,\n"
+            "but it seems to already have\n"
+            "a special someone in its heart."),
         .pokemonScale = 256,
         .pokemonOffset = 0,
         .trainerScale = 365,
@@ -3686,9 +3688,10 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .height = 7,
         .weight = 10,
         .description = COMPOUND_STRING(
-            "It stores flammable gas in its body and\n"
-            "uses it to generate heat. The yellow\n"
-            "sections on its belly get particularly hot."),
+            "It stores flammable gas in its\n"
+            "body to create heat. The yellow\n"
+            "spots on its belly get very\n"
+            "hot when it is excited."),
         .pokemonScale = 365,
         .pokemonOffset = 12,
         .trainerScale = 256,
@@ -3754,10 +3757,10 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .height = 30,
         .weight = 1200,
         .description = COMPOUND_STRING(
-            "When it heats up, its body temperature\n"
-            "reaches about 1,500 degrees Fahrenheit.\n"
-            "It lashes its body like a whip and\n"
-            "launches itself at enemies."),
+            "Body heat reaches 1,500\n"
+            "degrees Fahrenheit. It whips\n"
+            "its burning body around to\n"
+            "scorch opponents in battle."),
         .pokemonScale = 275,
         .pokemonOffset = 7,
         .trainerScale = 256,
@@ -5400,10 +5403,10 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .height = 3,
         .weight = 38,
         .description = COMPOUND_STRING(
-            "It spits out thread imbued with a frigid\n"
-            "sort of energy and uses it to tie its body\n"
-            "to branches, disguising itself as an\n"
-            "icicle while it sleeps."),
+            "If you feel something crush while\n"
+            "walking on snow, it is Snorm.\n"
+            "Being mostly liquid inside, many\n"
+            "mistake it for melted snow."),
         .pokemonScale = 530,
         .pokemonOffset = 13,
         .trainerScale = 256,
@@ -5465,10 +5468,10 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .height = 13,
         .weight = 420,
         .description = COMPOUND_STRING(
-            "Icy scales fall from its wings like snow\n"
-            "as it flies over fields and mountains.\n"
-            "The temperature of its wings is less than\n"
-            "-290 degrees Fahrenheit."),
+            "Seeking extreme heat, it floats\n"
+            "to get closer to the sun.\n"
+            "Whiskers on its forehead feel\n"
+            "wind speed and temperature."),
         .pokemonScale = 272,
         .pokemonOffset = 3,
         .trainerScale = 256,

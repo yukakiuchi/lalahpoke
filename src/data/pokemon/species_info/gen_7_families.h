@@ -1928,7 +1928,11 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
         .categoryName = _("Bee Fly"),
         .height = 2,
         .weight = 5,
-        .description = gRibombeePokedexText,
+        .description = COMPOUND_STRING(
+            "Glowing wings protect its eggs\n"
+            "from harsh heat and cold.\n"
+            "Caterpie can use butterfly\n"
+            "moves thanks to parent prayers."),
         .pokemonScale = 682,
         .pokemonOffset = 24,
         .trainerScale = 256,
@@ -3173,10 +3177,10 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
         .height = 2,
         .weight = 15,
         .description = COMPOUND_STRING(
-            "As it drowses the day away, it nourishes\n"
-            "itself by sucking from tree roots.\n"
-            "It wakens at the fall of night, wandering\n"
-            "off in search of a new tree."),
+            "A recently discovered mushroom\n"
+            "Pokemon. Nobody knows where\n"
+            "it came from. Someone please\n"
+            "help investigate this!"),
         .pokemonScale = 682,
         .pokemonOffset = 24,
         .trainerScale = 256,
@@ -3240,10 +3244,10 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
         .height = 10,
         .weight = 115,
         .description = COMPOUND_STRING(
-            "Forests where Shiinotic live are\n"
-            "treacherous to enter at night.\n"
-            "People confused by its strange lights\n"
-            "can never find their way home again."),
+            "Its Leech Seed move behaves\n"
+            "differently. Infected Pokemon\n"
+            "turn into zombie-like states.\n"
+            "What is happening here?"),
         .pokemonScale = 305,
         .pokemonOffset = 7,
         .trainerScale = 257,
@@ -3774,10 +3778,10 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
         .height = 12,
         .weight = 214,
         .description = COMPOUND_STRING(
-            "Its long, striking legs aren't just for\n"
-            "show but to be used to kick with skill.\n"
-            "In victory, it shows off by kicking the\n"
-            "defeated, laughing boisterously."),
+            "A floral fairy warrior. Sucks\n"
+            "stamina with finger spears to\n"
+            "gain energy. Its fluid movements\n"
+            "look like dancing butterflies."),
         .pokemonScale = 282,
         .pokemonOffset = 4,
         .trainerScale = 256,
