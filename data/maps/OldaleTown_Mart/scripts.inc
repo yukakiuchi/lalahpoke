@@ -17,7 +17,19 @@ OldaleTown_Mart_Pokemart_Basic:
 	.2byte ITEM_POTION
 	.2byte ITEM_ANTIDOTE
 	.2byte ITEM_PARALYZE_HEAL
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_TM01
+	.2byte ITEM_TM03
+	.2byte ITEM_TM05
+	.2byte ITEM_TM11
+	.2byte ITEM_TM12
+	.2byte ITEM_TM13
+	.2byte ITEM_TM14
+	.2byte ITEM_TM21
+	.2byte ITEM_TM28
+	.2byte ITEM_TM56
+	.2byte ITEM_TM66
+	.2byte ITEM_TM97
+	.2byte ITEM_TM98
 	pokemartlistend
 
 OldaleTown_Mart_ExpandedItems::
@@ -33,6 +45,19 @@ OldaleTown_Mart_Pokemart_Expanded:
 	.2byte ITEM_ANTIDOTE
 	.2byte ITEM_PARALYZE_HEAL
 	.2byte ITEM_AWAKENING
+	.2byte ITEM_TM01
+	.2byte ITEM_TM03
+	.2byte ITEM_TM05
+	.2byte ITEM_TM11
+	.2byte ITEM_TM12
+	.2byte ITEM_TM13
+	.2byte ITEM_TM14
+	.2byte ITEM_TM21
+	.2byte ITEM_TM28
+	.2byte ITEM_TM56
+	.2byte ITEM_TM66
+	.2byte ITEM_TM97
+	.2byte ITEM_TM98
 	pokemartlistend
 
 OldaleTown_Mart_EventScript_Woman::

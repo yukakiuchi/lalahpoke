@@ -26,6 +26,7 @@ import csv
 import io
 import os
 import sys
+import json
 import requests
 import re
 import time
@@ -37,13 +38,13 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 ########################### 設定 ###############################
 SPECIS_CSV_FILE_PATH                 = "/Users/yu/Desktop/sprites.csv"
 MOVES_CSV_FILE_PATH                  = "/Users/yu/Desktop/moves.csv"
-TM_LEARNSET_CSV_FILE_PATH            = "/Users/yu/Desktop/THs.csv"
+LEARNSET_CSV_FILE_PATH               = "/Users/yu/Desktop/learnset.csv"
 ORIGINAL_SPECIES_INFO_DIR            = "/Users/yu/Desktop/Original_expantion_data/PokeData/species_info"
 ORIGINAL_SPECIES_IDS_FILE_PATH       = "/Users/yu/Desktop/Original_expantion_data/PokeData/id_setting/species.h"
 ORIGINAL_ANIM_FRONT_FILE_PATH        = "/Users/yu/Desktop/Original_expantion_data/PokeData/anim_sprite_setting/pokemon.h"
 ORIGINAL_POKEMON_PNG_DIR             = "/Users/yu/Desktop/Original_expantion_data/PokeGraphics"
 ORIGINAL_NATIONAL_POKEDEX_FILE_PATH  = "/Users/yu/Desktop/Original_expantion_data/NationalPokedex/pokedex.h"
-ORIGINAL_TM_LEARNSET_FILE_PATH       = "/Users/yu/Desktop/Original_expantion_data/Moves/teachable_learnsets.h"
+ORIGINAL_LEARNSET_FILE_PATH          = "/Users/yu/Desktop/expand/src/data/pokemon/all_learnables.json"
 ORIGINAL_MOVES_FILE_PATH             = "/Users/yu/Desktop/Original_expantion_data/Moves/gen_9_moves.h"
 CURRENT_POKEMON_PNG_DIR              = "/Users/yu/Desktop/expand/graphics/pokemon"
 CURRENT_SPECIES_INFO_DIR             = "/Users/yu/Desktop/expand/src/data/pokemon/species_info"
@@ -51,7 +52,7 @@ CURRENT_SPECIES_ID_FILE_PATH         = "/Users/yu/Desktop/expand/include/constan
 CURRENT_ANIM_FRONT_SETTING_FILE_PATH = "/Users/yu/Desktop/expand/src/data/graphics/pokemon.h"
 CURRENT_NATIONAL_DEX_FILE_PATH       = "/Users/yu/Desktop/expand/include/constants/pokedex.h"
 CURRENT_MOVES_FILE_PATH              = "/Users/yu/Desktop/expand/src/data/pokemon/level_up_learnsets/gen_9.h"
-CURRENT_TM_LEARNSET_FILE_PATH        = "/Users/yu/Desktop/expand/src/data/pokemon/teachable_learnsets.h"
+CURRENT_LEARNSET_FILE_PATH           = "/Users/yu/Desktop/expand/src/data/pokemon/all_learnables.json"
 
 START_ID = 1
 END_ID = 272
@@ -66,7 +67,7 @@ CONFIG_VARS = [
     "UPDATE_DESCRIPTIONS",
     "UPDATE_EVOLUTIONS",
     "UPDATE_MOVES",
-    "UPDATE_TM_LEARNSET",
+    "UPDATE_LEARNSET",
     "UPDATE_ANIM_FRONT",
     "UPDATE_ID_SORT",
     "UPDATE_B_SPRITE_OFFSET",
@@ -92,7 +93,7 @@ if UPDATE_ALL_SPECIES_INFO == True:
     UPDATE_B_SPRITE_OFFSET = True
     UPDATE_DISPLAY_NAME    = True
     UPDATE_MOVES           = True
-    UPDATE_TM_LEARNSET     = True
+    UPDATE_LEARNSET     = True
 
 if UPDATE_PNG         == True:
     UPDATE_SPRITES        = True
@@ -139,8 +140,8 @@ MAX_PICS_DOWNLOAD_RETRIES = 3
 task_dict = {}
 moves_task_dictionary = {}
 cache_moves_file_content = ""
-tm_learnset_task_dictionary = {}
-cache_tm_learnset_file_content = ""
+learnset_task_dictionary = {}
+cache_learnset_json_dict = {}
 poke_graphics_cache = {}
 cache_gen_x_families_h_files = {}
 cache_species_h = {}
@@ -358,33 +359,44 @@ def update_pokemon_moves():
         print(f"\n❌ 以下の修得技データブロックが見つからずスキップされました:\n" + "\n".join(failed_species_list))
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
-# 1. Teachable修得技CSVの検証とデータ読み込み
-def check_tm_learnset_csv_and_validate():
+def check_learnset_csv_and_validate():
     print("\n" + "✨" * 40)
-    print("     Teachable修得技CSV (THs.csv) の検証と読み込みを開始します")
+    print("     修得技CSV (learnset.csv) の検証と読み込みを開始します")
     print("✨" * 40 + "\n")
 
-    if not os.path.exists(TM_LEARNSET_CSV_FILE_PATH):
-        print(f"❌ エラー: 指定されたTeachable修得技ファイルが見つかりません: {TM_LEARNSET_CSV_FILE_PATH}")
+    if not os.path.exists(LEARNSET_CSV_FILE_PATH):
+        print(f"❌ エラー: 指定された修得技ファイルが見つかりません: {LEARNSET_CSV_FILE_PATH}")
         sys.exit(1)
 
     invalid_entries = []
 
     try:
-        with open(TM_LEARNSET_CSV_FILE_PATH, newline="", encoding="utf-8") as tm_file_object:
-            csv_reader = csv.DictReader(tm_file_object)
+        with open(LEARNSET_CSV_FILE_PATH, newline="", encoding="utf-8") as learnset_file_object:
+            csv_reader = csv.DictReader(learnset_file_object)
             field_names = csv_reader.fieldnames or []
-            
+
             # moves_ で始まるカラムを抽出し、数値順（1, 2, 3...）にソート
-            moves_columns = [col for col in field_names if col.startswith("moves_")]
+            moves_columns = [column for column in field_names if column.startswith("moves_")]
             def get_column_index(column_name):
                 number_part = column_name.replace("moves_", "")
                 return int(number_part) if number_part.isdigit() else 9999
 
             moves_columns.sort(key=get_column_index)
 
-            for row in csv_reader:
-                poke_id = int(row["id"])
+            for line_number, row in enumerate(csv_reader, start=2):
+                raw_poke_id = row.get("id", "").strip()
+
+                # id カラムが数値でない場合、行番号と詳細を出力してエラー停止
+                if not raw_poke_id.isdigit():
+                    original_name_code = row.get("original_name_code", "不明")
+                    print(f"❌ エラー: CSV {line_number} 行目の 'id' カラムの値が不正です。")
+                    print(f"   - 取得された id の値 : '{raw_poke_id}'")
+                    print(f"   - 対象の種族コード    : '{original_name_code}'")
+                    print(f"   - 原因: CSVのカンマの数が多すぎる/少なすぎるため、列がズレている可能性があります。")
+                    sys.exit(1)
+
+                poke_id = int(raw_poke_id)
+
                 if START_ID <= poke_id <= END_ID:
                     original_name_code = row.get("original_name_code", "").strip()
 
@@ -416,60 +428,57 @@ def check_tm_learnset_csv_and_validate():
                             })
                             continue
 
-                    tm_learnset_task_dictionary[poke_id] = row
+                    learnset_task_dictionary[poke_id] = row
 
     except Exception as error_message:
-        print(f"❌ Teachable修得技CSVの読み込み中にエラーが発生しました: {error_message}")
+        print(f"❌ 修得技CSVの読み込み中にエラーが発生しました: {error_message}")
         sys.exit(1)
 
     if invalid_entries:
-        print("❌ 以下のTeachable修得技CSVデータ内に不正なフォーマットが発見されたため処理を停止します:\n")
+        print("❌ 以下の修得技CSVデータ内に不正なフォーマットが発見されたため処理を停止します:\n")
         for entry in invalid_entries:
             print(f"   - [ID: {entry['id']}] {entry['original_name_code']} | カラム: {entry['column']} | 値: '{entry['value']}' | 原因: {entry['reason']}")
-        print("\nTeachable修得技CSVデータを確認・修正の上、再度実行してください。")
+        print("\n修得技CSVデータを確認・修正の上、再度実行してください。")
         sys.exit(1)
 
-    print(f"✅ Teachable修得技CSVの検証完了: 対象 {len(tm_learnset_task_dictionary)} 件のデータを正常に取得しました。")
+    print(f"✅ 修得技CSVの検証完了: 対象 {len(learnset_task_dictionary)} 件のデータを正常に取得しました。")
 
 
-# 2. Teachable修得技（teachable_learnsets.h）ファイルのメモリキャッシュ化
-def cache_tm_learnset_file():
-    global cache_tm_learnset_file_content
-    if os.path.exists(ORIGINAL_TM_LEARNSET_FILE_PATH):
-        print(f"📦 ORIGINAL_TM_LEARNSET_FILEをメモリにキャッシュ中...\n📁({ORIGINAL_TM_LEARNSET_FILE_PATH})")
-        with open(ORIGINAL_TM_LEARNSET_FILE_PATH, "r", encoding="utf-8", errors="ignore") as tm_file_object:
-            cache_tm_learnset_file_content = tm_file_object.read()
-        print("✅ キャッシュ完了: Teachable修得技ファイル")
+# 2. 修得技（all_learnables.json）ファイルのメモリキャッシュ化
+def cache_learnset_file():
+    global cache_learnset_json_dict
+    if os.path.exists(ORIGINAL_LEARNSET_FILE_PATH):
+        print(f"📦 ORIGINAL_LEARNSET_FILEをメモリにキャッシュ中...\n📁({ORIGINAL_LEARNSET_FILE_PATH})")
+        with open(ORIGINAL_LEARNSET_FILE_PATH, "r", encoding="utf-8", errors="ignore") as learnset_file_object:
+            cache_learnset_json_dict = json.load(learnset_file_object)
+        print("✅ キャッシュ完了: 修得技JSONファイル")
     else:
-        print(f"⚠️ {ORIGINAL_TM_LEARNSET_FILE_PATH} が見つからないため、Teachable修得技ファイルのキャッシュに失敗しました。")
+        print(f"⚠️ {ORIGINAL_LEARNSET_FILE_PATH} が見つからないため、修得技JSONファイルのキャッシュに失敗しました。")
 
 
-# 3. キャッシュに対するTeachable修得技上書きおよび実ファイル適用
-def update_pokemon_tm_learnset():
-    global cache_tm_learnset_file_content
+# 3. キャッシュに対する修得技上書きおよび実ファイル適用
+def update_pokemon_learnset():
+    global cache_learnset_json_dict
     print("\n" + "✨" * 40)
-    print("     Teachable修得技 (teachable_learnsets.h) の上書き処理を開始します")
+    print("     修得技 (all_learnables.json) の上書き処理を開始します")
     print("✨" * 40 + "\n")
 
-    if not cache_tm_learnset_file_content:
-        print("⚠️ Teachable修得技のキャッシュデータが存在しないため、処理をスキップします。")
+    if not cache_learnset_json_dict:
+        print("⚠️ 修得技のJSONキャッシュデータが存在しないため、処理をスキップします。")
         return
 
-    working_content = cache_tm_learnset_file_content
     changed_pokemon_logs = []
     failed_species_list = []
 
-    for pokemon_id, row_data in tm_learnset_task_dictionary.items():
+    for pokemon_id, row_data in learnset_task_dictionary.items():
         original_name_code = row_data.get("original_name_code", "").strip()
 
-        # SPECIES_SLUGMA -> Slugma / SPECIES_WO_CHIEN -> WoChien（パスカルケース化）
-        base_species_name = original_name_code.replace("SPECIES_", "")
-        pascal_case_species_name = "".join(word.capitalize() for word in base_species_name.split("_"))
-        target_struct_name = f"s{pascal_case_species_name}TeachableLearnset"
+        # SPECIES_HO_OH -> HO_OH （SPECIES_ 以降の文字列を取得してキー検索）
+        search_key_name = original_name_code.replace("SPECIES_", "")
 
         # moves_ で始まるカラムから有効な技名を動的に抽出
-        move_entry_lines = []
-        moves_columns = [col for col in row_data.keys() if col.startswith("moves_")]
+        move_name_list = []
+        moves_columns = [column for column in row_data.keys() if column.startswith("moves_")]
         def get_column_index(column_name):
             number_part = column_name.replace("moves_", "")
             return int(number_part) if number_part.isdigit() else 9999
@@ -479,62 +488,48 @@ def update_pokemon_tm_learnset():
         for column_name in moves_columns:
             raw_move_value = row_data.get(column_name, "").strip()
             if raw_move_value:
-                move_entry_lines.append(f"    {raw_move_value},")
+                move_name_list.append(raw_move_value)
 
-        # 技が1つも指定されていない場合は完全にスキップして次へ
-        if not move_entry_lines:
+        # 技が1つも指定されていない場合は完全にスキップして次へ進む
+        if not move_name_list:
             continue
 
-        # 必ず末尾に MOVE_UNAVAILABLE, を付与
-        move_entry_lines.append("    MOVE_UNAVAILABLE,")
-
-        # 対象の配列ブロックを検索（大文字小文字区別あり）
-        search_pattern = re.compile(
-            rf"(static\s+const\s+u16\s+{target_struct_name}\s*\[\s*\]\s*=\s*\{{)(.*?)(\}};\n?)",
-            re.DOTALL
-        )
-
-        match_result = search_pattern.search(working_content)
-        if not match_result:
-            failed_species_list.append(f"ID:{pokemon_id} ({original_name_code} -> {target_struct_name}[])")
+        # 対象のキー（例: "HO_OH"）がJSONデータ内に存在するかチェック
+        if search_key_name not in cache_learnset_json_dict:
+            failed_species_list.append(f"ID:{pokemon_id} ({original_name_code} -> \"{search_key_name}\")")
             continue
 
-        new_block_content = "\n" + "\n".join(move_entry_lines) + "\n"
+        # JSONの該当キーの配列データを完全上書き
+        cache_learnset_json_dict[search_key_name] = move_name_list
+        changed_pokemon_logs.append(f"ID:{pokemon_id} ({original_name_code} / キー:\"{search_key_name}\") の修得技を上書き更新")
 
-        header_text = match_result.group(1)
-        footer_text = match_result.group(3)
-        replaced_full_block = f"{header_text}{new_block_content}{footer_text}"
+    # JSON文字列に整形（インデント2スペース）
+    formatted_json_content = json.dumps(cache_learnset_json_dict, indent=2, ensure_ascii=False) + "\n"
 
-        working_content = working_content[:match_result.start()] + replaced_full_block + working_content[match_result.end():]
-        changed_pokemon_logs.append(f"ID:{pokemon_id} ({original_name_code}) のTeachable修得技を上書き更新")
-
-    # キャッシュ内容を最新に更新
-    cache_tm_learnset_file_content = working_content
-
-    # 実ファイル（CURRENT_TM_LEARNSET_FILE_PATH）と比較して書き込み
+    # 実ファイル（CURRENT_LEARNSET_FILE_PATH）と比較して書き込み
     needs_write = True
-    if os.path.exists(CURRENT_TM_LEARNSET_FILE_PATH):
-        with open(CURRENT_TM_LEARNSET_FILE_PATH, "r", encoding="utf-8", errors="ignore") as current_file_object:
-            if current_file_object.read() == cache_tm_learnset_file_content:
+    if os.path.exists(CURRENT_LEARNSET_FILE_PATH):
+        with open(CURRENT_LEARNSET_FILE_PATH, "r", encoding="utf-8", errors="ignore") as current_file_object:
+            if current_file_object.read() == formatted_json_content:
                 needs_write = False
 
     if needs_write:
-        destination_directory = os.path.dirname(CURRENT_TM_LEARNSET_FILE_PATH)
+        destination_directory = os.path.dirname(CURRENT_LEARNSET_FILE_PATH)
         if destination_directory and not os.path.exists(destination_directory):
             os.makedirs(destination_directory, exist_ok=True)
 
-        with open(CURRENT_TM_LEARNSET_FILE_PATH, "w", encoding="utf-8") as current_file_object:
-            current_file_object.write(cache_tm_learnset_file_content)
+        with open(CURRENT_LEARNSET_FILE_PATH, "w", encoding="utf-8") as current_file_object:
+            current_file_object.write(formatted_json_content)
 
-        print("📝 Teachable修得技データを適用しました:")
+        print("📝 修得技(JSON)データを適用しました:")
         for log_message in changed_pokemon_logs:
             print(f"   - {log_message}")
-        print(f"\n💾 変更を適用しました: {os.path.basename(CURRENT_TM_LEARNSET_FILE_PATH)}")
+        print(f"\n💾 変更を適用しました: {os.path.basename(CURRENT_LEARNSET_FILE_PATH)}")
     else:
         print("💾 変更はありません (すでに最新の状態です)")
 
     if failed_species_list:
-        print(f"\n❌ 以下のTeachable修得技データブロックが見つからずスキップされました:\n" + "\n".join(failed_species_list))
+        print(f"\n❌ 以下の修得技(JSON)キーが見つからずスキップされました:\n" + "\n".join(failed_species_list))
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 
@@ -1766,9 +1761,9 @@ if __name__ == "__main__":
         check_moves_csv_and_validate()
         cache_moves_file()
 
-    if UPDATE_TM_LEARNSET:
-        check_tm_learnset_csv_and_validate()
-        cache_tm_learnset_file()
+    if UPDATE_LEARNSET:
+        check_learnset_csv_and_validate()
+        cache_learnset_file()
 
     # 2. 準備したデータを使って、画像処理を行なっていく
     if UPDATE_SPRITES or UPDATE_ICONS:
@@ -1781,8 +1776,8 @@ if __name__ == "__main__":
     if UPDATE_MOVES:
         update_pokemon_moves()
 
-    if UPDATE_TM_LEARNSET:
-        update_pokemon_tm_learnset()
+    if UPDATE_LEARNSET:
+        update_pokemon_learnset()
 
     if UPDATE_ID_SORT:
         sort_species_id()

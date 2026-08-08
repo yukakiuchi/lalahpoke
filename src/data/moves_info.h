@@ -552,14 +552,13 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Strikes the foe with a gust\n"
             "of wind whipped up by wings."),
         .effect = EFFECT_HIT,
-        .power = 480,
-        .type = TYPE_ELECTRIC,
+        .power = 30,
+        .type = TYPE_FLYING,
         .accuracy = 90,
         .pp = 35,
         .target = TARGET_SELECTED,
         .priority = 0,
         .windMove = TRUE,
-        .multiHit = TRUE,
         .category = DAMAGE_CATEGORY_SPECIAL,
         .ignoresKingsRock = (B_UPDATED_MOVE_FLAGS == GEN_4) || (B_UPDATED_MOVE_FLAGS < GEN_3),
         .damagesAirborneDoubleDamage = B_UPDATED_MOVE_FLAGS >= GEN_2,
@@ -567,7 +566,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .contestCategory = CONTEST_CATEGORY_SMART,
         .contestComboStarterId = 0,
         .contestComboMoves = {0},
-        .battleAnimScript = gBattleAnimMove_LockOn,
+        .battleAnimScript = gBattleAnimMove_Gust,
     },
 
     [MOVE_WING_ATTACK] =
