@@ -1904,12 +1904,12 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
 
     [SPECIES_RIBOMBEE] =
     {
-        .baseHP        = 60,
-        .baseAttack    = 55,
-        .baseDefense   = 60,
-        .baseSpeed     = 124,
-        .baseSpAttack  = 95,
-        .baseSpDefense = 70,
+        .baseHP        = 138,
+        .baseAttack    = 43,
+        .baseDefense   = 132,
+        .baseSpeed     = 73,
+        .baseSpAttack  = 108,
+        .baseSpDefense = 128,
         .types = MON_TYPES(TYPE_BUG),
         .catchRate = 75,
         .expYield = 162,
@@ -3151,12 +3151,12 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
 #if P_FAMILY_MORELULL
     [SPECIES_MORELULL] =
     {
-        .baseHP        = 40,
-        .baseAttack    = 35,
-        .baseDefense   = 55,
-        .baseSpeed     = 15,
-        .baseSpAttack  = 65,
-        .baseSpDefense = 75,
+        .baseHP        = 58,
+        .baseAttack    = 37,
+        .baseDefense   = 53,
+        .baseSpeed     = 123,
+        .baseSpAttack  = 38,
+        .baseSpDefense = 57,
         .types = MON_TYPES(TYPE_GRASS),
         .catchRate = 190,
         .expYield = 57,
@@ -3218,12 +3218,12 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
 
     [SPECIES_SHIINOTIC] =
     {
-        .baseHP        = 60,
-        .baseAttack    = 45,
-        .baseDefense   = 80,
-        .baseSpeed     = 30,
-        .baseSpAttack  = 90,
-        .baseSpDefense = 100,
+        .baseHP        = 139,
+        .baseAttack    = 67,
+        .baseDefense   = 129,
+        .baseSpeed     = 73,
+        .baseSpAttack  = 74,
+        .baseSpDefense = 131,
         .types = MON_TYPES(TYPE_GRASS, TYPE_DARK),
         .catchRate = 75,
         .expYield = 142,
@@ -3752,12 +3752,12 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
 
     [SPECIES_TSAREENA] =
     {
-        .baseHP        = 72,
-        .baseAttack    = 120,
-        .baseDefense   = 98,
-        .baseSpeed     = 72,
-        .baseSpAttack  = 50,
-        .baseSpDefense = 98,
+        .baseHP        = 138,
+        .baseAttack    = 47,
+        .baseDefense   = 102,
+        .baseSpeed     = 42,
+        .baseSpAttack  = 113,
+        .baseSpDefense = 137,
         .types = MON_TYPES(TYPE_GRASS, TYPE_FAIRY),
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_8) ? 255 : 230,

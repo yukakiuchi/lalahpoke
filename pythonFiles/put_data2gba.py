@@ -35,21 +35,23 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 ########################### 設定 ###############################
-SPECIS_CSV_FILE_PATH = "/Users/yu/Desktop/sprites.csv"
-MOVES_CSV_FILE_PATH = "/Users/yu/Desktop/moves.csv"
-ORIGINAL_SPECIES_INFO_DIR = "/Users/yu/Desktop/Original_expantion_data/PokeData/species_info"
-ORIGINAL_SPECIES_IDS_FILE_PATH = "/Users/yu/Desktop/Original_expantion_data/PokeData/id_setting/species.h"
-ORIGINAL_ANIM_FRONT_FILE_PATH = "/Users/yu/Desktop/Original_expantion_data/PokeData/anim_sprite_setting/pokemon.h"
-ORIGINAL_POKEMON_PNG_DIR = "/Users/yu/Desktop/Original_expantion_data/PokeGraphics"
-ORIGINAL_NATIONAL_POKEDEX_FILE_PATH = "/Users/yu/Desktop/Original_expantion_data/NationalPokedex/pokedex.h"
-ORIGINAL_MOVES_FILE_PATH= "/Users/yu/Desktop/Original_expantion_data/Moves/gen_9_moves.h"
-CURRENT_POKEMON_PNG_DIR = "/Users/yu/Desktop/expand/graphics/pokemon"
-CURRENT_SPECIES_INFO_DIR = "/Users/yu/Desktop/expand/src/data/pokemon/species_info"
-CURRENT_SPECIES_ID_FILE_PATH = "/Users/yu/Desktop/expand/include/constants/species.h"
+SPECIS_CSV_FILE_PATH                 = "/Users/yu/Desktop/sprites.csv"
+MOVES_CSV_FILE_PATH                  = "/Users/yu/Desktop/moves.csv"
+TM_LEARNSET_CSV_FILE_PATH            = "/Users/yu/Desktop/THs.csv"
+ORIGINAL_SPECIES_INFO_DIR            = "/Users/yu/Desktop/Original_expantion_data/PokeData/species_info"
+ORIGINAL_SPECIES_IDS_FILE_PATH       = "/Users/yu/Desktop/Original_expantion_data/PokeData/id_setting/species.h"
+ORIGINAL_ANIM_FRONT_FILE_PATH        = "/Users/yu/Desktop/Original_expantion_data/PokeData/anim_sprite_setting/pokemon.h"
+ORIGINAL_POKEMON_PNG_DIR             = "/Users/yu/Desktop/Original_expantion_data/PokeGraphics"
+ORIGINAL_NATIONAL_POKEDEX_FILE_PATH  = "/Users/yu/Desktop/Original_expantion_data/NationalPokedex/pokedex.h"
+ORIGINAL_TM_LEARNSET_FILE_PATH       = "/Users/yu/Desktop/Original_expantion_data/Moves/teachable_learnsets.h"
+ORIGINAL_MOVES_FILE_PATH             = "/Users/yu/Desktop/Original_expantion_data/Moves/gen_9_moves.h"
+CURRENT_POKEMON_PNG_DIR              = "/Users/yu/Desktop/expand/graphics/pokemon"
+CURRENT_SPECIES_INFO_DIR             = "/Users/yu/Desktop/expand/src/data/pokemon/species_info"
+CURRENT_SPECIES_ID_FILE_PATH         = "/Users/yu/Desktop/expand/include/constants/species.h"
 CURRENT_ANIM_FRONT_SETTING_FILE_PATH = "/Users/yu/Desktop/expand/src/data/graphics/pokemon.h"
-CURRENT_NATIONAL_DEX_FILE_PATH = "/Users/yu/Desktop/expand/include/constants/pokedex.h"
-CURRENT_MOVES_FILE_PATH = "/Users/yu/Desktop/expand/src/data/pokemon/level_up_learnsets/gen_9.h"
-
+CURRENT_NATIONAL_DEX_FILE_PATH       = "/Users/yu/Desktop/expand/include/constants/pokedex.h"
+CURRENT_MOVES_FILE_PATH              = "/Users/yu/Desktop/expand/src/data/pokemon/level_up_learnsets/gen_9.h"
+CURRENT_TM_LEARNSET_FILE_PATH        = "/Users/yu/Desktop/expand/src/data/pokemon/teachable_learnsets.h"
 
 START_ID = 1
 END_ID = 272
@@ -60,9 +62,11 @@ CONFIG_VARS = [
     "UPDATE_ICON_PALS",
     "UPDATE_TYPE",
     "UPDATE_ABILITIES",
+    "UPDATE_STATUS",
     "UPDATE_DESCRIPTIONS",
     "UPDATE_EVOLUTIONS",
     "UPDATE_MOVES",
+    "UPDATE_TM_LEARNSET",
     "UPDATE_ANIM_FRONT",
     "UPDATE_ID_SORT",
     "UPDATE_B_SPRITE_OFFSET",
@@ -82,11 +86,13 @@ if UPDATE_ALL_SPECIES_INFO == True:
     UPDATE_ICON_PALS       = True
     UPDATE_TYPE            = True
     UPDATE_ABILITIES       = True
+    UPDATE_STATUS          = True
     UPDATE_DESCRIPTIONS    = True
     UPDATE_EVOLUTIONS      = True
     UPDATE_B_SPRITE_OFFSET = True
     UPDATE_DISPLAY_NAME    = True
     UPDATE_MOVES           = True
+    UPDATE_TM_LEARNSET     = True
 
 if UPDATE_PNG         == True:
     UPDATE_SPRITES        = True
@@ -133,6 +139,8 @@ MAX_PICS_DOWNLOAD_RETRIES = 3
 task_dict = {}
 moves_task_dictionary = {}
 cache_moves_file_content = ""
+tm_learnset_task_dictionary = {}
+cache_tm_learnset_file_content = ""
 poke_graphics_cache = {}
 cache_gen_x_families_h_files = {}
 cache_species_h = {}
@@ -349,6 +357,190 @@ def update_pokemon_moves():
     if failed_species_list:
         print(f"\n❌ 以下の修得技データブロックが見つからずスキップされました:\n" + "\n".join(failed_species_list))
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
+
+# 1. Teachable修得技CSVの検証とデータ読み込み
+def check_tm_learnset_csv_and_validate():
+    print("\n" + "✨" * 40)
+    print("     Teachable修得技CSV (THs.csv) の検証と読み込みを開始します")
+    print("✨" * 40 + "\n")
+
+    if not os.path.exists(TM_LEARNSET_CSV_FILE_PATH):
+        print(f"❌ エラー: 指定されたTeachable修得技ファイルが見つかりません: {TM_LEARNSET_CSV_FILE_PATH}")
+        sys.exit(1)
+
+    invalid_entries = []
+
+    try:
+        with open(TM_LEARNSET_CSV_FILE_PATH, newline="", encoding="utf-8") as tm_file_object:
+            csv_reader = csv.DictReader(tm_file_object)
+            field_names = csv_reader.fieldnames or []
+            
+            # moves_ で始まるカラムを抽出し、数値順（1, 2, 3...）にソート
+            moves_columns = [col for col in field_names if col.startswith("moves_")]
+            def get_column_index(column_name):
+                number_part = column_name.replace("moves_", "")
+                return int(number_part) if number_part.isdigit() else 9999
+
+            moves_columns.sort(key=get_column_index)
+
+            for row in csv_reader:
+                poke_id = int(row["id"])
+                if START_ID <= poke_id <= END_ID:
+                    original_name_code = row.get("original_name_code", "").strip()
+
+                    for column_name in moves_columns:
+                        raw_move_value = row.get(column_name, "").strip()
+
+                        if not raw_move_value:
+                            continue
+
+                        # カンマが含まれている場合（レベル指定などが誤混入している場合）
+                        if "," in raw_move_value:
+                            invalid_entries.append({
+                                "id": poke_id,
+                                "original_name_code": original_name_code,
+                                "column": column_name,
+                                "value": raw_move_value,
+                                "reason": "カンマが含まれています（技名のみ指定してください）"
+                            })
+                            continue
+
+                        # MOVE_ から始まっていない場合
+                        if not raw_move_value.startswith("MOVE_"):
+                            invalid_entries.append({
+                                "id": poke_id,
+                                "original_name_code": original_name_code,
+                                "column": column_name,
+                                "value": raw_move_value,
+                                "reason": "'MOVE_' から始まっていません"
+                            })
+                            continue
+
+                    tm_learnset_task_dictionary[poke_id] = row
+
+    except Exception as error_message:
+        print(f"❌ Teachable修得技CSVの読み込み中にエラーが発生しました: {error_message}")
+        sys.exit(1)
+
+    if invalid_entries:
+        print("❌ 以下のTeachable修得技CSVデータ内に不正なフォーマットが発見されたため処理を停止します:\n")
+        for entry in invalid_entries:
+            print(f"   - [ID: {entry['id']}] {entry['original_name_code']} | カラム: {entry['column']} | 値: '{entry['value']}' | 原因: {entry['reason']}")
+        print("\nTeachable修得技CSVデータを確認・修正の上、再度実行してください。")
+        sys.exit(1)
+
+    print(f"✅ Teachable修得技CSVの検証完了: 対象 {len(tm_learnset_task_dictionary)} 件のデータを正常に取得しました。")
+
+
+# 2. Teachable修得技（teachable_learnsets.h）ファイルのメモリキャッシュ化
+def cache_tm_learnset_file():
+    global cache_tm_learnset_file_content
+    if os.path.exists(ORIGINAL_TM_LEARNSET_FILE_PATH):
+        print(f"📦 ORIGINAL_TM_LEARNSET_FILEをメモリにキャッシュ中...\n📁({ORIGINAL_TM_LEARNSET_FILE_PATH})")
+        with open(ORIGINAL_TM_LEARNSET_FILE_PATH, "r", encoding="utf-8", errors="ignore") as tm_file_object:
+            cache_tm_learnset_file_content = tm_file_object.read()
+        print("✅ キャッシュ完了: Teachable修得技ファイル")
+    else:
+        print(f"⚠️ {ORIGINAL_TM_LEARNSET_FILE_PATH} が見つからないため、Teachable修得技ファイルのキャッシュに失敗しました。")
+
+
+# 3. キャッシュに対するTeachable修得技上書きおよび実ファイル適用
+def update_pokemon_tm_learnset():
+    global cache_tm_learnset_file_content
+    print("\n" + "✨" * 40)
+    print("     Teachable修得技 (teachable_learnsets.h) の上書き処理を開始します")
+    print("✨" * 40 + "\n")
+
+    if not cache_tm_learnset_file_content:
+        print("⚠️ Teachable修得技のキャッシュデータが存在しないため、処理をスキップします。")
+        return
+
+    working_content = cache_tm_learnset_file_content
+    changed_pokemon_logs = []
+    failed_species_list = []
+
+    for pokemon_id, row_data in tm_learnset_task_dictionary.items():
+        original_name_code = row_data.get("original_name_code", "").strip()
+
+        # SPECIES_SLUGMA -> Slugma / SPECIES_WO_CHIEN -> WoChien（パスカルケース化）
+        base_species_name = original_name_code.replace("SPECIES_", "")
+        pascal_case_species_name = "".join(word.capitalize() for word in base_species_name.split("_"))
+        target_struct_name = f"s{pascal_case_species_name}TeachableLearnset"
+
+        # moves_ で始まるカラムから有効な技名を動的に抽出
+        move_entry_lines = []
+        moves_columns = [col for col in row_data.keys() if col.startswith("moves_")]
+        def get_column_index(column_name):
+            number_part = column_name.replace("moves_", "")
+            return int(number_part) if number_part.isdigit() else 9999
+
+        moves_columns.sort(key=get_column_index)
+
+        for column_name in moves_columns:
+            raw_move_value = row_data.get(column_name, "").strip()
+            if raw_move_value:
+                move_entry_lines.append(f"    {raw_move_value},")
+
+        # 技が1つも指定されていない場合は完全にスキップして次へ
+        if not move_entry_lines:
+            continue
+
+        # 必ず末尾に MOVE_UNAVAILABLE, を付与
+        move_entry_lines.append("    MOVE_UNAVAILABLE,")
+
+        # 対象の配列ブロックを検索（大文字小文字区別あり）
+        search_pattern = re.compile(
+            rf"(static\s+const\s+u16\s+{target_struct_name}\s*\[\s*\]\s*=\s*\{{)(.*?)(\}};\n?)",
+            re.DOTALL
+        )
+
+        match_result = search_pattern.search(working_content)
+        if not match_result:
+            failed_species_list.append(f"ID:{pokemon_id} ({original_name_code} -> {target_struct_name}[])")
+            continue
+
+        new_block_content = "\n" + "\n".join(move_entry_lines) + "\n"
+
+        header_text = match_result.group(1)
+        footer_text = match_result.group(3)
+        replaced_full_block = f"{header_text}{new_block_content}{footer_text}"
+
+        working_content = working_content[:match_result.start()] + replaced_full_block + working_content[match_result.end():]
+        changed_pokemon_logs.append(f"ID:{pokemon_id} ({original_name_code}) のTeachable修得技を上書き更新")
+
+    # キャッシュ内容を最新に更新
+    cache_tm_learnset_file_content = working_content
+
+    # 実ファイル（CURRENT_TM_LEARNSET_FILE_PATH）と比較して書き込み
+    needs_write = True
+    if os.path.exists(CURRENT_TM_LEARNSET_FILE_PATH):
+        with open(CURRENT_TM_LEARNSET_FILE_PATH, "r", encoding="utf-8", errors="ignore") as current_file_object:
+            if current_file_object.read() == cache_tm_learnset_file_content:
+                needs_write = False
+
+    if needs_write:
+        destination_directory = os.path.dirname(CURRENT_TM_LEARNSET_FILE_PATH)
+        if destination_directory and not os.path.exists(destination_directory):
+            os.makedirs(destination_directory, exist_ok=True)
+
+        with open(CURRENT_TM_LEARNSET_FILE_PATH, "w", encoding="utf-8") as current_file_object:
+            current_file_object.write(cache_tm_learnset_file_content)
+
+        print("📝 Teachable修得技データを適用しました:")
+        for log_message in changed_pokemon_logs:
+            print(f"   - {log_message}")
+        print(f"\n💾 変更を適用しました: {os.path.basename(CURRENT_TM_LEARNSET_FILE_PATH)}")
+    else:
+        print("💾 変更はありません (すでに最新の状態です)")
+
+    if failed_species_list:
+        print(f"\n❌ 以下のTeachable修得技データブロックが見つからずスキップされました:\n" + "\n".join(failed_species_list))
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
+
+
+
+
+
 
 def load_poke_graphics_cache():
     """PokeGraphicsフォルダの全ファイルをメモリに一括読み込み"""
@@ -708,6 +900,8 @@ def update_species_info():
         print("     typeの上書き処理を開始します")
     if UPDATE_ABILITIES:
         print("     abilitiesの上書き処理を開始します")
+    if UPDATE_STATUS:
+        print("     種族値（ステータス）の上書き処理を開始します")
     if UPDATE_DESCRIPTIONS:
         print("     dex_descriptionの上書き処理を開始します")
     if UPDATE_EVOLUTIONS:
@@ -724,6 +918,27 @@ def update_species_info():
         csv_abilities               = row["abilities"].strip()
         csv_dex_description         = row["dex_description"].strip()
         csv_evolution_requirements  = row["evo_requirements"].strip()
+        csv_hp_status               = row["HP"].strip()
+        csv_atk_status              = row["ATK"].strip()
+        csv_def_status              = row["DEF"].strip()
+        csv_satk_status             = row["SATK"].strip()
+        csv_sdef_status             = row["SDEF"].strip()
+        csv_spd_status              = row["SPD"].strip()
+
+        # 空のカラム名を特定してリスト化
+        missing_status_columns = []
+        if not csv_hp_status:   missing_status_columns.append("HP")
+        if not csv_atk_status:  missing_status_columns.append("ATK")
+        if not csv_def_status:  missing_status_columns.append("DEF")
+        if not csv_satk_status: missing_status_columns.append("SATK")
+        if not csv_sdef_status: missing_status_columns.append("SDEF")
+        if not csv_spd_status:  missing_status_columns.append("SPD")
+
+        has_all_status_values = len(missing_status_columns) == 0
+
+        # 値が空でスキップされた場合、どの項目の値が無かったかを警告ログに記録
+        if UPDATE_STATUS and not has_all_status_values:
+            failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 種族値更新スキップ: 空のカラムがあります -> [{', '.join(missing_status_columns)}]")
 
         if UPDATE_TYPE:
             types = [t.strip().upper() for t in type_raw.split(",")] # pythonが読み取れる形にする。配列形式にする
@@ -780,6 +995,13 @@ def update_species_info():
             replaced_pal                      = False
             replaced_abilities                = False
             found_abilities_in_block          = False
+            replaced_status                   = False
+            found_hp_status                   = False
+            found_atk_status                  = False
+            found_def_status                  = False
+            found_spd_status                  = False
+            found_satk_status                 = False
+            found_sdef_status                 = False
             has_replaced_evolution            = False
             replaced_description              = False
             is_inside_description_block       = False
@@ -889,6 +1111,68 @@ def update_species_info():
                         replaced_abilities = True
                         found_abilities_in_block = True
                         continue
+
+                     # ステータス（種族値）の変更
+                    if UPDATE_STATUS and has_all_status_values:
+                        if ".baseHP" in line and "=" in line:
+                            search_result = re.search(r"=\s*(.*?)\s*,", line)
+                            old_value = search_result.group(1) if search_result else ""
+                            line = f"{indent}.baseHP        = {csv_hp_status},"
+                            new_lines.append(line)
+                            changed_pokemon_logs[raw_species_name].append(f"HP           : {old_value} →  {csv_hp_status}")
+                            found_hp_status = True
+                            replaced_status = True
+                            continue
+
+                        if ".baseAttack" in line and "=" in line:
+                            search_result = re.search(r"=\s*(.*?)\s*,", line)
+                            old_value = search_result.group(1) if search_result else ""
+                            line = f"{indent}.baseAttack    = {csv_atk_status},"
+                            new_lines.append(line)
+                            changed_pokemon_logs[raw_species_name].append(f"ATK          : {old_value} →  {csv_atk_status}")
+                            found_atk_status = True
+                            replaced_status = True
+                            continue
+
+                        if ".baseDefense" in line and "=" in line:
+                            search_result = re.search(r"=\s*(.*?)\s*,", line)
+                            old_value = search_result.group(1) if search_result else ""
+                            line = f"{indent}.baseDefense   = {csv_def_status},"
+                            new_lines.append(line)
+                            changed_pokemon_logs[raw_species_name].append(f"DEF          : {old_value} →  {csv_def_status}")
+                            found_def_status = True
+                            replaced_status = True
+                            continue
+
+                        if ".baseSpeed" in line and "=" in line:
+                            search_result = re.search(r"=\s*(.*?)\s*,", line)
+                            old_value = search_result.group(1) if search_result else ""
+                            line = f"{indent}.baseSpeed     = {csv_spd_status},"
+                            new_lines.append(line)
+                            changed_pokemon_logs[raw_species_name].append(f"SPD          : {old_value} →  {csv_spd_status}")
+                            found_spd_status = True
+                            replaced_status = True
+                            continue
+
+                        if ".baseSpAttack" in line and "=" in line:
+                            search_result = re.search(r"=\s*(.*?)\s*,", line)
+                            old_value = search_result.group(1) if search_result else ""
+                            line = f"{indent}.baseSpAttack  = {csv_satk_status},"
+                            new_lines.append(line)
+                            changed_pokemon_logs[raw_species_name].append(f"SATK         : {old_value} →  {csv_satk_status}")
+                            found_satk_status = True
+                            replaced_status = True
+                            continue
+
+                        if ".baseSpDefense" in line and "=" in line:
+                            search_result = re.search(r"=\s*(.*?)\s*,", line)
+                            old_value = search_result.group(1) if search_result else ""
+                            line = f"{indent}.baseSpDefense = {csv_sdef_status},"
+                            new_lines.append(line)
+                            changed_pokemon_logs[raw_species_name].append(f"SDEF         : {old_value} →  {csv_sdef_status}")
+                            found_sdef_status = True
+                            replaced_status = True
+                            continue
 
                     # 説明文（.description）の変更
                     if UPDATE_DESCRIPTIONS and cleaned_description:
@@ -1013,7 +1297,8 @@ def update_species_info():
 
                 new_lines.append(line)
 
-            replaced_in_this_file = replaced_type or replaced_pal or replaced_offset or replaced_abilities or has_replaced_evolution or replaced_description
+            replaced_in_this_file = replaced_type or replaced_pal or replaced_offset or replaced_abilities or has_replaced_evolution or replaced_description or replaced_status
+
             if replaced_in_this_file:
                 cache_gen_x_families_h_files[cache_gen_x_file_name] = "\n".join(new_lines)
                 file_full_path = os.path.join(CURRENT_SPECIES_INFO_DIR, cache_gen_x_file_name)
@@ -1023,6 +1308,9 @@ def update_species_info():
 
                 if UPDATE_ABILITIES and not found_abilities_in_block:
                     failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 対象ブロック内に `.abilities =` の行が見つかりませんでした。")
+                if UPDATE_STATUS and has_all_status_values:
+                    if not (found_hp_status and found_atk_status and found_def_status and found_spd_status and found_satk_status and found_sdef_status):
+                        failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 対象ブロック内に一部のステータス項目 (.baseHP 等) が見つかりませんでした。")
                 if UPDATE_EVOLUTIONS and csv_evolution_requirements != "NO_EVOLUTION" and not has_replaced_evolution:
                     failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 進化情報を追加しようとしましたが `.evolutions =` も `.levelUpLearnset` も見つかりませんでした。")
                 if UPDATE_DESCRIPTIONS and cleaned_description and not replaced_description:
@@ -1478,6 +1766,10 @@ if __name__ == "__main__":
         check_moves_csv_and_validate()
         cache_moves_file()
 
+    if UPDATE_TM_LEARNSET:
+        check_tm_learnset_csv_and_validate()
+        cache_tm_learnset_file()
+
     # 2. 準備したデータを使って、画像処理を行なっていく
     if UPDATE_SPRITES or UPDATE_ICONS:
         download_n_process_graphics()
@@ -1488,6 +1780,9 @@ if __name__ == "__main__":
 
     if UPDATE_MOVES:
         update_pokemon_moves()
+
+    if UPDATE_TM_LEARNSET:
+        update_pokemon_tm_learnset()
 
     if UPDATE_ID_SORT:
         sort_species_id()

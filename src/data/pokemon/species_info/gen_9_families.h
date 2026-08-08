@@ -329,12 +329,12 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
 
     [SPECIES_SKELEDIRGE] =
     {
-        .baseHP        = 104,
-        .baseAttack    = 75,
-        .baseDefense   = 100,
+        .baseHP        = 118,
+        .baseAttack    = 127,
+        .baseDefense   = 78,
         .baseSpeed     = 66,
-        .baseSpAttack  = 110,
-        .baseSpDefense = 75,
+        .baseSpAttack  = 42,
+        .baseSpDefense = 68,
         .types = MON_TYPES(TYPE_FIRE, TYPE_BUG),
         .catchRate = 45,
         .expYield = 265,
@@ -3707,12 +3707,12 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
 #if P_FAMILY_TINKATINK
     [SPECIES_TINKATINK] =
     {
-        .baseHP        = 50,
-        .baseAttack    = 45,
-        .baseDefense   = 45,
-        .baseSpeed     = 58,
-        .baseSpAttack  = 35,
-        .baseSpDefense = 64,
+        .baseHP        = 47,
+        .baseAttack    = 72,
+        .baseDefense   = 48,
+        .baseSpeed     = 136,
+        .baseSpAttack  = 36,
+        .baseSpDefense = 43,
         .types = MON_TYPES(TYPE_WATER, TYPE_FIGHTING),
         .catchRate = 190,
         .expYield = 59,
@@ -3771,12 +3771,12 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
 
     [SPECIES_TINKATUFF] =
     {
-        .baseHP        = 65,
-        .baseAttack    = 55,
-        .baseDefense   = 55,
-        .baseSpeed     = 78,
-        .baseSpAttack  = 45,
-        .baseSpDefense = 82,
+        .baseHP        = 76,
+        .baseAttack    = 128,
+        .baseDefense   = 67,
+        .baseSpeed     = 63,
+        .baseSpAttack  = 38,
+        .baseSpDefense = 67,
         .types = MON_TYPES(TYPE_WATER, TYPE_FIGHTING),
         .catchRate = 90,
         .expYield = 133,
@@ -3835,12 +3835,12 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
 
     [SPECIES_TINKATON] =
     {
-        .baseHP        = 85,
-        .baseAttack    = 75,
-        .baseDefense   = 77,
-        .baseSpeed     = 94,
-        .baseSpAttack  = 70,
-        .baseSpDefense = 105,
+        .baseHP        = 116,
+        .baseAttack    = 162,
+        .baseDefense   = 73,
+        .baseSpeed     = 38,
+        .baseSpAttack  = 47,
+        .baseSpDefense = 76,
         .types = MON_TYPES(TYPE_WATER, TYPE_FIGHTING),
         .catchRate = 45,
         .expYield = 253,
@@ -4356,12 +4356,12 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
 
     [SPECIES_REVAVROOM] =
     {
-        .baseHP        = 80,
-        .baseAttack    = 119,
-        .baseDefense   = 90,
-        .baseSpeed     = 90,
-        .baseSpAttack  = 54,
-        .baseSpDefense = 67,
+        .baseHP        = 143,
+        .baseAttack    = 149,
+        .baseDefense   = 141,
+        .baseSpeed     = 37,
+        .baseSpAttack  = 43,
+        .baseSpDefense = 147,
         .types = MON_TYPES(TYPE_DARK),
         .catchRate = 75,
         .expYield = 175,
@@ -6831,12 +6831,12 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
 #if P_FAMILY_WO_CHIEN
     [SPECIES_WO_CHIEN] =
     {
-        .baseHP        = 85,
-        .baseAttack    = 85,
-        .baseDefense   = 100,
-        .baseSpeed     = 70,
-        .baseSpAttack  = 95,
-        .baseSpDefense = 135,
+        .baseHP        = 137,
+        .baseAttack    = 102,
+        .baseDefense   = 128,
+        .baseSpeed     = 32,
+        .baseSpAttack  = 63,
+        .baseSpDefense = 101,
         .types = MON_TYPES(TYPE_GRASS, TYPE_ROCK),
         .catchRate = 6,
         .expYield = 285,

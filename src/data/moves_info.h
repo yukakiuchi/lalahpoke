@@ -567,7 +567,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .contestCategory = CONTEST_CATEGORY_SMART,
         .contestComboStarterId = 0,
         .contestComboMoves = {0},
-        .battleAnimScript = gBattleAnimMove_GlacialLance,
+        .battleAnimScript = gBattleAnimMove_LockOn,
     },
 
     [MOVE_WING_ATTACK] =
@@ -3358,7 +3358,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .makesContact = TRUE,
         .additionalEffects = ADDITIONAL_EFFECTS({
             .moveEffect = MOVE_EFFECT_PARALYSIS,
-            .chance = 30,
+            .chance = 40,
         }),
         .contestEffect = C_UPDATED_MOVE_EFFECTS >= GEN_6 ? CONTEST_EFFECT_STARTLE_PREV_MON : CONTEST_EFFECT_BADLY_STARTLE_FRONT_MON,
         .contestCategory = C_UPDATED_MOVE_CATEGORIES >= GEN_6 ? CONTEST_CATEGORY_CUTE : CONTEST_CATEGORY_TOUGH,
@@ -4652,7 +4652,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .description = COMPOUND_STRING(
             "Senses the foe's action and\n"
             "Increase its accuracy."),
-        .effect = EFFECT_ACCURACY_UP,
+        .effect = EFFECT_ACCURACY_UP_2,
         .power = 0,
         .type = TYPE_NORMAL,
         .accuracy = 0,
@@ -5388,8 +5388,8 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .name = COMPOUND_STRING("Lock-On"),
         .description = COMPOUND_STRING(
             "Locks on to the foe to\n"
-            "ensure the next move hits."),
-        .effect = EFFECT_LOCK_ON,
+            "increase its accuracy."),
+        .effect = EFFECT_ACCURACY_UP,
         .power = 0,
         .type = TYPE_NORMAL,
         .accuracy = B_UPDATED_MOVE_DATA >= GEN_4 ? 0 : 100,
@@ -15002,31 +15002,6 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .battleAnimScript = gBattleAnimMove_MistyTerrain,
     },
 
-    [MOVE_MISTY_FOG] =
-    {
-        .name = COMPOUND_STRING("Misty Fog"),
-        .description = COMPOUND_STRING(
-            "Creates a deep mist that\n"
-            "obscures the battlefield."),
-        .effect = EFFECT_WEATHER,
-        .power = 0,
-        .type = TYPE_BUG,
-        .accuracy = 0,
-        .pp = 10,
-        .target = TARGET_FIELD,
-        .priority = 0,
-        .category = DAMAGE_CATEGORY_STATUS,
-        .ignoresProtect = TRUE,
-        .mirrorMoveBanned = TRUE,
-        .skyBattleBanned = TRUE,
-        .argument = { .weatherType =  BATTLE_WEATHER_FOG },
-        .contestEffect = CONTEST_EFFECT_BETTER_WHEN_AUDIENCE_EXCITED,
-        .contestCategory = CONTEST_CATEGORY_BEAUTY,
-        .contestComboStarterId = COMBO_STARTER_MISTY_TERRAIN,
-        .contestComboMoves = {0},
-        .battleAnimScript = gBattleAnimMove_Haze,
-    },
-
     [MOVE_ELECTRIFY] =
     {
         .name = COMPOUND_STRING("Electrify"),
@@ -15865,7 +15840,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "no longer escape."),
         .effect = EFFECT_HIT,
         .power = 90,
-        .type = TYPE_GROUND,
+        .type = TYPE_GRASS,
         .accuracy = 100,
         .pp = 10,
         .target = TARGET_BOTH,
@@ -24509,5 +24484,31 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         }),
         .battleAnimScript = gBattleAnimMove_ShineBomb,
     },
+
+    [MOVE_MISTY_FOG] =
+    {
+        .name = COMPOUND_STRING("Misty Fog"),
+        .description = COMPOUND_STRING(
+            "Creates a deep mist that\n"
+            "obscures the battlefield."),
+        .effect = EFFECT_WEATHER,
+        .power = 0,
+        .type = TYPE_BUG,
+        .accuracy = 0,
+        .pp = 10,
+        .target = TARGET_FIELD,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_STATUS,
+        .ignoresProtect = TRUE,
+        .mirrorMoveBanned = TRUE,
+        .skyBattleBanned = TRUE,
+        .argument = { .weatherType =  BATTLE_WEATHER_FOG },
+        .contestEffect = CONTEST_EFFECT_BETTER_WHEN_AUDIENCE_EXCITED,
+        .contestCategory = CONTEST_CATEGORY_BEAUTY,
+        .contestComboStarterId = COMBO_STARTER_MISTY_TERRAIN,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_Haze,
+    },
+
 
 };

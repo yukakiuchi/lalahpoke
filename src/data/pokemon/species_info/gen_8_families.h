@@ -6,12 +6,12 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
 #if P_FAMILY_GROOKEY
     [SPECIES_GROOKEY] =
     {
-        .baseHP        = 50,
-        .baseAttack    = 65,
-        .baseDefense   = 50,
-        .baseSpeed     = 65,
-        .baseSpAttack  = 40,
-        .baseSpDefense = 40,
+        .baseHP        = 51,
+        .baseAttack    = 82,
+        .baseDefense   = 53,
+        .baseSpeed     = 152,
+        .baseSpAttack  = 43,
+        .baseSpDefense = 47,
         .types = MON_TYPES(TYPE_ELECTRIC, TYPE_FIGHTING),
         .catchRate = 45,
         .expYield = 62,
@@ -71,12 +71,12 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
 
     [SPECIES_THWACKEY] =
     {
-        .baseHP        = 70,
-        .baseAttack    = 85,
-        .baseDefense   = 70,
-        .baseSpeed     = 80,
-        .baseSpAttack  = 55,
-        .baseSpDefense = 60,
+        .baseHP        = 94,
+        .baseAttack    = 98,
+        .baseDefense   = 73,
+        .baseSpeed     = 103,
+        .baseSpAttack  = 47,
+        .baseSpDefense = 58,
         .types = MON_TYPES(TYPE_ELECTRIC, TYPE_FIGHTING),
         .catchRate = 45,
         .expYield = 147,
@@ -135,12 +135,12 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
 
     [SPECIES_RILLABOOM] =
     {
-        .baseHP        = 100,
-        .baseAttack    = 125,
-        .baseDefense   = 90,
-        .baseSpeed     = 85,
-        .baseSpAttack  = 60,
-        .baseSpDefense = 70,
+        .baseHP        = 114,
+        .baseAttack    = 146,
+        .baseDefense   = 86,
+        .baseSpeed     = 82,
+        .baseSpAttack  = 52,
+        .baseSpDefense = 76,
         .types = MON_TYPES(TYPE_ELECTRIC, TYPE_FIGHTING),
         .catchRate = 45,
         .expYield = 265,
@@ -3664,12 +3664,12 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
 #if P_FAMILY_SIZZLIPEDE
     [SPECIES_SIZZLIPEDE] =
     {
-        .baseHP        = 50,
-        .baseAttack    = 65,
-        .baseDefense   = 45,
-        .baseSpeed     = 45,
-        .baseSpAttack  = 50,
-        .baseSpDefense = 50,
+        .baseHP        = 47,
+        .baseAttack    = 77,
+        .baseDefense   = 48,
+        .baseSpeed     = 138,
+        .baseSpAttack  = 34,
+        .baseSpDefense = 43,
         .types = MON_TYPES(TYPE_FIRE, TYPE_BUG),
         .catchRate = 190,
         .expYield = 61,
@@ -3733,12 +3733,12 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
 
     [SPECIES_CENTISKORCH] =
     {
-        .baseHP        = 100,
-        .baseAttack    = 115,
-        .baseDefense   = 65,
-        .baseSpeed     = 65,
-        .baseSpAttack  = 90,
-        .baseSpDefense = 90,
+        .baseHP        = 71,
+        .baseAttack    = 103,
+        .baseDefense   = 68,
+        .baseSpeed     = 102,
+        .baseSpAttack  = 42,
+        .baseSpDefense = 62,
         .types = MON_TYPES(TYPE_FIRE, TYPE_BUG),
         .catchRate = 75,
         .expYield = 184,
@@ -5378,12 +5378,12 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
 #if P_FAMILY_SNOM
     [SPECIES_SNOM] =
     {
-        .baseHP        = 30,
-        .baseAttack    = 25,
-        .baseDefense   = 35,
-        .baseSpeed     = 20,
-        .baseSpAttack  = 45,
-        .baseSpDefense = 30,
+        .baseHP        = 46,
+        .baseAttack    = 33,
+        .baseDefense   = 38,
+        .baseSpeed     = 139,
+        .baseSpAttack  = 77,
+        .baseSpDefense = 48,
         .types = MON_TYPES(TYPE_BUG, TYPE_ICE),
         .catchRate = 190,
         .expYield = 37,
@@ -5444,12 +5444,12 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
 
     [SPECIES_FROSMOTH] =
     {
-        .baseHP        = 70,
-        .baseAttack    = 65,
-        .baseDefense   = 60,
-        .baseSpeed     = 65,
-        .baseSpAttack  = 125,
-        .baseSpDefense = 90,
+        .baseHP        = 86,
+        .baseAttack    = 74,
+        .baseDefense   = 76,
+        .baseSpeed     = 86,
+        .baseSpAttack  = 73,
+        .baseSpDefense = 74,
         .types = MON_TYPES(TYPE_GRASS, TYPE_FLYING),
         .catchRate = 75,
         .expYield = 166,
