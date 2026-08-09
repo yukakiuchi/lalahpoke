@@ -62,6 +62,7 @@ CONFIG_VARS = [
     "UPDATE_ICONS",
     "UPDATE_ICON_PALS",
     "UPDATE_TYPE",
+    "UPDATE_HOLDITEMS",
     "UPDATE_ABILITIES",
     "UPDATE_STATUS",
     "UPDATE_DESCRIPTIONS",
@@ -86,6 +87,7 @@ UPDATE_NATIONAL_DEX       = True
 if UPDATE_ALL_SPECIES_INFO == True:
     UPDATE_ICON_PALS       = True
     UPDATE_TYPE            = True
+    UPDATE_HOLDITEMS       = True
     UPDATE_ABILITIES       = True
     UPDATE_STATUS          = True
     UPDATE_DESCRIPTIONS    = True
@@ -106,7 +108,7 @@ ALLOWED_TYPES =[
 
 REQUIRED_CSV_HEADERS = [
     "id","original_name_code","display_name", "sprite_url","icon_url", "pal", "dex_description", 
-    "type", "abilities", "evo_requirements", "backPicYOffset","frontPicYOffset","enemyMonElevation","Shadow"]
+    "type", "itemCommon", "itemRare", "abilities", "evo_requirements", "backPicYOffset","frontPicYOffset","enemyMonElevation","Shadow"]
 
 # 画像処理の時の特殊なフォルダ分け設定（SPECIES名: フォルダ名）
 # 指定がない場合は既存の自動ルールが適用されます
@@ -893,6 +895,8 @@ def update_species_info():
         print("     pal番号の上書き処理を開始します")
     if UPDATE_TYPE:
         print("     typeの上書き処理を開始します")
+     if UPDATE_HOLDITEMS:
+        print("     所持アイテム（itemCommon/itemRare）の上書き処理を開始します")
     if UPDATE_ABILITIES:
         print("     abilitiesの上書き処理を開始します")
     if UPDATE_STATUS:
@@ -909,6 +913,8 @@ def update_species_info():
         pal                         = row["pal"]
         raw_species_name            = row["original_name_code"]
         type_raw                    = row["type"].strip()
+        csv_item_common             = row["itemCommon"].strip()
+        csv_item_rare               = row["itemRare"].strip()
         csv_display_name            = row["display_name"].strip()
         csv_abilities               = row["abilities"].strip()
         csv_dex_description         = row["dex_description"].strip()
@@ -987,6 +993,10 @@ def update_species_info():
             new_lines                         = []
             in_block                          = False
             replaced_type                     = False
+            replaced_hold_items               = False
+            found_types_for_items             = False
+            old_item_common                   = "(なし)"
+            old_item_rare                     = "(なし)"
             replaced_pal                      = False
             replaced_abilities                = False
             found_abilities_in_block          = False
@@ -1018,7 +1028,21 @@ def update_species_info():
                     in_block = True
                     elevation_handled = False
 
-                # この種族ブロック内に .description = COMPOUND_STRING( が存在するか事前に確認
+                    # 対象種族ブロック内に存在する既存のアイテム値（旧値）を事前に取得
+                    if species_block_start_line_index != -1:
+                        for check_line in lines[species_block_start_line_index:]:
+                            if check_line.strip().startswith("},"):
+                                break
+                            if ".itemCommon" in check_line and "=" in check_line:
+                                match_result = re.search(r"=\s*(.*?)\s*,", check_line)
+                                if match_result:
+                                    old_item_common = match_result.group(1).strip()
+                            if ".itemRare" in check_line and "=" in check_line:
+                                match_result = re.search(r"=\s*(.*?)\s*,", check_line)
+                                if match_result:
+                                    old_item_rare = match_result.group(1).strip()
+
+                    # この種族ブロック内に .description = COMPOUND_STRING( が存在するか事前に確認
                     has_compound_string_description = False
                     if species_block_start_line_index != -1:
                         for check_line in lines[species_block_start_line_index:]:
@@ -1084,15 +1108,36 @@ def update_species_info():
                         replaced_pal = True
                         continue
 
-                    # タイプの変更
-                    if UPDATE_TYPE and ".types" in line:
-                        search_result = re.search(r"MON_TYPES\((.*?)\)", line)
-                        old_value = search_result.group(1)
-                        line = f"{indent}.types = {output_type},"
-                        new_lines.append(line)
-                        changed_pokemon_logs[raw_species_name].append(f"TYPE         : {old_value} →  {type_raw}")
-                        replaced_type = True
+                    # タイプの変更とアイテム変更
+                    if ".types" in line:
+                        if UPDATE_TYPE:
+                            search_result = re.search(r"MON_TYPES\((.*?)\)", line)
+                            old_value = search_result.group(1)
+                            line = f"{indent}.types = {output_type},"
+                            new_lines.append(line)
+                            changed_pokemon_logs[raw_species_name].append(f"TYPE         : {old_value} →  {type_raw}")
+                            replaced_type = True
+                        else:
+                            new_lines.append(line)
+
+                        # 所持アイテム（itemCommon / itemRare）を .types の直下に追加
+                        if UPDATE_HOLDITEMS and (csv_item_common or csv_item_rare):
+                            found_types_for_items = True
+                            if csv_item_common:
+                                new_lines.append(f"{indent}.itemCommon = {csv_item_common},")
+                                changed_pokemon_logs[raw_species_name].append(f"ITEM_COMMON  : {old_item_common} →  {csv_item_common}")
+                            if csv_item_rare:
+                                new_lines.append(f"{indent}.itemRare = {csv_item_rare},")
+                                changed_pokemon_logs[raw_species_name].append(f"ITEM_RARE    : {old_item_rare} →  {csv_item_rare}")
+                            replaced_hold_items = True
                         continue
+
+                    # 既存の所持アイテム行（.itemCommon / .itemRare）を削除（スキップ）
+                    if UPDATE_HOLDITEMS and (csv_item_common or csv_item_rare):
+                        if ".itemCommon" in line and "=" in line:
+                            continue
+                        if ".itemRare" in line and "=" in line:
+                            continue
 
                     # 特性変更
                     # If文で世代によってabilitiesが何個もパターンがあるがそういうパターンは全部csvに上書きさせる
@@ -1292,7 +1337,7 @@ def update_species_info():
 
                 new_lines.append(line)
 
-            replaced_in_this_file = replaced_type or replaced_pal or replaced_offset or replaced_abilities or has_replaced_evolution or replaced_description or replaced_status
+            replaced_in_this_file = replaced_type or replaced_pal or replaced_offset or replaced_abilities or has_replaced_evolution or replaced_description or replaced_status or replaced_hold_items
 
             if replaced_in_this_file:
                 cache_gen_x_families_h_files[cache_gen_x_file_name] = "\n".join(new_lines)
@@ -1301,6 +1346,8 @@ def update_species_info():
                 
                 changed_pokemon_logs[raw_species_name].append("-" * 40)
 
+                if UPDATE_HOLDITEMS and (csv_item_common or csv_item_rare) and not found_types_for_items:
+                    failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 対象ブロック内に `.types =` の行が見つからなかったため所持アイテムを更新できませんでした。")
                 if UPDATE_ABILITIES and not found_abilities_in_block:
                     failed_types.append(f"⚠️ ID:{poke_id} ({raw_species_name}) 対象ブロック内に `.abilities =` の行が見つかりませんでした。")
                 if UPDATE_STATUS and has_all_status_values:
@@ -1770,7 +1817,7 @@ if __name__ == "__main__":
         download_n_process_graphics()
 
     # 3. 種族情報更新ブロック
-    if UPDATE_ICON_PALS or UPDATE_TYPE or UPDATE_B_SPRITE_OFFSET or UPDATE_DISPLAY_NAME or UPDATE_ABILITIES or UPDATE_EVOLUTIONS or UPDATE_DESCRIPTIONS:
+    if UPDATE_ICON_PALS or UPDATE_TYPE or UPDATE_B_SPRITE_OFFSET or UPDATE_DISPLAY_NAME or UPDATE_ABILITIES or UPDATE_EVOLUTIONS or UPDATE_DESCRIPTIONS or UPDATE_HOLDITEMS:
         update_species_info()
 
     if UPDATE_MOVES:
