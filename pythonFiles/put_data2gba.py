@@ -895,7 +895,7 @@ def update_species_info():
         print("     pal番号の上書き処理を開始します")
     if UPDATE_TYPE:
         print("     typeの上書き処理を開始します")
-     if UPDATE_HOLDITEMS:
+    if UPDATE_HOLDITEMS:
         print("     所持アイテム（itemCommon/itemRare）の上書き処理を開始します")
     if UPDATE_ABILITIES:
         print("     abilitiesの上書き処理を開始します")

@@ -9290,9 +9290,14 @@ gBattleAnimMove_Nuzzle::
 	createsprite gMagentaHeartSpriteTemplate, ANIM_ATTACKER, 3, 0x14, 0x14
 	playsewithpan SE_M_CHARM, SOUND_PAN_ATTACKER
 	waitforvisualfinish
+	createsprite gHorizontalLungeSpriteTemplate, ANIM_ATTACKER, 2, 4, 4
+	delay 6
 	playsewithpan SE_M_THUNDERBOLT2, SOUND_PAN_TARGET
 	create_basic_hitsplat_sprite ANIM_ATTACKER, 2, x=0, y=0, relative_to=ANIM_TARGET, animation=2
-	call ElectricityEffectNoSound
+	@ 相手のポケモンの体の色一時的に色変わる
+	blend_color_cycle selector=F_PAL_TARGET, delay=1, num_blends=2, initial_blend_y=0, target_blend_y=12, color=RGB(31, 30, 10)
+	createvisualtask AnimTask_ShakeMon2, 2, ANIM_TARGET, 3, 0, 10, 1
+	call ElectricityEffect
 	waitforvisualfinish
 	end
 
