@@ -1428,7 +1428,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .effect = EFFECT_LEVEL_DAMAGE,
         .power = 1,
         .type = TYPE_NORMAL,
-        .accuracy = 90,
+        .accuracy = 70,
         .pp = 20,
         .target = TARGET_SELECTED,
         .priority = 0,
@@ -3876,8 +3876,8 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Lovely Kiss"),
         .description = COMPOUND_STRING(
-            "Demands a kiss with a scary\n"
-            "face that induces sleep."),
+            "An eerie kiss that may\n"
+            "paralyze the target."),
         .effect = EFFECT_NON_VOLATILE_STATUS,
         .power = 0,
         .type = TYPE_NORMAL,
@@ -3886,7 +3886,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .target = TARGET_SELECTED,
         .priority = 0,
         .category = DAMAGE_CATEGORY_STATUS,
-        .argument = { .nonVolatileStatus = MOVE_EFFECT_SLEEP },
+        .argument = { .nonVolatileStatus = MOVE_EFFECT_PARALYSIS },
         .zMove = { .effect = Z_EFFECT_SPD_UP_1 },
         .magicCoatAffected = TRUE,
         .contestEffect = CONTEST_EFFECT_BADLY_STARTLE_PREV_MONS, //C_UPDATED_MOVE_EFFECTS >= GEN_6 ? CONTEST_EFFECT_QUICKLY_GROW_BORED :
@@ -4599,7 +4599,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "While attacking, it may\n"
             "steal the foe's held item."),
         .effect = EFFECT_STEAL_ITEM,
-        .power = 80,
+        .power = 20,
         .type = TYPE_NORMAL,
         .accuracy = 100,
         .pp = 35,
@@ -9198,7 +9198,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Cutely begs to obtain an\n"
             "item held by the foe."),
         .effect = EFFECT_STEAL_ITEM,
-        .power = 60,
+        .power = 20,
         .type = TYPE_NORMAL,
         .accuracy = 100,
         .pp = B_UPDATED_MOVE_DATA >= GEN_6 ? 25 : 40,
@@ -13968,7 +13968,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Strikes the foe with its\n"
             "tail 2 to 5 times."),
         .effect = EFFECT_HIT,
-        .power = 20,
+        .power = 25,
         .type = TYPE_NORMAL,
         .accuracy = 100,
         .pp = 10,
@@ -14893,7 +14893,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .category = DAMAGE_CATEGORY_SPECIAL,
         .argument = { .absorbPercentage = 30 },
         .makesContact = TRUE,
-        .healingMove = FALSE,
+        .healingMove = TRUE,
         .contestEffect = CONTEST_EFFECT_APPEAL_AS_GOOD_AS_PREV_ONES,
         .contestCategory = CONTEST_CATEGORY_CUTE,
         .contestComboStarterId = 0,
@@ -23059,7 +23059,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .category = DAMAGE_CATEGORY_SPECIAL,
         .windMove = TRUE,
         .additionalEffects = ADDITIONAL_EFFECTS({
-            .moveEffect = MOVE_EFFECT_BURN,
+            .moveEffect = MOVE_EFFECT_ATTRACT,
             .chance = 30,
         }),
         .battleAnimScript = gBattleAnimMove_SpringBreeze,
@@ -23776,7 +23776,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Showers sprouts at the foe.\n"
             "May lower accuracy."),
         .effect = EFFECT_HIT,
-        .power = 20,
+        .power = 10,
         .type = TYPE_GRASS,
         .accuracy = 90,
         .pp = 35,
@@ -23785,7 +23785,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .category = DAMAGE_CATEGORY_SPECIAL,
         .additionalEffects = ADDITIONAL_EFFECTS({
             .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
-            .chance = 70,
+            .chance = 90,
         }),
         .battleAnimScript = gBattleAnimMove_SproutShower,
     },
@@ -23797,7 +23797,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Hurls hot sand at the foe.\n"
             "May lower accuracy."),
         .effect = EFFECT_HIT,
-        .power = 20,
+        .power = 10,
         .type = TYPE_FIRE,
         .accuracy = 90,
         .pp = 35,
@@ -23806,7 +23806,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .category = DAMAGE_CATEGORY_SPECIAL,
         .additionalEffects = ADDITIONAL_EFFECTS({
             .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
-            .chance = 70,
+            .chance = 90,
         }),
         .battleAnimScript = gBattleAnimMove_HotSand,
     },
@@ -23818,7 +23818,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Hurls cold sand at the foe.\n"
             "May lower accuracy."),
         .effect = EFFECT_HIT,
-        .power = 20,
+        .power = 10,
         .type = TYPE_ICE,
         .accuracy = 90,
         .pp = 35,
@@ -23827,7 +23827,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .category = DAMAGE_CATEGORY_SPECIAL,
         .additionalEffects = ADDITIONAL_EFFECTS({
             .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
-            .chance = 70,
+            .chance = 90,
         }),
         .battleAnimScript = gBattleAnimMove_ColdSand,
     },
@@ -23839,7 +23839,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Hurls electric sand at foe.\n"
             "May lower accuracy."),
         .effect = EFFECT_HIT,
-        .power = 20,
+        .power = 10,
         .type = TYPE_ELECTRIC,
         .accuracy = 90,
         .pp = 35,
@@ -23848,7 +23848,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .category = DAMAGE_CATEGORY_SPECIAL,
         .additionalEffects = ADDITIONAL_EFFECTS({
             .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
-            .chance = 70,
+            .chance = 90,
         }),
         .battleAnimScript = gBattleAnimMove_StaticSand,
     },

@@ -31,6 +31,7 @@ Route102_EventScript_Calvin::
 Route102_EventScript_CalvinRegisterMatchCallAfterBattle::
 	special PlayerFaceTrainerAfterBattle
 	waitmovement 0
+	setvar VAR_LEVEL_CAP, 16
 	goto_if_set FLAG_HAS_MATCH_CALL, Route102_EventScript_CalvinRegisterMatchCall
 	release
 	end
@@ -90,11 +91,15 @@ Route102_Text_LetsGoBack:
 	.string "Let's go back to the GYM!$"
 
 Route102_Text_ImNotVeryTall:
-	.string "I'm…not very tall, so I sink right\n"
-	.string "into tall grass.\p"
-	.string "The grass goes up my nose and…\n"
-	.string "Fwafwafwafwafwa…\p"
-	.string "Fwatchoo!$"
+	.string "My big bro calls himself the\n"
+	.string "“Guardian of Route 102,” even\p"
+	.string "though nobody asked him to!\n"
+	.string "He's so annoying, so here's a\p"
+	.string "tip: try catching a Stapip.\n"
+	.string "Confusion damage after using\p"
+	.string "Belly Drum is just brutal!\n"
+	.string "Still stuck? Try using Attract!\p"
+	.string "They sell the TM at the shop.$"
 
 Route102_Text_CatchWholeBunchOfPokemon:
 	.string "I'm going to catch a whole bunch of\n"

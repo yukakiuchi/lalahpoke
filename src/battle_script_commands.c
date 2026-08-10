@@ -7099,8 +7099,8 @@ static void Animation_got_item(u16 dropItem)
 }
 
 // dropItemガチャの処理
-// レアアイテムは10%
-// 通常アイテムは40%
+// レアアイテムは5%
+// 通常アイテムは10%
 static u16 itemGacha(void)
 {
     // gBattleMons[0].item
@@ -7119,16 +7119,16 @@ static u16 itemGacha(void)
     u8 luckyNumber = Random() % 100;
     u16 dropItem = ITEM_NONE;
 
-    // ドロップの確率を変えたい場合はここ中の数字を変更
+    // ドロップ確率を変えたい場合はここ中の数字を変更
     switch (luckyNumber)
     {
-        case 0 ... 9: // 0から9まで（20%）
+        case 0 ... 4: // 0から1まで（5%）
             dropItem = rareItem;
             break;
-        case 10 ... 49: // 10から49まで（40%）
+        case 5 ... 24: // 5から24まで（20%）
             dropItem = commonItem;
             break;
-        default: // 50から99まで（ハズレ）
+        default: // 15から99まで（ハズレ）
             dropItem = ITEM_NONE;
             break;
     }

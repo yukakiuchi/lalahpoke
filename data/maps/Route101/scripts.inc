@@ -281,16 +281,22 @@ Route101_Text_YouSavedMe:
 	.string "by my POKéMON LAB later, okay?$"
 
 Route101_Text_TakeTiredPokemonToPokeCenter:
-	.string "If POKéMON get tired, take them to\n"
-	.string "a POKéMON CENTER.\p"
-	.string "There's a POKéMON CENTER in OLDALE\n"
-	.string "TOWN right close by.$"
+	.string "Very rarely, you can encounter\n"
+	.string "DELIBIRD around here.\p"
+	.string "It sometimes drops the TMs for Covet\n"
+	.string "or Thief when defeated!\p"
+	.string "If you teach those to your\n"
+	.string "POKéMON, collecting items\l"
+	.string "will become super easy!$"
 
 Route101_Text_WildPokemonInTallGrass:
-	.string "Wild POKéMON will jump out at you in\n"
-	.string "tall grass.\p"
-	.string "If you want to catch POKéMON, you have\n"
-	.string "to go into the tall grass and search.$"
+	.string "Status conditions and PP\n"
+	.string "recover automatically after\l"
+	.string "battle!\p"
+	.string "Plus, used Berries and items\n"
+	.string "get restored, too!\p"
+	.string "This is a super convenient\n"
+	.string "parallel world, isn't it?$"
 
 Route101_Text_RouteSign:
 	.string "ROUTE 101\n"

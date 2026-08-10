@@ -2119,13 +2119,24 @@ Class: Lady
 Pic: Lady
 Gender: Female
 Music: Female
-Items: Full Restore
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer / Force Setup First Turn
 
-Zigzagoon @ Nugget
-Level: 7
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+SPECIES_WINGULL @ ITEM_SITRUS_BERRY
+Level: 16
+IVs: 32 HP / 32 Atk / 32 Def / 32 SpA / 32 SpD / 32 Spe
+EVs: 252 HP / 252 Spe
+Shiny: Yes
+- MOVE_TAILWIND
+- MOVE_MIST
+- MOVE_SAFEGUARD
+- MOVE_BOLT_BEAK
+
+SPECIES_KRABBY @ ITEM_FOCUS_SASH
+Level: 16
+IVs: 32 Atk / 32 Def / 32 SpA / 32 SpD / 32 Spe
+EVs: 252 Spe
+Shiny: Yes
 
 === TRAINER_DAPHNE ===
 Name: DAPHNE
@@ -5947,11 +5958,34 @@ Pic: Youngster
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: AI_FLAG_SMART_TRAINER
 
-Poochyena
-Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+SPECIES_SWABLU @ Life Orb
+Level: 12
+IVs: 32 HP / 32 Atk / 32 Def / 32 SpA / 32 SpD / 32 Spe
+EVs: 252 HP / 252 Spe
+Shiny: Yes
+- MOVE_SAFEGUARD
+- MOVE_FLAP
+- MOVE_RAINY_BREEZE
+- MOVE_MEADOW_BREEZE
+
+SPECIES_PIKACHU @ ITEM_LIGHT_BALL
+Level: 12
+IVs: 32 HP / 32 Atk / 32 Def / 32 SpA / 32 SpD / 32 Spe
+EVs: 252 HP / 252 Spe
+- MOVE_NUZZLE
+- MOVE_BUG_FURY_SWIPES
+- MOVE_SLACK_OFF
+- MOVE_BELLY_DRUM
+
+SPECIES_GEODUDE @ ITEM_SITRUS_BERRY
+Level: 12
+IVs: 32 HP / 32 Atk / 32 Def / 32 SpA / 32 SpD / 32 Spe
+EVs: 252 HP / 252 Def
+- MOVE_BELLY_DRUM
+- MOVE_JET_PUNCH
+- MOVE_DRAIN_PUNCH
 
 === TRAINER_BILLY ===
 Name: BILLY
@@ -9501,7 +9535,7 @@ IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
 - Psychic
 - Future Sight
 
-=== TRAINER_BRENDAN_ROUTE_103_MUDKIP ===
+=== TRAINER_BRENDAN_ROUTE_103_TORCHIC ===
 Name: BRENDAN
 Class: Rival
 Pic: Brendan
@@ -9611,18 +9645,35 @@ Combusken
 Level: 31
 IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 
-=== TRAINER_BRENDAN_ROUTE_103_TORCHIC ===
+=== TRAINER_BRENDAN_ROUTE_103 ===
 Name: BRENDAN
 Class: Rival
 Pic: Brendan
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Basic Trainer
+AI: AI_FLAG_SMART_TRAINER
 
-Mudkip
-Level: 5
+Torchic
+Level: 7
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Ball: Moon
+- MOVE_SONIC_BOOM
+
+=== TRAINER_MAY_ROUTE_103 ===
+Name: MAY
+Class: Rival
+Pic: May
+Gender: Female
+Music: Female
+Double Battle: No
+AI: AI_FLAG_SMART_TRAINER
+
+Torchic
+Level: 7
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Ball: Moon
+- MOVE_SONIC_BOOM
 
 === TRAINER_BRENDAN_ROUTE_110_TORCHIC ===
 Name: BRENDAN
@@ -9665,19 +9716,6 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 Marshtomp
 Level: 31
 IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
-
-=== TRAINER_MAY_ROUTE_103_MUDKIP ===
-Name: MAY
-Class: Rival
-Pic: May
-Gender: Female
-Music: Female
-Double Battle: No
-AI: Basic Trainer
-
-Treecko
-Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_MAY_ROUTE_110_MUDKIP ===
 Name: MAY
@@ -12974,11 +13012,25 @@ Pic: Fisherman
 Gender: Male
 Music: Hiker
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer / Force Setup First Turn
 
-Magikarp
-Level: 9
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+SPECIES_WINGULL @ ITEM_SITRUS_BERRY
+Level: 16
+IVs: 32 HP / 32 Atk / 32 Def / 32 SpA / 32 SpD / 32 Spe
+EVs: 252 HP / 252 Spe
+Shiny: Yes
+Ball: DUSK
+- MOVE_TAILWIND
+- MOVE_MIST
+- MOVE_SAFEGUARD
+- MOVE_BOLT_BEAK
+
+SPECIES_KRABBY @ ITEM_FOCUS_SASH
+Level: 16
+IVs: 32 Atk / 32 Def / 32 SpA / 32 SpD / 32 Spe
+EVs: 252 Spe
+Shiny: Yes
+Ball: Dive
 
 === TRAINER_HAILEY ===
 Name: HAILEY

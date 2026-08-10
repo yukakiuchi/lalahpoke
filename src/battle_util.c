@@ -3013,8 +3013,8 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
             BattleScriptPushCursorAndCallback(BattleScript_OverworldTerrain);
             effect = TRUE;
         }
-        // 深夜の時間帯20%の確率で野外に自動的にダークフィールが展開される
-        else if (!(gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN) && (gLocalTime.hours < 5) && (Random() % 100 < 20) && gMapHeader.mapType != MAP_TYPE_INDOOR)
+        // 深夜の時間帯10%の確率で野外に自動的にダークフィールが展開される
+        else if (!(gFieldStatuses & STATUS_FIELD_PSYCHIC_TERRAIN) && (gLocalTime.hours < 5) && (Random() % 100 < 10) && gMapHeader.mapType != MAP_TYPE_INDOOR)
         {
             gFieldStatuses = STATUS_FIELD_PSYCHIC_TERRAIN;
             gFieldTimers.terrainTimer = 0;
@@ -7287,7 +7287,12 @@ static inline u32 CalcAttackStat(struct BattleContext *ctx)
     switch (ctx->holdEffectAtk)
     {
     case HOLD_EFFECT_THICK_CLUB:
-        if ((atkBaseSpeciesId == SPECIES_CUBONE || atkBaseSpeciesId == SPECIES_MAROWAK) && IsBattleMovePhysical(move))
+        if ((atkBaseSpeciesId == SPECIES_CUBONE
+            || atkBaseSpeciesId == SPECIES_MAROWAK
+            || atkBaseSpeciesId == SPECIES_TINKATINK
+            || atkBaseSpeciesId == SPECIES_TINKATUFF
+            || atkBaseSpeciesId == SPECIES_TINKATON)
+            && IsBattleMovePhysical(move))
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(2.0));
         break;
     case HOLD_EFFECT_DEEP_SEA_TOOTH:

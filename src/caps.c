@@ -4,6 +4,13 @@
 #include "caps.h"
 #include "pokemon.h"
 
+void InitLevelCap(void)
+{
+    if (B_LEVEL_CAP_TYPE == LEVEL_CAP_VARIABLE)
+    {
+        VarSet(B_LEVEL_CAP_VARIABLE, 7); // 変数式の場合の初期値をセット（例: 7）
+    }
+}
 
 u32 GetCurrentLevelCap(void)
 {

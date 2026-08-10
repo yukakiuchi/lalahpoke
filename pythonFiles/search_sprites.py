@@ -10,8 +10,8 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # ------------------ 設定 ------------------
-SEARCH_IMAGE_PATH = "/Users/yu/Desktop/telefang/alex_front.png"
-ROM_PATH = '/Users/yu/Downloads/Keitai Denjuu Telefang 2 - Power (Japan).gba'
+SEARCH_IMAGE_PATH = "/Users/yu/Desktop/aaa.png"
+ROM_PATH = '/Users/yu/Downloads/hodgepodge.gba'
 OUTPUT_DIR = '/Users/yu/Desktop/extracted_results'
 # -----------------------------------------
 

@@ -1,15 +1,21 @@
 Route102_Text_CalvinIntro:
-	.string "If you have POKéMON with you, then\n"
-	.string "you're an official POKéMON TRAINER!\l"
-	.string "You can't say no to my challenge!$"
+	.string "In this world, Trainers don't\n"
+	.string "usually lock eyes with you.\p"
+	.string "But I am the gatekeeper\n"
+	.string "of Route 102!\p"
+	.string "If you can't beat me, you\n"
+	.string "can't move forward!$"
 
 Route102_Text_CalvinDefeated:
 	.string "Arrgh, I lost…\n"
 	.string "I should have trained mine more…$"
 
 Route102_Text_CalvinPostBattle:
-	.string "Listen, you. If you're strong,\n"
-	.string "you should have told me before!$"
+	.string "Not bad, you pass!\n"
+	.string "Huh? What's that? You heard\p"
+	.string "something from my little bro?\n"
+	.string "Did he say, “My big bro Guardian\p"
+	.string "is so cool”? Hahaha!$"
 
 Route102_Text_CalvinRegister:
 	.string "I've been working hard at this since\n"
@@ -382,8 +388,10 @@ Route104_Text_WinstonPostRematch:
 	.string "It's so deep, the world of POKéMON…$"
 
 Route104_Text_CindyIntro:
-	.string "We must have been fated to meet.\n"
-	.string "May I ask you for a battle?$"
+	.string "Eek! You scared me! Don't talk\n"
+	.string "to me so suddenly!\p"
+	.string "What was I doing? That's none\n"
+	.string "of your business! Now, battle me!$"
 
 Route104_Text_CindyDefeat:
 	.string "Oh, my!$"
@@ -416,12 +424,14 @@ Route104_Text_CindyPostRematch:
 	.string "I hope we meet again.$"
 
 Route104_Text_DarianIntro:
-	.string "I fished up a tough-looking POKéMON!\p"
-	.string "It has this magical quality to it!\n"
-	.string "It surely looks tough, yes it does!$"
+	.string "I'm the Guardian of this beach!\n"
+	.string "You know this world has gimmicks,\p"
+	.string "right? You can't pass here until\n"
+	.string "you solve my gimmick!$"
 
 Route104_Text_DarianDefeat:
-	.string "What the…$"
+	.string "I guess it's crab hotpot\n"
+	.string "tonight...$"
 
 Route104_Text_DarianPostBattle:
 	.string "Hey, MAGIKARP, you sure don't live up\n"

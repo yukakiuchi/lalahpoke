@@ -38022,7 +38022,7 @@ gBattleAnimMove_GrassyWind::
 	delay 0
 	simple_palette_blend selector=F_PAL_BG, delay=1, initial_blend_y=6, target_blend_y=0, color=RGB(13, 31, 12)     @ 背景色戻る
 	createvisualtask AnimTask_BlendBattleAnimPal, 10, (F_PAL_ATTACKER), 0, 4, 0, RGB(13, 31, 12)                    @ 自分のポケモンの体の色戻る
-	@ waitforvisualfinish @ バグったらこれをいれる
+	waitforvisualfinish @ バグったらこれをいれる
 	end
 
 gBattleAnimMove_GrassyStorm::
@@ -38509,7 +38509,7 @@ gBattleAnimMove_SolsticeWind::
 	createsprite gFlyingRedSandCrescentSpriteTemplate, ANIM_ATTACKER, 40, 10, 2304, 96, 0                      @ 技画像流れ始める
 	delay 10
 	setarg 0, 2
-	createvisualtask AnimTask_DriftTargetsSide, 1                                                              @ 受ける側横にズレる
+	createvisualtask AnimTask_DriftTargetsSideNoFlip, 1                                                        @ 受ける側横にズレる
 	createsprite gFlyingRedSandCrescentSpriteTemplate, ANIM_ATTACKER, 40, 90, 2048, 96, 0
 	delay 10
 	createsprite gFlyingRedSandCrescentSpriteTemplate, ANIM_ATTACKER, 40, 50, 2560, 96, 0
@@ -38682,12 +38682,11 @@ gBattleAnimMove_GloomWind::
 	playsewithpan SE_M_SWEET_SCENT, SOUND_PAN_ATTACKER                                                          @ あまいかおりの効果音
 	setarg 0, FALSE    @ gBattleAnimArgs[0] に方向（FALSE）をセット
 	setarg 1, 1        @ gBattleAnimArgs[1] にパレットモード（1）をセット
-	createvisualtask AnimTask_LoadSandstormBackground, 5, 0   													@ 背景をプログラムで作る
+	createvisualtask AnimTask_LoadSandstormBackground, 5, 0, TRUE, 100 													@ 背景をプログラムで作る
 	delay 16
 	createsprite gFlyingPurpleSandCrescentSpriteTemplate, ANIM_ATTACKER, 40, 10, 2304, 96, 0                    @ 技画像流れ始める
 	delay 10
 	setarg 0, 5
-	createvisualtask AnimTask_DriftTargetsSide, 1                                                               @ 受け取り手風に流されるモーション
 	createsprite gFlyingPurpleSandCrescentSpriteTemplate, ANIM_ATTACKER, 40, 90, 2048, 96, 0
 	delay 10
 	createsprite gFlyingPurpleSandCrescentSpriteTemplate, ANIM_ATTACKER, 40, 50, 2560, 96, 0
@@ -41408,8 +41407,11 @@ gBattleAnimMove_SonicBoom::
 	delay 30
 	invert_screen_color scenery=0x1 | 0x2 | 0x4
 	delay 30
+	playsewithpan SE_M_TOXIC, SOUND_PAN_TARGET                           @ 受け取り手に効果音
 	createvisualtask AnimTask_ShakeMon2, 2, ANIM_TARGET, 4, 0, 4, 7
-	delay 30
+	delay 15
+	playsewithpan SE_M_TOXIC, SOUND_PAN_TARGET                           @ 受け取り手に効果音
+	delay 15
 	invert_screen_color scenery=0x1 | 0x2 | 0x4
 	waitforvisualfinish
 	blendoff

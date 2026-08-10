@@ -30,6 +30,7 @@ OldaleTown_Mart_Pokemart_Basic:
 	.2byte ITEM_TM66
 	.2byte ITEM_TM97
 	.2byte ITEM_TM98
+	.2byte ITEM_TM108
 	pokemartlistend
 
 OldaleTown_Mart_ExpandedItems::
@@ -58,6 +59,7 @@ OldaleTown_Mart_Pokemart_Expanded:
 	.2byte ITEM_TM66
 	.2byte ITEM_TM97
 	.2byte ITEM_TM98
+	.2byte ITEM_TM108
 	pokemartlistend
 
 OldaleTown_Mart_EventScript_Woman::

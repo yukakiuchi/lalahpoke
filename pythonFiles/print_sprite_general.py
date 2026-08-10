@@ -6,11 +6,11 @@ from PIL import Image
 from collections import Counter
 
 # ------------------ 📝 ユーザー設定エリア ------------------
-ROM_PATH = '/Users/yu/Downloads/spades&clubs demo 0.2.1.gba'
+ROM_PATH = '/Users/yu/Downloads/hodgepodge.gba'
 OUTPUT_BASE_DIR = '/Users/yu/Desktop/extracted_pokemon_syncedaaaa'
 
-HINT_IMG_ADDR = 0xD4183C       # 画像アドレスのヒント
-HINT_PAL_ADDR = 0xD41B9C       # 通常パレットアドレスのヒント
+HINT_IMG_ADDR = 0x1BEEBD0       # 画像アドレスのヒント
+HINT_PAL_ADDR = 0x1BEEFAC       # 通常パレットアドレスのヒント
 HINT_SHINY_ADDR = None         # 色違いパレットアドレス（NoneのままでOK）
 SCAN_COUNT = 445               # 抽出したいモンスターの最大数
 # -----------------------------------------------------

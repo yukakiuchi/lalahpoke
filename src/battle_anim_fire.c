@@ -1467,18 +1467,27 @@ void AnimTask_DriftTargetsSide(u8 taskId)
 {
     struct Task *task = &gTasks[taskId];
 
-    task->data[12] = IsOnPlayerSide(gBattleAnimAttacker) ? 1 : -1;
+    task->data[12] = IsOnPlayerSide(gBattleAnimAttacker) ? 1 : -1; // 自動で反転
     task->data[13] = IsBattlerSpriteVisible(BATTLE_PARTNER(gBattleAnimTarget)) + 1;
     task->data[14] = GetAnimBattlerSpriteId(ANIM_TARGET);
     task->data[15] = GetAnimBattlerSpriteId(ANIM_DEF_PARTNER);
-
-    // ── 引数からループ回数を取得して退避 ──
-    // 引数に 0 以下が指定されていた場合は安全のために最低 1 回にする
     task->data[8] = (gBattleAnimArgs[0] <= 0) ? 1 : gBattleAnimArgs[0]; 
 
     task->func = AnimTask_DriftTargetsSide_Step;
 }
 
+void AnimTask_DriftTargetsSideNoFlip(u8 taskId)
+{
+    struct Task *task = &gTasks[taskId];
+
+    task->data[12] = 1; // 常に右固定！
+    task->data[13] = IsBattlerSpriteVisible(BATTLE_PARTNER(gBattleAnimTarget)) + 1;
+    task->data[14] = GetAnimBattlerSpriteId(ANIM_TARGET);
+    task->data[15] = GetAnimBattlerSpriteId(ANIM_DEF_PARTNER);
+    task->data[8] = (gBattleAnimArgs[0] <= 0) ? 1 : gBattleAnimArgs[0]; 
+
+    task->func = AnimTask_DriftTargetsSide_Step;
+}
 
 
 // Used to add a color mask to the battle background.

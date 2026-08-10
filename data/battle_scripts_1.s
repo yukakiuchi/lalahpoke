@@ -3150,14 +3150,14 @@ BattleScript_MoveEffectBleed::
 	volatileanimation BS_TARGET, VOLATILE_BLEED
 	printstring STRINGID_PKMNSTARTEDBLEEDING
 	waitmessage B_WAIT_TIME_LONG
-	end2
+	goto BattleScript_MoveEnd
 
 @ 出血再度付与された時の処理
 BattleScript_MoveEffectBleedContinue::
 	volatileanimation BS_TARGET, VOLATILE_BLEED
 	printstring STRINGID_PKMBLEEDINGCONTINUING
     waitmessage B_WAIT_TIME_LONG
-	end2
+	goto BattleScript_MoveEnd
 
 BattleScript_EffectMinimize::
 	attackcanceler
