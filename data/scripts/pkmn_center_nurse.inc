@@ -131,3 +131,37 @@ Movement_PkmnCenterNurse_Bow:
 Movement_PkmnCenterNurse_Turn:
 	walk_in_place_faster_left
 	step_end
+
+EventScript_OutsideNurse::
+	lock
+	faceplayer
+	msgbox Text_OutsideNurse_Intro, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, YES, EventScript_OutsideNurse_Heal
+	msgbox Text_OutsideNurse_Declined, MSGBOX_DEFAULT
+	release
+	end
+
+EventScript_OutsideNurse_Heal::
+	closemessage
+	call Common_EventScript_OutOfCenterPartyHeal
+	msgbox Text_OutsideNurse_Healed, MSGBOX_DEFAULT
+	release
+	end
+
+Text_OutsideNurse_Intro:
+	.string "I'm a traveling nurse!\n"
+	.string "Tired from your adventure?\p"
+	.string "Would you like to chat with me?$"
+
+Text_OutsideNurse_Declined:
+	.string "Oh, you're still full of energy!\n"
+	.string "Ufufufu...\p"
+	.string "Come chat with me whenever you're\n"
+	.string "tired!\p"
+	.string "Good luck on your adventure, and\n"
+	.string "take care out there, sweetheart!$"
+
+Text_OutsideNurse_Healed:
+	.string "Your Pokémon are fully restored!\p"
+	.string "Good luck on your adventure, and\n"
+	.string "take care out there, sweetheart!$"

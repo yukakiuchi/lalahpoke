@@ -6633,3 +6633,63 @@ bool32 IsNewAbilityThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, 
 
     return FALSE;
 }
+
+bool32 CanAiSurviveWithSash(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData)
+{
+    // 相手が連続攻撃技を持っているかチェック
+    bool32 defHasMultiHit = FALSE;
+    for (u32 i = 0; i < MAX_MON_MOVES; i++)
+    {
+        enum Move defMove = gBattleMons[battlerDef].moves[i];
+        if (defMove != MOVE_NONE && IsMultiHitMove(defMove))
+        {
+            defHasMultiHit = TRUE;
+            break;
+        }
+    }
+
+    // HP満タン ＆ (タスキ所持 OR 特性がんじょう) ＆ 相手に連続技なし ＆ 定数ダメージなし
+    return (gBattleMons[battlerAtk].hp == gBattleMons[battlerAtk].maxHP)
+        && (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_FOCUS_SASH || aiData->abilities[battlerAtk] == ABILITY_STURDY)
+        && !defHasMultiHit
+        && (GetBattlerSecondaryDamage(battlerAtk) == 0);
+}
+
+bool32 CanSafelyApplyLeechSeed(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData)
+{
+    // 1. 相手がすでに宿り木状態なら不発
+    if (gBattleMons[battlerDef].volatiles.leechSeed)
+        return FALSE;
+
+    // 2. 草タイプには無効
+    if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GRASS))
+        return FALSE;
+
+    // 3. 相手のみがわりに防がれる
+    if (DoesSubstituteBlockMove(battlerAtk, battlerDef, move))
+        return FALSE;
+
+    // 4. ヘドロえき（吸収で逆にダメージを受ける）
+    if (aiData->abilities[battlerDef] == ABILITY_LIQUID_OOZE)
+        return FALSE;
+
+    // 5. マジックガード（スリップダメージが入らない）
+    if (aiData->abilities[battlerDef] == ABILITY_MAGIC_GUARD)
+        return FALSE;
+
+    // 6. ダブルバトル等で味方が同じターンに宿り木系技を使っていないか
+    if (DoesPartnerHaveSameMoveEffect(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
+        return FALSE;
+
+    // 7. 変化技の場合の無効・反射特性チェック（マジックミラー / おうごんのからだ）
+    if (GetBattleMoveCategory(move) == DAMAGE_CATEGORY_STATUS)
+    {
+        if (aiData->abilities[battlerDef] == ABILITY_MAGIC_BOUNCE)
+            return FALSE;
+
+        if (aiData->abilities[battlerDef] == ABILITY_GOOD_AS_GOLD)
+            return FALSE;
+    }
+
+    return TRUE;
+}

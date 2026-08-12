@@ -53,8 +53,7 @@ static void AI_HandleDeathSongThreat(enum BattlerId battlerAtk, enum BattlerId b
 static void AI_HandleKrabbyKinglerAbilityChange(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, s32 *score);
 static void AI_CheckDeathSongBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score);
 static void AI_CheckNewAbilityThreatBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score);
-static void AI_CheckContactAbilityBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score); // ★追加（新規）
-
+static void AI_CheckContactAbilityBadMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData, s32 *score);
 
 // ewram
 EWRAM_DATA const u8 *gAIScriptPtr = NULL;   // Still used in contests
@@ -1527,7 +1526,8 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
     case EFFECT_EVASION_UP:
     case EFFECT_EVASION_UP_2:
     case EFFECT_MINIMIZE:
-        if (!BattlerStatCanRise(battlerAtk, aiData->abilities[battlerAtk], STAT_EVASION))
+        if (!BattlerStatCanRise(battlerAtk, aiData->abilities[battlerAtk], STAT_EVASION)
+         || abilityDef == ABILITY_WIND_WEAVER) // ★ 相手の特性が WIND_WEAVER なら減点
             ADJUST_SCORE(-10);
         break;
     case EFFECT_COSMIC_POWER:
@@ -3201,14 +3201,21 @@ static s32 AI_TryToFaint(enum BattlerId battlerAtk, enum BattlerId battlerDef, e
         else
             ADJUST_SCORE(SLOW_KILL);
     }
-    else if (CanTargetFaintAi(battlerDef, battlerAtk)
+    else
+    {
+        // 共通関数を呼び出し
+        bool32 aiCanSurviveWithSash = CanAiSurviveWithSash(battlerAtk, battlerDef, gAiLogicData);
+
+        if (CanTargetFaintAi(battlerDef, battlerAtk)
+            && !aiCanSurviveWithSash // ★ タスキ/頑丈で耐えられる場合は、焦って先制技（悪あがき）を打たない！
             && AI_GetWhichBattlerFasterOrTies(battlerAtk, battlerDef, TRUE) != AI_IS_FASTER
             && GetBattleMovePriority(battlerAtk, gAiLogicData->abilities[battlerAtk], move) > 0)
-    {
-        if (RandomPercentage(RNG_AI_PRIORITIZE_LAST_CHANCE, PRIORITIZE_LAST_CHANCE_CHANCE) && !IsDoubleBattle()) // Last Chance behaviour is too easily abused in doubles
-            ADJUST_SCORE(BEST_EFFECT); // Don't outscore Fast Kill (which gets a bonus point in AI_CompareDamagingMoves), but do outscore Slow Kill getting the same
-        else
-            ADJUST_SCORE(LAST_CHANCE);
+        {
+            if (RandomPercentage(RNG_AI_PRIORITIZE_LAST_CHANCE, PRIORITIZE_LAST_CHANCE_CHANCE) && !IsDoubleBattle())
+                ADJUST_SCORE(BEST_EFFECT);
+            else
+                ADJUST_SCORE(LAST_CHANCE);
+        }
     }
 
     return score;
@@ -4439,6 +4446,17 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
     // ★ 頑丈ヌケニンに対する有効打の加点処理
     AI_HandleSturdyShedinja(battlerAtk, battlerDef, move, &score);
 
+    if (CanAiSurviveWithSash(battlerAtk, battlerDef, aiData) && GetMoveCategory(move) == DAMAGE_CATEGORY_STATUS)
+    {
+        enum BattleMoveEffects moveEffect = GetMoveEffect(move);
+
+        // 積み技（能力上昇）、設置技（ステロ等）、状態異常技（電磁波/胞子等）なら最高評価（BEST_EFFECT）を加点
+        if (IsStatRaisingEffect(moveEffect) || IsHazardMove(move) || IsNonVolatileStatusMove(move))
+        {
+            ADJUST_SCORE(BEST_EFFECT);
+        }
+    }
+
     // Non-volatile statuses
     switch (GetMoveNonVolatileStatus(move))
     {
@@ -4825,6 +4843,16 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
         }
         break;
     case EFFECT_LEECH_SEED:
+        u16 speciesDef = gBattleMons[battlerDef].species;
+        // ★ AIの特性が「寄生 (ABILITY_PARASITISM)」かつ安全に付与できる場合、スコアを8加算
+        if (aiData->abilities[battlerAtk] == ABILITY_PARASITISM && speciesDef != SPECIES_KRABBY)
+        {
+            if (CanSafelyApplyLeechSeed(battlerAtk, battlerDef, move, aiData))
+            {
+                ADJUST_SCORE(8);
+                break;
+            }
+        }
         // 無効・危険な相手なら処理を中断（評価を上げない）
         if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GRASS)
           || gBattleMons[battlerDef].volatiles.leechSeed
@@ -4834,11 +4862,6 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
         {
             break;
         }
-        // 水または虫タイプなら＋5スコア、それ以外は通常（GOOD_EFFECT）加算
-        if (IS_BATTLER_ANY_TYPE(battlerDef, TYPE_WATER, TYPE_BUG))
-            ADJUST_SCORE(5);
-        else
-            ADJUST_SCORE(GOOD_EFFECT);
         if (!HasDamagingMove(battlerDef)
             || IsBattlerTrapped(battlerAtk, battlerDef)
             || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT)
@@ -5056,6 +5079,8 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
     case EFFECT_PERISH_SONG:
         if (IsBattlerTrapped(battlerAtk, battlerDef))
             ADJUST_SCORE(GOOD_EFFECT);
+        if (aiData->abilities[battlerAtk] == ABILITY_DEATH_SINGER) 
+            ADJUST_SCORE(BEST_EFFECT);
         break;
     case EFFECT_WEATHER:
         ADJUST_SCORE(CalcWeatherScore(battlerAtk, battlerDef, move, aiData));
@@ -5217,15 +5242,56 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
             ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPDEF));
         break;
     case EFFECT_TAUNT:
-        // ★ 安全チェック：
-        // 1. 相手がまだちょうはつ状態ではない (tauntTimer == 0)
-        // 2. 相手がみがわりを張っていない (!DoesSubstituteBlockMove)
-        // 3. 自分がちょうはつ等で技を封じられていない (!IsMoveUnusable)
-        // 4. 相手がメンタルハーブを持っていない（即座に治されるのを防ぐ）
+        // 1. AIが打とうとしている「ちょうはつ」の優先度を取得（いたずらごころ等なら自動で 1 になる）
+        s32 atkTauntPriority = GetBattleMovePriority(battlerAtk, aiData->abilities[battlerAtk], move);
+
+        bool32 canFaintToFasterMove = FALSE;
+        bool32 defHasPriorityMove = FALSE;
+
+        for (u32 i = 0; i < MAX_MON_MOVES; i++)
+        {
+            enum Move defMove = gBattleMons[battlerDef].moves[i];
+            if (defMove == MOVE_NONE)
+                continue;
+
+            s32 defMovePriority = GetBattleMovePriority(battlerDef, aiData->abilities[battlerDef], defMove);
+
+            if (defMovePriority > 0)
+                defHasPriorityMove = TRUE;
+
+            // 相手のこの攻撃技1発でAIが倒される可能性があるか？
+            if (CanTargetMoveFaintAi(defMove, battlerDef, battlerAtk, 1))
+            {
+                // ① 相手の攻撃の優先度がAIの挑発より高い場合（例：相手のフェイント[+2] vs いたずらごころ挑発[+1]）
+                if (defMovePriority > atkTauntPriority)
+                {
+                    canFaintToFasterMove = TRUE; // 優先度で負けて倒される
+                    break;
+                }
+                // ② 優先度が同じ場合（例：相手のマッハパンチ[+1] vs いたずらごころ挑発[+1]）
+                else if (defMovePriority == atkTauntPriority)
+                {
+                    // 素早さで負けているなら相手に先制されて倒される
+                    if (AI_IsSlower(battlerAtk, battlerDef, move, defMove, DONT_CONSIDER_PRIORITY))
+                    {
+                        canFaintToFasterMove = TRUE;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // ★ 安全チェック（すべての「ちょうはつ」判定に共通する必須条件）：
+        // ・相手がまだちょうはつ状態ではない (tauntTimer == 0)
+        // ・相手がみがわりを張っていない (!DoesSubstituteBlockMove)
+        // ・自分がちょうはつ等で技を封じられていない (!IsMoveUnusable)
+        // ・相手がメンタルハーブを持っていない
+        // ・相手の攻撃に上を取られて倒される状態ではない (!canFaintToFasterMove) ★いたずらごころ＆素早さ考慮！
         if (gBattleMons[battlerDef].volatiles.tauntTimer == 0
          && !DoesSubstituteBlockMove(battlerAtk, battlerDef, move)
          && !IsMoveUnusable(movesetIndex, move, aiData->moveLimitations[battlerAtk])
-         && !(B_MENTAL_HERB >= GEN_5 && aiData->holdEffects[battlerDef] == HOLD_EFFECT_MENTAL_HERB))
+         && !(B_MENTAL_HERB >= GEN_5 && aiData->holdEffects[battlerDef] == HOLD_EFFECT_MENTAL_HERB)
+         && !canFaintToFasterMove) // ★ 相手に先制されて倒される場合のみ禁止！
         {
             // ① DEATH_SINGER または トリック/スキスワ/脅威特性等の危険コンボ阻止
             if (IsDeathSongThreat(battlerAtk, battlerDef, aiData)
@@ -5236,12 +5302,20 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
                 else
                     ADJUST_SCORE(GOOD_EFFECT); // 後攻でも次ターン以降の阻止用に +3点
             }
-            // ② 相手がこのターン変化技を使う予測なら +3点
+            // ② 相手が「はらだいこ」を持っている場合
+            else if (isAiFaster 
+                  && (HasMove(battlerDef, MOVE_BELLY_DRUM) || HasMoveWithEffect(battlerDef, EFFECT_BELLY_DRUM))
+                  && !CanTargetFaintAi(battlerDef, battlerAtk)
+                  && !defHasPriorityMove)
+            {
+                ADJUST_SCORE(5);
+            }
+            // ③ 相手がこのターン変化技を使う予測なら +3点
             else if (IsBattleMoveStatus(predictedMove))
             {
                 ADJUST_SCORE(DECENT_EFFECT);
             }
-            // ③ 相手が変化技を持っているなら +2点
+            // ④ 相手が変化技を持っているなら +2点
             else if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_STATUS))
             {
                 ADJUST_SCORE(DECENT_EFFECT);
@@ -6206,6 +6280,16 @@ static s32 AI_CalcAdditionalEffectScore(enum BattlerId battlerAtk, enum BattlerI
             case MOVE_EFFECT_POISON:
                 IncreasePoisonScore(battlerAtk, battlerDef, move, &score);
                 break;
+             case MOVE_EFFECT_LEECH_SEED:
+                u16 speciesDef = gBattleMons[battlerDef].species;
+                if (aiData->abilities[battlerAtk] == ABILITY_PARASITISM && speciesDef != SPECIES_KRABBY)
+                {
+                    if (CanSafelyApplyLeechSeed(battlerAtk, battlerDef, move, aiData))
+                    {
+                        ADJUST_SCORE(8);
+                    }
+                }
+                break;
             case MOVE_EFFECT_CLEAR_SMOG:
             {
                 enum MoveTarget target = AI_GetBattlerMoveTargetType(battlerAtk, move);
@@ -6401,7 +6485,8 @@ static s32 AI_CheckViability(enum BattlerId battlerAtk, enum BattlerId battlerDe
             // ★相手（battlerDef）がクラブまたはキングラーの場合、自分が使う先制技（優先度>0）の評価を大幅上昇
             u16 speciesDef = gBattleMons[battlerDef].species;
             if ((speciesDef == SPECIES_KRABBY)
-             && GetBattleMovePriority(battlerAtk, aiData->abilities[battlerAtk], move) > 0)
+             && GetBattleMovePriority(battlerAtk, aiData->abilities[battlerAtk], move) > 0
+             && !Ai_IsPriorityBlocked(battlerAtk, battlerDef, move, aiData)) // ★先制技が無効化されないかチェック追加
             {
                 ADJUST_SCORE(5);
             }

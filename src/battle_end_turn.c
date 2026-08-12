@@ -289,8 +289,8 @@ static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
             }
             ApplyFieldEffectsHpUpdate(battler, hpFraction, &fieldEffectFlags);
 
-            // 全ポケモン20%確率で氷結状態付与 こおりとほのおタイプ以外 こおりタイプかどうかはCanBeFrozenの中でチェックしてる
-            if (!IS_BATTLER_ANY_TYPE(battler, TYPE_FIRE) && CanBeFrozen(battler, battler, ability) && (Random() % 100 < 20))
+            // 全ポケモン10%確率で氷結状態付与 こおりとほのおタイプ以外 こおりタイプかどうかはCanBeFrozenの中でチェックしてる
+            if (!IS_BATTLER_ANY_TYPE(battler, TYPE_FIRE) && CanBeFrozen(battler, battler, ability) && (Random() % 100 < 10))
             {
                 gBattleMons[battler].status1 |= STATUS1_FREEZE;
                 fieldEffectFlags |= B_MS_FIELD_EFFECT_INFLICT_STATUS;
@@ -518,10 +518,10 @@ static bool32 HandleEndTurnFirstEventBlock(enum BattlerId battler)
             if(IS_BATTLER_ANY_TYPE(battler, TYPE_DARK))
                 hpFraction += 2; // あくタイプは毎ターン1/8HP回復
 
-            // 20%の確率でポケモンを眠らせる(あくタイプ・ひこうタイプ以外)
+            // 10%の確率でポケモンを眠らせる(あくタイプ・ひこうタイプ以外)
             if (CanBeSlept(battler, battler, ability, NOT_BLOCKED_BY_SLEEP_CLAUSE)
                 && !IS_BATTLER_ANY_TYPE(battler, TYPE_DARK, TYPE_FLYING)
-                && (Random() % 100 < 20))
+                && (Random() % 100 < 10))
             {
                 // 軽いねむり状態を付与
                 gBattleMons[battler].status1 |= STATUS1_SLEEP_TURN(RandomUniform(RNG_SLEEP_TURNS, 1, 2));
@@ -1739,7 +1739,7 @@ static bool32 HandleEndTurnLeechSeed(enum BattlerId battler)
         // 2. 特性「寄生」を持っている場合のみ、確率で即死判定を行う
         if (hasParasitism)
         {
-            u32 successRate = isBugOrWater ? 80 : 20; // 水・虫なら80%、それ以外は20%
+            u32 successRate = isBugOrWater ? 100 : 80; // 水・虫なら100%、それ以外は80%
             
             if ((Random() % 100) < successRate)
             {
@@ -1766,7 +1766,6 @@ static bool32 HandleEndTurnLeechSeed(enum BattlerId battler)
 
         // ダメージ量と回復量の事前設定
         SetPassiveDamageAmount(battler, drainAmount);
-        SetHealAmount(gBattlerTarget, healAmount);
 
         // 4. バトルスクリプトの分岐呼び出し
         if (isParasiteSuccess)
@@ -1774,6 +1773,10 @@ static bool32 HandleEndTurnLeechSeed(enum BattlerId battler)
             // 特性による即死（特性ポップアップを表示してKO）
             gBattlerAbility = gBattlerTarget;      // ポップアップを種の主（自分）に表示
             gLastUsedAbility = ABILITY_PARASITISM;
+            if (!IsHealDisabledByStatus(gBattlerTarget))
+            {
+                SetHealAmount(gBattlerTarget, healAmount);
+            }
             BattleScriptExecute(BattleScript_LeechSeedTurnKO);
         }
         else if (GetBattlerAbility(battler) == ABILITY_LIQUID_OOZE)
@@ -1791,6 +1794,7 @@ static bool32 HandleEndTurnLeechSeed(enum BattlerId battler)
         else
         {
             // 通常のやどりぎ処理（通常のやどりぎメッセージ＆1/8回復）
+            SetHealAmount(gBattlerTarget, healAmount);
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_LEECH_SEED_DRAIN;
             BattleScriptExecute(BattleScript_LeechSeedTurnDrainRecovery);
         }

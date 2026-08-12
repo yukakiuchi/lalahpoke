@@ -471,8 +471,6 @@ const u16 gFieldEffectObjectPalette_CaveDust[] = INCGFX_U16("graphics/field_effe
 
 const u32 gObjectEventPic_ApricornTree[] = INCGFX_U32("graphics/object_events/pics/misc/apricorn_tree.png", ".4bpp", "-mwidth 2 -mheight 2");
 
-#if IS_FRLG
-
 const u16 gObjectEventPic_RedNormal[] = INCGFX_U16("graphics/object_events/pics/people/red/red_normal.png", ".4bpp", "-mwidth 2 -mheight 4");
 const u16 gObjectEventPic_RedBike[] = INCGFX_U16("graphics/object_events/pics/people/red/red_bike.png", ".4bpp", "-mwidth 4 -mheight 4");
 const u16 gObjectEventPic_RedSurf[] = INCGFX_U16("graphics/object_events/pics/people/red/red_surf.png", ".4bpp", "-mwidth 4 -mheight 4");
@@ -640,6 +638,3 @@ const u16 gObjectEventPic_ClefairyOld[] = INCGFX_U16("graphics/object_events/pic
 // OWイベント追加
 // 引数は1=8 ピクセルを分割していくっていう意味
 // 4,4にすると32x32ずつ分割していく
-
-
-#endif // IS_FRLG

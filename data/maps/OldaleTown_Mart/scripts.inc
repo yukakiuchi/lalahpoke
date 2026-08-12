@@ -84,12 +84,24 @@ OldaleTown_Mart_Text_PokeBallsAreSoldOut:
 	.string "I can't buy any POKé BALLS.$"
 
 OldaleTown_Mart_Text_ImGoingToBuyPokeBalls:
-	.string "I'm going to buy a bunch of POKé BALLS\n"
-	.string "and catch a bunch of POKéMON!$"
+	.string "Shops don't sell very good items\n"
+	.string "in this world.\p"
+	.string "Instead, you mostly rely on item\n"
+	.string "drops from POKéMON!\p"
+	.string "It's a bit different from usual,\n"
+	.string "but interesting, isn't it?\p"
+	.string "It gives more reason to battle\n"
+	.string "killing two birds with one stone!$"
 
 OldaleTown_Mart_Text_RestoreHPWithPotion:
-	.string "If a POKéMON gets hurt and loses its HP\n"
-	.string "and faints, it won't be able to battle.\p"
-	.string "To prevent your POKéMON from fainting,\n"
-	.string "restore its HP with a POTION.$"
+	.string "Wild POKéMON drop common items\n"
+	.string "20 percent of the time, and\p"
+	.string "rare items 10 percent of the time.\p"
+	.string "That might be rebalanced later,\n"
+	.string "but that's the rate for now.\p"
+	.string "By the way, held items are at\n"
+	.string "30 percent for both types!\p"
+	.string "So catching POKéMON or stealing\n"
+	.string "their held items is a much better\p"
+	.string "way to get rare items!$"
 

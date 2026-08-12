@@ -183,6 +183,7 @@ static enum CancelerResult CancelerAsleepOrFrozen(struct BattleContext *ctx)
 
 static enum CancelerResult CancelerObedience(struct BattleContext *ctx)
 {
+    return CANCELER_RESULT_SUCCESS; // ポケモンのレベルが高くて言うこと聞かない仕様をOFF
     if (!gBattleMons[ctx->battlerAtk].volatiles.multipleTurns)
     {
         enum Obedience obedienceResult = GetAttackerObedienceForAction();

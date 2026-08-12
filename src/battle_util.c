@@ -2703,6 +2703,14 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
     switch (caseId)
     {
     case FIELD_EFFECT_TRAINER_STATUSES:  // starting field/side/etc statuses with a variable
+
+
+        // 特定のトレーナー戦で特定のバトルフィールドにすることができる
+        // if ((gBattleTypeFlags & BATTLE_TYPE_TRAINER) && TRAINER_BATTLE_PARAM.opponentA == TRAINER_ROXANNE_1) // TRAINER_ERIKAは任意のトレーナーID
+        //     {
+        //         gStartingStatuses.psychicTerrain = TRUE;
+        //     }
+
         if (gStartingStatuses.electricTerrain || gStartingStatuses.electricTerrainTemporary)
         {
             effect = SetStartingFieldStatus(
@@ -9823,8 +9831,8 @@ bool32 AreBattlersOfOppositeGender(enum BattlerId battler1, enum BattlerId battl
     if (gender1 != gender2)
         return TRUE;
 
-    // 同性（gender1 == gender2）の場合、20%（1/5）の確率で成功
-    if (Random() % 100 < 30)
+    // 同性（gender1 == gender2）の場合、50%（1/2）の確率で成功
+    if (Random() % 100 < 50)
         return TRUE;
 
     return FALSE;
@@ -10798,9 +10806,9 @@ u32 GetTotalAccuracy(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum 
         // 1. むしタイプ命中下がらない
         if (!IS_BATTLER_ANY_TYPE(battlerAtk, TYPE_BUG))
         {
-            // 2. あくタイプひこうタイプは命中20%下がる
-            if (IS_BATTLER_OF_TYPE(battlerAtk, TYPE_DARK) || IS_BATTLER_OF_TYPE(battlerAtk, TYPE_FLYING))
-                calc = (calc * 20) / 100;
+            // 2. あくタイプタイプは命中10%下がる
+            if (IS_BATTLER_OF_TYPE(battlerAtk, TYPE_DARK))
+                calc = (calc * 10) / 100;
             // 3. それ以外は命中率60%になる
             else
                 calc = (calc * 60) / 100;

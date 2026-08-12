@@ -8386,6 +8386,7 @@ static void Task_FirstBattleEnterParty_WaitFadeNormal(u8 taskId)
 }
 
 /**
+ * ポケモンにボールを持たせたら自動でそのボールをポケモン本体の持ってるボールと入れ替える処理
  * ポケモンに持たせたアイテムがボール系か判定し、
  * ボールであればそのポケモンの格納ボール情報を更新する
  * * @param mon 変更対象のポケモン構造体へのポインタ
@@ -8395,8 +8396,9 @@ static void TryUpdateMonPokeball(struct Pokemon *mon, u32 itemId)
 {
     // 関数経由で安全にボールIDを取得
     u32 ballId = ItemIdToBallId(itemId);
+    enum Item originalBall = GetMonData(mon, MON_DATA_POKEBALL);
     GetMonNickname(mon, gStringVar1);  // ピカチューは
-    CopyItemName(itemId, gStringVar2); // モンスターボールを返したという風にメッセージを表示させたいから
+    CopyItemName(originalBall, gStringVar2); // モンスターボールを返したという風にメッセージを表示させたいから
 
     if (TryReturnOriginalHeldBallToBag(mon))
     {

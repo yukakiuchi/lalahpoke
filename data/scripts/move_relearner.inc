@@ -1,9 +1,11 @@
 Common_EventScript_MoveRelearner::
 	lockall
 	faceplayer
-	message MoveRelearner_Text_WouldLearnNewMoves
-	waitmessage
-	goto Common_EventScript_MoveRelearnerDynMultiChoice
+	msgbox MoveRelearner_Text_WouldLearnNewMoves, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, MoveRelearner_EventScript_PleaseComeAgain
+	setmoverelearnerstate MOVE_RELEARNER_LEVEL_UP_MOVES
+	bufferstring STR_VAR_3, MoveRelearner_Text_LevelUpMoveLWR
+	goto MoveRelearner_EventScript_TeachMove
 	end
 
 Common_EventScript_MoveRelearnerDynMultiChoice::

@@ -41,7 +41,11 @@ RustboroCity_PokemonCenter_1F_Text_MaleAndFemalePokemon:
 	.string "they're different.$"
 
 RustboroCity_PokemonCenter_1F_Text_HMCutNextDoor:
-	.string "The man next door gave me an HM!\p"
-	.string "I used it to teach my POKéMON how to\n"
-	.string "CUT down skinny trees.$"
-
+	.string "Can't beat the challenger on\n"
+	.string "Route 116?\p"
+	.string "Give a bulky POKéMON the Rocky\n"
+	.string "Helmet item found on that route!\p"
+	.string "The opponent will practically\n"
+	.string "melt away on their own!\p"
+	.string "By the way, Tinkatuff drops\n"
+	.string "Rocky Helmets too!$"

@@ -1738,4 +1738,4 @@ EventScript_PalletTown_PlayersHouse_2F_TurnOnPC::
 	.include "data/scripts/apricorn_tree.inc"
 	.include "data/scripts/delibirdShop.inc"
 	.include "data/scripts/delibirdShop_outside.inc"
-
+	.include "data/scripts/pokemon_taxi.inc"

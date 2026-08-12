@@ -102,8 +102,15 @@ Route102_Text_ImNotVeryTall:
 	.string "They sell the TM at the shop.$"
 
 Route102_Text_CatchWholeBunchOfPokemon:
-	.string "I'm going to catch a whole bunch of\n"
-	.string "POKéMON!$"
+	.string "The Shiny POKéMON rate is just\n"
+	.string "1 percent!\p"
+	.string "Many POKéMON don't have Shiny\n"
+	.string "forms yet, so don't get your\p"
+	.string "hopes up too high.\p"
+	.string "Still, lots of Shiny POKéMON have\n"
+	.string "really cool colors!\p"
+	.string "By the way, the developer is solo,\n"
+	.string "so they're recruiting designers!$"
 
 Route102_Text_RouteSignOldale:
 	.string "ROUTE 102\n"

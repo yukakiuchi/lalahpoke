@@ -3693,9 +3693,9 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
         {
             gBattlescriptCurrInstr = battleScript;
         }
-        // 2. 同性同士（♂×♂、♀×♀）の場合、30%の確率を引けなければ無効（70%で無効化）
-        // ※ RandomPercentage(RNG_..., 30) が使えない場合は (Random() % 100 >= 30) で代用できます
-        else if (genderAtk == genderDef && !(Random() % 100 <= 30))
+        // 2. 同性同士（♂×♂、♀×♀）の場合、50%の確率を引けなければ無効（70%で無効化）
+        // ※ RandomPercentage(RNG_..., 50) が使えない場合は (Random() % 100 >= 50) で代用できます
+        else if (genderAtk == genderDef && !(Random() % 100 <= 50))
         {
             gBattlescriptCurrInstr = battleScript;
         }
@@ -7099,8 +7099,9 @@ static void Animation_got_item(u16 dropItem)
 }
 
 // dropItemガチャの処理
-// レアアイテムは5%
-// 通常アイテムは10%
+// レアアイテムは10%
+// 通常アイテムは20%
+// ドロップ率調整はここ
 static u16 itemGacha(void)
 {
     // gBattleMons[0].item
@@ -7122,10 +7123,10 @@ static u16 itemGacha(void)
     // ドロップ確率を変えたい場合はここ中の数字を変更
     switch (luckyNumber)
     {
-        case 0 ... 4: // 0から1まで（5%）
+        case 0 ... 9: // （10%）
             dropItem = rareItem;
             break;
-        case 5 ... 24: // 5から24まで（20%）
+        case 10 ... 29: // （20%）
             dropItem = commonItem;
             break;
         default: // 15から99まで（ハズレ）
@@ -15286,3 +15287,5 @@ void BS_UndoDynamax(void)
 
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
+
+

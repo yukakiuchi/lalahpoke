@@ -1412,30 +1412,33 @@ void HandleBoulderActivateVictoryRoadSwitch(u16 x, u16 y)
 
 void UpdateDelibirdRandomEggStepCounter(void)
 {
-    // 判定：特定のフラグが立っているか（TRUEならセットされている）
-    bool8 isDelibirdHidden = FlagGet(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
+    // デリバードショップ機能非活性
+    FlagSet(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
 
-    gSaveBlock1Ptr->delibirdEgg.stepCounter++;
+    // // 判定：特定のフラグが立っているか（TRUEならセットされている）
+    // bool8 isDelibirdHidden = FlagGet(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
 
-    if (isDelibirdHidden) 
-    {
-        // フラグがセットされている（デリバードが非表示）時の処理
-        if (gSaveBlock1Ptr->delibirdEgg.stepCounter >= DELIBIRDSHOP_OUTSIDE_ENCOUNT_STEPS && (Random() % 100 < 10))
-        {
-            gSaveBlock1Ptr->delibirdEgg.stepCounter = 0;
-            // 非表示フラグを解除して出現させる（＝クリアする）
-            FlagClear(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
-            VarSet(VAR_DELIBIRD_EGG_PURCHASE_COUNT, 0);
-        }
-    }
-    else
-    {
-        // フラグがセットされていない（デリバードが表示中）時の処理
-        if (gSaveBlock1Ptr->delibirdEgg.stepCounter >= DELIBIRDSHOP_OUTSIDE_DISSAPEAR_STEPS 
-            && (Random() % 100 < 40))
-        {
-            // 非表示フラグをセットして消す
-            FlagSet(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
-        }
-    }
+    // gSaveBlock1Ptr->delibirdEgg.stepCounter++;
+
+    // if (isDelibirdHidden) 
+    // {
+    //     // フラグがセットされている（デリバードが非表示）時の処理
+    //     if (gSaveBlock1Ptr->delibirdEgg.stepCounter >= DELIBIRDSHOP_OUTSIDE_ENCOUNT_STEPS && (Random() % 100 < 10))
+    //     {
+    //         gSaveBlock1Ptr->delibirdEgg.stepCounter = 0;
+    //         // 非表示フラグを解除して出現させる（＝クリアする）
+    //         FlagClear(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
+    //         VarSet(VAR_DELIBIRD_EGG_PURCHASE_COUNT, 0);
+    //     }
+    // }
+    // else
+    // {
+    //     // フラグがセットされていない（デリバードが表示中）時の処理
+    //     if (gSaveBlock1Ptr->delibirdEgg.stepCounter >= DELIBIRDSHOP_OUTSIDE_DISSAPEAR_STEPS 
+    //         && (Random() % 100 < 40))
+    //     {
+    //         // 非表示フラグをセットして消す
+    //         FlagSet(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
+    //     }
+    // }
 }

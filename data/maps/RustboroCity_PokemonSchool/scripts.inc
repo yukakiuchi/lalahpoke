@@ -268,25 +268,31 @@ RustboroCity_PokemonSchool_Text_AlwaysWantedSeedot:
 	.string "I'm finally getting one!$"
 
 RustboroCity_PokemonSchool_Text_PokemontCantUseManMadeItems:
-	.string "POKéMON can hold items, but they\n"
-	.string "don't know what to do with man-made\l"
-	.string "items like POTION and ANTIDOTE.$"
+	.string "In Snow, Ice types heal 1/8 of\n"
+	.string "their max HP every turn.\p"
+	.string "Other types except Ice and Fire\n"
+	.string "take 1/16 chip damage,\p"
+	.string "and have a 10 percent chance to\n"
+	.string "get frozen each turn!\p"
+	.string "Weather can completely turn a\n"
+	.string "battle around! Exciting, right?$"
 
 RustboroCity_PokemonSchool_Text_ConfusedPokemonAttacksItself:
-	.string "You know how some POKéMON moves can\n"
-	.string "confuse a POKéMON?\p"
-	.string "A confused POKéMON will sometimes\n"
-	.string "attack itself without meaning to.\p"
-	.string "But once it leaves battle, it will\n"
-	.string "return to normal.$"
+	.string "From midnight to 5 AM, wild\n"
+	.string "battles have a 10 percent chance\p"
+	.string "to start in Psychic Terrain!\n"
+	.string "On it, Dark types heal 1/8 HP\p"
+	.string "every turn, and non-Dark, non-\n"
+	.string "Flying types may fall asleep!\p"
+	.string "Accuracy against Dark types is\n"
+	.string "also reduced on this terrain!$"
 
 RustboroCity_PokemonSchool_Text_PokemonHealItselfWithBerry:
-	.string "A POKéMON holding a BERRY will heal\n"
-	.string "itself…\p"
-	.string "There are many kinds of items that\n"
-	.string "POKéMON can hold…\p"
-	.string "Boy, it sure is hard taking notes\n"
-	.string "down…$"
+	.string "Sunny weather boosts Fire moves,\n"
+	.string "but NOT against Grass types!\p"
+	.string "This lets Grass types set sunny\n"
+	.string "weather safely to use Synthesis\p"
+	.string "or Solar Beam easily!$"
 
 RustboroCity_PokemonSchool_Text_StudentsNotes:
 	.string "It's this student's notebook…\p"

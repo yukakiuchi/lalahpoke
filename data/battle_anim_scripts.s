@@ -21523,6 +21523,8 @@ gBattleAnimMove_IcicleSpear::
 	monbg ANIM_TARGET
 	splitbgprio ANIM_TARGET
 	setalpha 12, 8
+	createsprite gHorizontalLungeSpriteTemplate, ANIM_ATTACKER, 2, 4, 4
+	delay 4
 	playsewithpan SE_M_ICY_WIND, SOUND_PAN_ATTACKER
 	createsprite gIcicleSpearSpriteTemplate, ANIM_ATTACKER, 2, 20, -8, -8, -8, 20, -32
 	delay 15
@@ -41513,8 +41515,8 @@ gBattleAnimMove_RainbowFly::
 	waitbgfadein
 	delay 10
 	@ ---- 相手に当たる ---- @
-	monbg ANIM_DEF_PARTNER
 	setalpha 12, 8
+	monbg ANIM_DEF_PARTNER
 	playsewithpan SE_M_DOUBLE_TEAM, SOUND_PAN_ATTACKER
 	createsprite gFlyBallAttackSpriteTemplate, ANIM_ATTACKER, 2, 20, FALSE
 	delay 20
@@ -41535,7 +41537,11 @@ gBattleAnimMove_RainbowFly::
 	@ 受身側定位置に戻る
 	createvisualtask AnimTask_RotateMonSpriteToSide, 2, 8, -256, ANIM_TARGET, 1
 	createvisualtask AnimTask_BlendBattleAnimPal, 10, F_PAL_TARGET, 2, 0, 0, RGB_WHITE
-	createsprite gSlideMonToOriginalPosSpriteTemplate, ANIM_TARGET, 2, 1, 0, 7
+	waitforvisualfinish
+	createsprite gSlideMonToOriginalPosSpriteTemplate, ANIM_ATTACKER, 2, 0, 0, 5
+	delay 3
+	createsprite gSlideMonToOriginalPosSpriteTemplate, ANIM_ATTACKER, 2, 1, 0, 7
+	waitforvisualfinish
 	setarg 0x7, 0x1000
 	waitforvisualfinish
 	@ ---- 不要になった画像解除 ---- @
@@ -42181,7 +42187,7 @@ BleedEffect:
 	return
 SetRainbowBackgroundForAnimationMove:
 	createvisualtask AnimTask_GetAttackerSide, 2
-	jumprettrue SetRainbowBgOppoentSide
+	jumprettrue SetRainbowBgOppoentSideForAnimationMove
 	fadetobg BG_RAINBOW_PLAYER
 	return
 

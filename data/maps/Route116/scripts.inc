@@ -287,6 +287,12 @@ Route116_EventScript_Janice::
 	msgbox Route116_Text_JanicePostBattle, MSGBOX_AUTOCLOSE
 	end
 
+Route116_EventScript_JudoGardian::
+	trainerbattle_single TRAINER_JUDOGARDIAN, Route116_Text_JudoGardianIntro, Route116_Text_JudoGardianDefeat
+	msgbox Route116_Text_JudoGardianPostBattle, MSGBOX_AUTOCLOSE
+	setvar VAR_LEVEL_CAP, 30
+	end
+
 Route116_EventScript_Karen::
 	trainerbattle_single TRAINER_KAREN_1, Route116_Text_KarenIntro, Route116_Text_KarenDefeat, Route116_EventScript_TryRegisterKarenAfterBattle
 	specialvar VAR_RESULT, ShouldTryRematchBattle

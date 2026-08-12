@@ -9796,7 +9796,7 @@ const struct ItemInfo gItemsInfo[] =
         .price = 100,
     #endif
         .holdEffect = HOLD_EFFECT_FLINCH,
-        .holdEffectParam = 15, // ひるむ確率
+        .holdEffectParam = 5, // ひるむ確率(連続技のひるみ効果にも乗るようになったから)
         .description = sKingsRockDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_HELD_ITEM,

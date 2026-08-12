@@ -340,8 +340,14 @@ OldaleTown_Movement_ReturnToOriginalPosition:
 	step_end
 
 OldaleTown_Text_SavingMyProgress:
-	.string "I want to take a rest, so I'm saving my\n"
-	.string "progress.$"
+	.string "For the first rival battle, give\n"
+	.string "your partner the BrightPowder\p"
+	.string "from your PC, and teach it Sing\n"
+	.string "from a TM dropped by wild Swablu!\p"
+	.string "That makes the battle super easy!\n"
+	.string "Gimmicks are key in this world.\p"
+	.string "If you can't win, talk to people.\n"
+	.string "There's always a hint somewhere!$"
 
 OldaleTown_Text_IWorkAtPokemonMart:
 	.string "Hi!\n"

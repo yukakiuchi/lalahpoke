@@ -4662,3 +4662,82 @@ u32 FldEff_PhotoFlash(void)
 
     return 0;
 }
+
+// --- ポケモンタクシー専用：ボール回収モーションなしの着地処理 ---
+static void Task_PokemonTaxiFlyIn(u8 taskId);
+
+static void FieldCallback_PokemonTaxiFlyIntoMap(void)
+{
+    Overworld_PlaySpecialMapMusic();
+    FadeInFromBlack();
+    CreateTask(Task_PokemonTaxiFlyIn, 0);
+    gObjectEvents[gPlayerAvatar.objectEventId].invisible = TRUE;
+    if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_SURFING)
+    {
+        ObjectEventTurn(&gObjectEvents[gPlayerAvatar.objectEventId], DIR_WEST);
+    }
+    LockPlayerFieldControls();
+    FreezeObjectEvents();
+    gFieldCallback = NULL;
+}
+
+static void PokemonTaxiFlyInFieldEffect_End(struct Task *task)
+{
+    u8 state;
+    struct ObjectEvent *objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
+    struct Sprite *sprite = &gSprites[objectEvent->spriteId];
+
+    // モンスターボールへ吸い込まれる演出をスキップしてスプライト消去
+    DestroySprite(&gSprites[task->data[1]]); // task->tBirdSpriteId
+    objectEvent->inanimate = FALSE;
+    MoveObjectEventToMapCoords(objectEvent, objectEvent->currentCoords.x, objectEvent->currentCoords.y);
+    sprite->x2 = 0;
+    sprite->y2 = 0;
+    sprite->coordOffsetEnabled = TRUE;
+
+    state = PLAYER_AVATAR_STATE_NORMAL;
+    if (task->data[15] & PLAYER_AVATAR_FLAG_SURFING) // task->tAvatarFlags
+    {
+        state = PLAYER_AVATAR_STATE_SURFING;
+        SetSurfBlob_BobState(objectEvent->fieldEffectSpriteId, BOB_PLAYER_AND_MON);
+    }
+    ObjectEventSetGraphicsId(objectEvent, GetPlayerAvatarGraphicsIdByStateId(state));
+    ObjectEventTurn(objectEvent, DIR_SOUTH);
+    gPlayerAvatar.flags = task->data[15];
+    gPlayerAvatar.preventStep = FALSE;
+    UnlockPlayerFieldControls();
+    UnfreezeObjectEvents();
+    FieldEffectActiveListRemove(FLDEFF_FLY_IN);
+    DestroyTask(FindTaskIdByFunc(Task_PokemonTaxiFlyIn));
+}
+
+static void (*const sPokemonTaxiFlyInFieldEffectFuncs[])(struct Task *) = {
+    FlyInFieldEffect_BirdSwoopDown,     // 空から降りてくる
+    FlyInFieldEffect_FlyInWithBird,     // タッチダウン
+    FlyInFieldEffect_JumpOffBird,       // 主人公が降りる
+    PokemonTaxiFlyInFieldEffect_End,    // ボールに戻さずそのまま完了！
+};
+
+static void Task_PokemonTaxiFlyIn(u8 taskId)
+{
+    sPokemonTaxiFlyInFieldEffectFuncs[gTasks[taskId].data[0]](&gTasks[taskId]);
+}
+
+void DoPokemonTaxiWarp(void)
+{
+    u16 map = VarGet(VAR_0x8004);
+    s16 x = VarGet(VAR_0x8005);
+    s16 y = VarGet(VAR_0x8006);
+
+    SetWarpDestination(MAP_GROUP(map), MAP_NUM(map), WARP_ID_NONE, x, y);
+    Overworld_ResetStateAfterFly();
+    WarpIntoMap();
+    SetMainCallback2(CB2_LoadMap);
+    gFieldCallback = FieldCallback_PokemonTaxiFlyIntoMap;
+}
+
+void GetCurrentMapScript(void)
+{
+    // ビットシフトの左右を修正: (mapGroup << 8) | mapNum
+    VarSet(VAR_TEMP_2, (gSaveBlock1Ptr->location.mapGroup << 8) | gSaveBlock1Ptr->location.mapNum);
+}

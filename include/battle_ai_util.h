@@ -341,6 +341,8 @@ bool32 IsDeathSongThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, s
 bool32 ShouldTauntToPreventDangers(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
 bool32 CanApplySecondaryDamage(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData);
 bool32 IsNewAbilityThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
+bool32 CanAiSurviveWithSash(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
+bool32 CanSafelyApplyLeechSeed(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData);
 
 // These are for the purpose of not doubling up on moves during double battles.
 // Used in GetAIEffectGroup for move effects and GetAIEffectGroupFromMove for additional effects

@@ -1850,6 +1850,10 @@ void CalculateMonStats(struct Pokemon *mon)
     {
         newMaxHP = 1;
     }
+    else if (species == SPECIES_KRABBY)
+    {
+        newMaxHP = 20;
+    }
     else
     {
         s32 n = 2 * GetSpeciesBaseHP(species) + iv[STAT_HP];
@@ -6077,8 +6081,11 @@ void SetWildMonHeldItem(void)
         u16 count = (WILD_DOUBLE_BATTLE) ? 2 : 1;
         u16 i;
         bool32 itemHeldBoost = CanFirstMonBoostHeldItemRarity();
-        u16 chanceNoItem = itemHeldBoost ? 20 : 45;
-        u16 chanceNotRare = itemHeldBoost ? 80 : 95;
+        // ★ ここを修正 ★
+        // 通常時: なし 40% / 通常アイテム 30% / レアアイテム 30%
+        // 特性「ふくがん」等の時: なし 20% / 通常アイテム 30% / レアアイテム 50%
+        u16 chanceNoItem = itemHeldBoost ? 20 : 40;  // 45 から 40 に変更
+        u16 chanceNotRare = itemHeldBoost ? 50 : 70; // 95 から 70 に変更
 
         for (i = 0; i < count; i++)
         {

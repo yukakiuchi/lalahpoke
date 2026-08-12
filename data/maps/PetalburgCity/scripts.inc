@@ -703,12 +703,10 @@ PetalburgCity_Text_WhereIsWally:
 	.string "very soon…$"
 
 PetalburgCity_Text_AreYouRookieTrainer:
-	.string "Hiya! Are you maybe…\n"
-	.string "A rookie TRAINER?\p"
-	.string "Do you know what POKéMON TRAINERS\n"
-	.string "do when they reach a new town?\p"
-	.string "They first check what kind of GYM\n"
-	.string "is in the town.$"
+	.string "In this world, there are far fewer\n"
+	.string "types than in the main games.\p"
+	.string "I think it makes things simpler,\n"
+	.string "more fair, and easier to grasp!$"
 
 PetalburgCity_Text_ThisIsPetalburgGym:
 	.string "See? This is PETALBURG CITY's GYM.$"
@@ -718,17 +716,21 @@ PetalburgCity_Text_ThisIsGymSign:
 	.string "whenever you're looking for a GYM.$"
 
 PetalburgCity_Text_WaterReflection:
-	.string "My face is reflected in the water.\p"
-	.string "It's a shining grin full of hope…\p"
-	.string "Or it could be a look of somber silence\n"
-	.string "struggling with fear…\p"
-	.string "What do you see reflected in your face?$"
+	.string "A new status effect called Bleed\n"
+	.string "was added to the game.\p"
+	.string "When afflicted, you cannot heal\n"
+	.string "and take damage every turn!\p"
+	.string "If it happens, I recommend\n"
+	.string "switching your POKéMON out!$"
 
 PetalburgCity_Text_FullPartyExplanation:
-	.string "Let's say you have six POKéMON.\n"
-	.string "If you catch another one…\p"
-	.string "It is automatically sent to a STORAGE\n"
-	.string "BOX over a PC connection.$"
+	.string "Poison-type was merged into Dark!\n"
+	.string "Most Normal-type moves are now\p"
+	.string "Fighting-type moves instead.\n"
+	.string "Slashing moves are Fighting, too!\p"
+	.string "Fighting is for anything strong.\n"
+	.string "Move mechanics changed a lot,\p"
+	.string "so be sure to read descriptions!$"
 
 PetalburgCity_Text_GymSign:
 	.string "PETALBURG CITY POKéMON GYM\n"

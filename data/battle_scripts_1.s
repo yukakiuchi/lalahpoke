@@ -4673,13 +4673,9 @@ BattleScript_LeechSeedTurnKO::
 	printstring STRINGID_TARGETPARASITIZED @ 吸い尽くされたメッセージを表示
 	tryfaintmon BS_TARGET                  @ ここで相手が倒れる
 	waitmessage B_WAIT_TIME_LONG
-	
 	@ 2. 次に自分（BS_ATTACKER）のHPを回復させる
 	healthbarupdate BS_ATTACKER, PASSIVE_HP_UPDATE
 	datahpupdate BS_ATTACKER, PASSIVE_HP_UPDATE
-	printfromtable gLeechSeedStringIds      @ 回復時のメッセージ（〜から 体力を すいとった！）を表示
-	waitmessage B_WAIT_TIME_LONG
-	tryfaintmon BS_ATTACKER                @ 念のための生存チェック
 	end2
 
 BattleScript_BideStoringEnergy::

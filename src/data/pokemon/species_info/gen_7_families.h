@@ -3158,6 +3158,7 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
         .baseSpAttack  = 38,
         .baseSpDefense = 57,
         .types = MON_TYPES(TYPE_GRASS),
+        .itemCommon = ITEM_CHERISH_BALL,
         .itemRare = ITEM_TM37,
         .catchRate = 190,
         .expYield = 57,
@@ -3217,10 +3218,10 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
 
     [SPECIES_SHIINOTIC] =
     {
-        .baseHP        = 139,
-        .baseAttack    = 67,
+        .baseHP        = 152,
+        .baseAttack    = 31,
         .baseDefense   = 129,
-        .baseSpeed     = 73,
+        .baseSpeed     = 30,
         .baseSpAttack  = 74,
         .baseSpDefense = 131,
         .types = MON_TYPES(TYPE_GRASS, TYPE_DARK),
