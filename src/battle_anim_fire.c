@@ -1379,6 +1379,117 @@ static void AnimTask_MoveHeatWaveTargets_Step(u8 taskId)
     }
 }
 
+
+static void AnimTask_DriftTargetsSide_Step(u8 taskId)
+{
+    struct Task *task = &gTasks[taskId];
+
+    switch (task->data[0])
+    {
+    case 0: // ★ステップ0：横移動
+        // (揺れ処理はそのまま)
+        if (task->data[9] < 10) task->data[10] += task->data[12] * 2;
+        else                    task->data[10] -= task->data[12] * 1;
+
+        if (++task->data[1] >= 2)
+        {
+            task->data[1] = 0;
+            task->data[2]++;
+            task->data[11] = (task->data[2] & 1) ? 2 : -2;
+        }
+
+        for (task->data[3] = 0; task->data[3] < task->data[13]; task->data[3]++)
+            gSprites[task->data[task->data[3] + 14]].x2 = task->data[10] + task->data[11];
+
+        if (++task->data[9] == 20)
+        {
+            task->data[9] = 0;
+            task->data[11] = 0;
+            task->data[8]--;
+            // ループ終了なら「静止ステップ(case 4)」へ飛ばす
+            if (task->data[8] <= 0) task->data[0] = 4;
+        }
+        break;
+
+    case 4: // ★ステップ4：5フレーム静止（追加したステップ）
+        if (++task->data[9] >= 5)
+        {
+            task->data[9] = 0;
+            task->data[0] = 1; // 次のステップ「ガクガク(case 1)」へ
+        }
+        break;
+
+    case 1: // ★ステップ1：ガクガク
+        // (ガクガク処理はそのまま)
+        if (++task->data[1] >= 5) 
+        {
+            task->data[1] = 0;
+            task->data[2]++;
+            task->data[11] = (task->data[2] & 1) ? 2 : -2;
+        }
+
+        for (task->data[3] = 0; task->data[3] < task->data[13]; task->data[3]++)
+            gSprites[task->data[task->data[3] + 14]].x2 = task->data[10] + task->data[11];
+
+        if (++task->data[9] == 16) 
+        {
+            task->data[9] = 0;
+            task->data[11] = 0; 
+            task->data[0] = 2; // 次の「帰還(case 2)」へ
+        }
+        break;
+
+    case 2: // ★ステップ2：高速帰還
+        // (帰還処理はそのまま)
+        if (task->data[10] > 0)      task->data[10] -= 4;
+        else if (task->data[10] < 0) task->data[10] += 4;
+
+        for (task->data[3] = 0; task->data[3] < task->data[13]; task->data[3]++)
+            gSprites[task->data[task->data[3] + 14]].x2 = task->data[10];
+
+        if ((task->data[12] == 1 && task->data[10] <= 0) || (task->data[12] == -1 && task->data[10] >= 0))
+        {
+            task->data[10] = 0;
+            task->data[0] = 3; // 次の「終了(case 3)」へ
+        }
+        break;
+
+    case 3: // ★ステップ3：終了
+        // (リセット処理はそのまま)
+        for (task->data[3] = 0; task->data[3] < task->data[13]; task->data[3]++)
+            gSprites[task->data[task->data[3] + 14]].x2 = 0;
+        DestroyAnimVisualTask(taskId);
+        break;
+    }
+}
+
+void AnimTask_DriftTargetsSide(u8 taskId)
+{
+    struct Task *task = &gTasks[taskId];
+
+    task->data[12] = IsOnPlayerSide(gBattleAnimAttacker) ? 1 : -1; // 自動で反転
+    task->data[13] = IsBattlerSpriteVisible(BATTLE_PARTNER(gBattleAnimTarget)) + 1;
+    task->data[14] = GetAnimBattlerSpriteId(ANIM_TARGET);
+    task->data[15] = GetAnimBattlerSpriteId(ANIM_DEF_PARTNER);
+    task->data[8] = (gBattleAnimArgs[0] <= 0) ? 1 : gBattleAnimArgs[0]; 
+
+    task->func = AnimTask_DriftTargetsSide_Step;
+}
+
+void AnimTask_DriftTargetsSideNoFlip(u8 taskId)
+{
+    struct Task *task = &gTasks[taskId];
+
+    task->data[12] = 1; // 常に右固定！
+    task->data[13] = IsBattlerSpriteVisible(BATTLE_PARTNER(gBattleAnimTarget)) + 1;
+    task->data[14] = GetAnimBattlerSpriteId(ANIM_TARGET);
+    task->data[15] = GetAnimBattlerSpriteId(ANIM_DEF_PARTNER);
+    task->data[8] = (gBattleAnimArgs[0] <= 0) ? 1 : gBattleAnimArgs[0]; 
+
+    task->func = AnimTask_DriftTargetsSide_Step;
+}
+
+
 // Used to add a color mask to the battle background.
 // arg 0: opacity
 // arg 1: color code

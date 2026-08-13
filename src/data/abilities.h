@@ -415,7 +415,6 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
         .name = _("Truant"),
         .description = COMPOUND_STRING("Moves only every two turns."),
         .aiRating = -2,
-        .cantBeOverwritten = TRUE,
     },
 
     [ABILITY_HUSTLE] =
@@ -2431,5 +2430,50 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
         .cantBeCopied = TRUE,
         .cantBeSwapped = TRUE,
         .cantBeTraced = TRUE,
+    },
+
+    [ABILITY_DEATH_SINGER] =
+    {
+        .name = _("Death Singer"),
+        .description = COMPOUND_STRING("Perish Song 0 turn instant"),
+        .aiRating = 8,
+        .cantBeCopied = TRUE,
+        .cantBeSwapped = TRUE,
+        .cantBeTraced = TRUE,
+    },
+
+    [ABILITY_ROUND_BODY] =
+    {
+        .name = _("Round Body"),
+        .description = COMPOUND_STRING("DefenseCurl When Switch in"),
+        .aiRating = 8,
+    },
+
+    [ABILITY_AURORA_BARRIER] =
+    {
+        .name = _("Aurora barrier"),
+        .description = COMPOUND_STRING("Light Screen + Refelct."),
+        .aiRating = 4,
+    },
+
+    [ABILITY_PARASITISM] =
+    {
+        .name = _("Parasitism"),
+        .description = COMPOUND_STRING("K.O foe when use Leech seed"),
+        .aiRating = 4,
+    },
+
+    [ABILITY_MISTY_BREATH] =
+    {
+        .name = _("Misty Breath"),
+        .description = COMPOUND_STRING("Summons fog in battle."),
+        .aiRating = 4,
+    },
+
+    [ABILITY_WIND_WEAVER] =
+    {
+        .name = _("Wind Weaver"),
+        .description = COMPOUND_STRING("x1.5 dmg when use wind move"),
+        .aiRating = 7,
     },
 };

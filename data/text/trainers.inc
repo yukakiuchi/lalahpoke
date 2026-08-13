@@ -1,15 +1,21 @@
 Route102_Text_CalvinIntro:
-	.string "If you have POKéMON with you, then\n"
-	.string "you're an official POKéMON TRAINER!\l"
-	.string "You can't say no to my challenge!$"
+	.string "In this world, Trainers don't\n"
+	.string "usually lock eyes with you.\p"
+	.string "But I am the gatekeeper\n"
+	.string "of Route 102!\p"
+	.string "If you can't beat me, you\n"
+	.string "can't move forward!$"
 
 Route102_Text_CalvinDefeated:
 	.string "Arrgh, I lost…\n"
 	.string "I should have trained mine more…$"
 
 Route102_Text_CalvinPostBattle:
-	.string "Listen, you. If you're strong,\n"
-	.string "you should have told me before!$"
+	.string "Not bad, you pass!\n"
+	.string "Huh? What's that? You heard\p"
+	.string "something from my little bro?\n"
+	.string "Did he say, “My big bro Guardian\p"
+	.string "is so cool”? Hahaha!$"
 
 Route102_Text_CalvinRegister:
 	.string "I've been working hard at this since\n"
@@ -382,15 +388,31 @@ Route104_Text_WinstonPostRematch:
 	.string "It's so deep, the world of POKéMON…$"
 
 Route104_Text_CindyIntro:
-	.string "We must have been fated to meet.\n"
-	.string "May I ask you for a battle?$"
+	.string "Eek! You startled me!\n"
+	.string "What was I doing? Oh, nothing!\p"
+	.string "I'm just a passing pretty lady.\n"
+	.string "Forget you saw me here. Got it?\p"
+	.string "Huh? You can't do that?\n"
+	.string "Oh, what a shame...$"
 
 Route104_Text_CindyDefeat:
 	.string "Oh, my!$"
 
 Route104_Text_CindyPostBattle:
-	.string "“Hello” is the beginning of “good-bye.”\n"
-	.string "I hope we meet again.$"
+	.string "Defeating me means you cleared\n"
+	.string "the Gym and finished the demo!\p"
+	.string "But I can't step aside. If I do,\n"
+	.string "the story would keep going...\p"
+	.string "However, the story beyond here\n"
+	.string "isn't finished just yet.\p"
+	.string "The Pokémon ahead don't even\n"
+	.string "have evolutions or moves set up.\p"
+	.string "Even if you hack your way past,\n"
+	.string "it won't be any fun at all.\p"
+	.string "Since you've come this far, why\n"
+	.string "not help me develop the game?\p"
+	.string "Search for lalahack151 on X!\n"
+	.string "Ufufufu...$"
 
 Route104_Text_CindyRegister1:
 	.string "Hello, we meet again.\p"
@@ -416,16 +438,26 @@ Route104_Text_CindyPostRematch:
 	.string "I hope we meet again.$"
 
 Route104_Text_DarianIntro:
-	.string "I fished up a tough-looking POKéMON!\p"
-	.string "It has this magical quality to it!\n"
-	.string "It surely looks tough, yes it does!$"
+	.string "I'm the Guardian of this beach!\n"
+	.string "You know this world has gimmicks,\p"
+	.string "right? You can't pass here until\n"
+	.string "you solve my gimmick!$"
 
 Route104_Text_DarianDefeat:
-	.string "What the…$"
+	.string "I guess it's crab hotpot\n"
+	.string "tonight...$"
 
 Route104_Text_DarianPostBattle:
-	.string "Hey, MAGIKARP, you sure don't live up\n"
-	.string "to your name, do you?$"
+	.string "You did well solving my trick!\n"
+	.string "Speed isn't everything, right?\p"
+	.string "Now, I've raised your party's\n"
+	.string "level cap up to 20!\p"
+	.string "With this, most POKéMON can\n"
+	.string "now evolve to their next stage.\p"
+	.string "However, evolving them actually\n"
+	.string "lowers their Speed...\p"
+	.string "So deciding whether to evolve\n"
+	.string "them is a tough choice!$"
 
 Route105_Text_FosterIntro:
 	.string "There's supposed to be a mystical\n"
@@ -2216,6 +2248,23 @@ Route116_Text_JaniceDefeat:
 Route116_Text_JanicePostBattle:
 	.string "POKéMON that possess cuteness and\n"
 	.string "power, that's ideal, I think.$"
+
+Route116_Text_JudoGardianIntro:
+	.string "I'm the Guardian of Route 116!\n"
+	.string "If you beat me, I'll raise your\p"   @ \n を \p に変更
+	.string "level cap up to 30!\n"
+	.string "That should make your Gym battle\p" @ \n を \p に変更
+	.string "a little bit easier, right?\p"
+	.string "Alright! Here I come!$"
+
+Route116_Text_JudoGardianDefeat:
+.string "That was a great battle!$"
+
+Route116_Text_JudoGardianPostBattle:
+	.string "Now your party can level up\n"
+	.string "all the way to level 30!\p"
+	.string "Some POKéMON evolve at level 30,\n"
+	.string "so try training even more of them!$"
 
 Route116_Text_JerryIntro:
 	.string "We learn all sorts of things at the\n"

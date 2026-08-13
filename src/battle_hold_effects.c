@@ -193,7 +193,9 @@ static enum ItemEffect TryKingsRock(enum BattlerId battlerAtk, enum BattlerId ba
     if (!IsBattlerAlive(battlerDef)
      || !IsBattlerTurnDamaged(battlerDef, EXCLUDING_SUBSTITUTES)
      || MoveIgnoresKingsRock(gCurrentMove)
-     || MoveHasAdditionalEffect(gCurrentMove, MOVE_EFFECT_FLINCH))
+     // ひるみ効果のある技にもおうじゃのしるしの効果が乗るようにした
+     // || MoveHasAdditionalEffect(gCurrentMove, MOVE_EFFECT_FLINCH)
+     )
         return effect;
 
     enum Ability ability = GetBattlerAbility(battlerAtk);

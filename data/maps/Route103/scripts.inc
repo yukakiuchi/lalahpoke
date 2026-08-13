@@ -25,6 +25,10 @@ Route103_EventScript_Rival::
 	end
 
 Route103_EventScript_RivalMay::
+	@ 再挑戦フラグが1なら、再挑戦用処理（YES/NO付き）へジャンプ
+	goto_if_eq VAR_SHOW_RETRY_BATTLE_COMMENT, TRUE, Route103_EventScript_RivalMayRetry
+
+	@ --- 初回会話 ---
 	msgbox Route103_Text_MayRoute103Pokemon, MSGBOX_DEFAULT
 	closemessage
 	playbgm MUS_ENCOUNTER_MAY, TRUE
@@ -35,6 +39,7 @@ Route103_EventScript_RivalMay::
 	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_Delay48
 	waitmovement 0
 	msgbox Route103_Text_MayLetsBattle, MSGBOX_DEFAULT
+	setvar VAR_SHOW_RETRY_BATTLE_COMMENT, 1 @ 敗北に備えて1にする
 	switch VAR_STARTER_MON
 	case 0, Route103_EventScript_StartMayBattleTreecko
 	case 1, Route103_EventScript_StartMayBattleTorchic
@@ -42,6 +47,9 @@ Route103_EventScript_RivalMay::
 	end
 
 Route103_EventScript_RivalBrendan::
+	@ 再挑戦フラグが1なら、再挑戦用処理（YES/NO付き）へジャンプ
+	goto_if_eq VAR_SHOW_RETRY_BATTLE_COMMENT, TRUE, Route103_EventScript_RivalBrendanRetry
+	@ --- 初回会話 ---
 	msgbox Route103_Text_BrendanRoute103Pokemon, MSGBOX_DEFAULT
 	closemessage
 	playbgm MUS_ENCOUNTER_BRENDAN, TRUE
@@ -52,6 +60,7 @@ Route103_EventScript_RivalBrendan::
 	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_Delay48
 	waitmovement 0
 	msgbox Route103_Text_BrendanLetsBattle, MSGBOX_DEFAULT
+	setvar VAR_SHOW_RETRY_BATTLE_COMMENT, TRUE @ 敗北に備えてTRUEにする
 	switch VAR_STARTER_MON
 	case 0, Route103_EventScript_StartBrendanBattleTreecko
 	case 1, Route103_EventScript_StartBrendanBattleTorchic
@@ -59,32 +68,32 @@ Route103_EventScript_RivalBrendan::
 	end
 
 Route103_EventScript_StartMayBattleTreecko::
-	trainerbattle_no_intro TRAINER_MAY_ROUTE_103_TREECKO, Route103_Text_MayDefeated
+	trainerbattle_no_intro TRAINER_MAY_ROUTE_103, Route103_Text_MayDefeated
 	goto Route103_EventScript_AfterMayBattle
 	end
 
 Route103_EventScript_StartMayBattleTorchic::
-	trainerbattle_no_intro TRAINER_MAY_ROUTE_103_TORCHIC, Route103_Text_MayDefeated
+	trainerbattle_no_intro TRAINER_MAY_ROUTE_103, Route103_Text_MayDefeated
 	goto Route103_EventScript_AfterMayBattle
 	end
 
 Route103_EventScript_StartMayBattleMudkip::
-	trainerbattle_no_intro TRAINER_MAY_ROUTE_103_MUDKIP, Route103_Text_MayDefeated
+	trainerbattle_no_intro TRAINER_MAY_ROUTE_103, Route103_Text_MayDefeated
 	goto Route103_EventScript_AfterMayBattle
 	end
 
 Route103_EventScript_StartBrendanBattleTreecko::
-	trainerbattle_no_intro TRAINER_BRENDAN_ROUTE_103_TREECKO, Route103_Text_BrendanDefeated
+	trainerbattle_no_intro TRAINER_BRENDAN_ROUTE_103, Route103_Text_BrendanDefeated
 	goto Route103_EventScript_AfterBrendanBattle
 	end
 
 Route103_EventScript_StartBrendanBattleTorchic::
-	trainerbattle_no_intro TRAINER_BRENDAN_ROUTE_103_TORCHIC, Route103_Text_BrendanDefeated
+	trainerbattle_no_intro TRAINER_BRENDAN_ROUTE_103, Route103_Text_BrendanDefeated
 	goto Route103_EventScript_AfterBrendanBattle
 	end
 
 Route103_EventScript_StartBrendanBattleMudkip::
-	trainerbattle_no_intro TRAINER_BRENDAN_ROUTE_103_MUDKIP, Route103_Text_BrendanDefeated
+	trainerbattle_no_intro TRAINER_BRENDAN_ROUTE_103, Route103_Text_BrendanDefeated
 	goto Route103_EventScript_AfterBrendanBattle
 	end
 
@@ -111,7 +120,6 @@ Route103_EventScript_RivalExitFacingNorth::
 	applymovement LOCALID_PLAYER, Route103_Movement_WatchRivalExitFacingNorth
 	applymovement LOCALID_ROUTE103_RIVAL, Route103_Movement_RivalExitFacingNorth1
 	waitmovement 0
-	playse SE_LEDGE
 	applymovement LOCALID_ROUTE103_RIVAL, Route103_Movement_RivalExitFacingNorth2
 	waitmovement 0
 	goto Route103_EventScript_RivalEnd
@@ -121,7 +129,6 @@ Route103_EventScript_RivalExitFacingEastOrWest::
 	applymovement LOCALID_PLAYER, Route103_Movement_WatchRivalExitFacingEastOrWest
 	applymovement LOCALID_ROUTE103_RIVAL, Route103_Movement_RivalExit1
 	waitmovement 0
-	playse SE_LEDGE
 	applymovement LOCALID_ROUTE103_RIVAL, Route103_Movement_RivalExit2
 	waitmovement 0
 	goto Route103_EventScript_RivalEnd
@@ -130,10 +137,45 @@ Route103_EventScript_RivalExitFacingEastOrWest::
 Route103_EventScript_RivalExitFacingSouth::
 	applymovement LOCALID_ROUTE103_RIVAL, Route103_Movement_RivalExit1
 	waitmovement 0
-	playse SE_LEDGE
 	applymovement LOCALID_ROUTE103_RIVAL, Route103_Movement_RivalExit2
 	waitmovement 0
 	goto Route103_EventScript_RivalEnd
+	end
+
+Route103_EventScript_RivalMayRetry::
+	playbgm MUS_ENCOUNTER_MAY, TRUE
+	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_FacePlayer
+	waitmovement 0
+	
+	@ はい/いいえ 選択肢付きメッセージボックス
+	msgbox Route103_Text_MayRetryBattlePrompt, MSGBOX_YESNO
+	
+	@ 「はい」を選んだらバトル開始 BattleTreeckoなんでもいい。どうせどれも中身一緒だから
+	goto_if_eq VAR_RESULT, YES, Route103_EventScript_StartMayBattleTreecko
+	
+	@ 「いいえ」を選んだ場合（断られた時）
+	msgbox Route103_Text_MayDeclinedBattle, MSGBOX_DEFAULT
+	savebgm MUS_DUMMY
+	fadedefaultbgm
+	releaseall
+	end
+
+Route103_EventScript_RivalBrendanRetry::
+	playbgm MUS_ENCOUNTER_BRENDAN, TRUE
+	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_FacePlayer
+	waitmovement 0
+	
+	@ はい/いいえ 選択肢付きメッセージボックス
+	msgbox Route103_Text_BrendanRetryBattlePrompt, MSGBOX_YESNO
+	
+	@ 「はい」を選んだらバトル開始
+	goto_if_eq VAR_RESULT, YES, Route103_EventScript_StartBrendanBattleTreecko
+	
+	@ 「いいえ」を選んだ場合（断られた時）
+	msgbox Route103_Text_BrendanDeclinedBattle, MSGBOX_DEFAULT
+	savebgm MUS_DUMMY
+	fadedefaultbgm
+	releaseall
 	end
 
 Route103_EventScript_RivalEnd::
@@ -143,8 +185,10 @@ Route103_EventScript_RivalEnd::
 	setflag FLAG_DEFEATED_RIVAL_ROUTE103
 	setvar VAR_OLDALE_RIVAL_STATE, 1
 	clearflag FLAG_HIDE_OLDALE_TOWN_RIVAL
+	setvar VAR_LEVEL_CAP, 12
 	savebgm MUS_DUMMY
 	fadedefaultbgm
+	setvar VAR_SHOW_RETRY_BATTLE_COMMENT, FALSE @ ★勝利したので次のバトル用に0リセット！
 	releaseall
 	end
 
@@ -154,8 +198,7 @@ Route103_Movement_RivalExitFacingNorth1:
 	step_end
 
 Route103_Movement_RivalExitFacingNorth2:
-	jump_2_down
-	delay_16
+	walk_down
 	walk_down
 	walk_down
 	walk_down
@@ -175,8 +218,7 @@ Route103_Movement_RivalExit1:
 	step_end
 
 Route103_Movement_RivalExit2:
-	jump_2_down
-	delay_16
+	walk_down
 	walk_down
 	walk_down
 	walk_down
@@ -304,14 +346,29 @@ Route103_Text_MayDefeated:
 	.string "{PLAYER}{KUN}, you're pretty good!$"
 
 Route103_Text_MayTimeToHeadBack:
-	.string "MAY: I think I know why my dad has\n"
-	.string "an eye out for you now.\p"
-	.string "I mean, you just got that POKéMON,\n"
-	.string "but it already likes you.\p"
-	.string "You might be able to befriend any\n"
-	.string "kind of POKéMON easily.\p"
-	.string "Well, it's time to head back to\n"
-	.string "the LAB.$"
+	.string "MAY: Where did I catch my\n"
+	.string "Umbryo, you ask?\p"
+	.string "Rather than catching it...\n"
+	.string "the moment I saw it in the\l"
+	.string "grass, I felt a strange\l"
+	.string "feeling that we were destined\l"
+	.string "to be together.\p"
+	.string "It approached me slowly,\n"
+	.string "without taking its eyes off me,\l"
+	.string "as if it had finally found me.\p"
+	.string "So we've been together ever\n"
+	.string "since that day...\p"
+	.string "Looking at you two, I wonder...\n"
+	.string "haven't you met your own\l"
+	.string "POKéMON of destiny, too?\p"
+	.string "I mean, you just got it,\n"
+	.string "but look how close you two\l"
+	.string "already are!\p"
+	.string "Maybe that POKéMON is meant\n"
+	.string "to be your partner, too.\p"
+	.string "Well... setting my long talk\n"
+	.string "aside, let's head back to\l"
+	.string "the LAB!$"
 
 Route103_Text_BrendanRoute103Pokemon:
 	.string "BRENDAN: Okay, so it's this one and\n"
@@ -329,18 +386,37 @@ Route103_Text_BrendanDefeated:
 	.string "Huh, {PLAYER}, you're not too shabby.$"
 
 Route103_Text_BrendanTimeToHeadBack:
-	.string "BRENDAN: I think I get it.\n"
-	.string "I think I know why my dad has his eye\l"
-	.string "out for you now.\p"
-	.string "Look, your POKéMON already likes you,\n"
-	.string "even though you just got it.\p"
-	.string "{PLAYER}, I get the feeling that you\n"
-	.string "could befriend any POKéMON with ease.\p"
-	.string "We should head back to the LAB.$"
+	.string "BRENDAN: Where did I catch\n"
+	.string "my Umbryo, you ask?\p"
+	.string "Rather than catching it...\n"
+	.string "the moment I saw it in the\l"
+	.string "grass, I felt a strange\l"
+	.string "feeling that we were destined\l"
+	.string "to be together.\p"
+	.string "It approached me slowly,\n"
+	.string "without taking its eyes off me,\l"
+	.string "as if it had finally found me.\p"
+	.string "So we've been together ever\n"
+	.string "since that day...\p"
+	.string "Looking at you two, though...\n"
+	.string "doesn't it feel like you've\l"
+	.string "met your own POKéMON of\l"
+	.string "destiny, too?\p"
+	.string "I mean, you just got it,\n"
+	.string "but you two are already\l"
+	.string "so close!\p"
+	.string "Maybe that POKéMON is meant\n"
+	.string "to be your partner, too.\p"
+	.string "Well... setting my long talk\n"
+	.string "aside, we should head back\l"
+	.string "to the LAB!$"
 
 Route103_Text_ShouldHaveBroughtPotion:
-	.string "My POKéMON is staggeringly tired…\n"
-	.string "I should have brought a POTION…$"
+	.string "SWABLU is so cute, isn't it?\n"
+	.string "Its wings smell so nice!\p"
+	.string "That's why any POKéMON hit\n"
+	.string "by it falls in love...even if\l"
+	.string "they're both male or female!$"
 
 Route103_Text_ShortcutToOldale:
 	.string "If you cross the sea from here,\n"
@@ -351,3 +427,44 @@ Route103_Text_RouteSign:
 	.string "ROUTE 103\n"
 	.string "{DOWN_ARROW} OLDALE TOWN$"
 
+Route103_Text_MayRetryBattlePrompt:
+	.string "MAY: How was that? Quite a\n"
+	.string "challenge, right?\p"
+	.string "Since you just became a TRAINER,\n"
+	.string "I'll give you a little tip!\p"
+	.string "Wild SWABLU sometimes drop\n"
+	.string "the TM for SING when defeated.\p"
+	.string "I haven't prepared any sleep\n"
+	.string "countermeasures yet, so that\l"
+	.string "might be my weakness!\p"
+	.string "Oh, by the way, have you checked\n"
+	.string "your PC at home?\p"
+	.string "Something good should be inside!\n"
+	.string "Giving POKéMON held items is\l"
+	.string "super important in this world, too!\p"
+	.string "So, are you ready for a rematch?$"
+
+Route103_Text_MayDeclinedBattle:
+	.string "MAY: I see.\n"
+	.string "Come talk to me once you're ready!$"
+
+Route103_Text_BrendanRetryBattlePrompt:
+	.string "BRENDAN: How was that?\n"
+	.string "Pretty tough, huh?\p"
+	.string "Since you just became a TRAINER,\n"
+	.string "I'll give you a little advice!\p"
+	.string "Wild SWABLU sometimes drop\n"
+	.string "the TM for SING when defeated.\p"
+	.string "To be honest, I haven't prepped\n"
+	.string "any sleep countermeasures yet,\l"
+	.string "so that might be your chance!\p"
+	.string "By the way, did you check the PC\n"
+	.string "in your room?\p"
+	.string "Something good should be inside!\n"
+	.string "Giving POKéMON items to hold is\l"
+	.string "pretty important in this world, too!\p"
+	.string "So, are you ready for a rematch?$"
+
+Route103_Text_BrendanDeclinedBattle:
+	.string "BRENDAN: What, getting cold feet?\n"
+	.string "Come back when you're fully prepped!$"

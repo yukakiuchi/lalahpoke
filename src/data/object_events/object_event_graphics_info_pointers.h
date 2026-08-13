@@ -188,6 +188,8 @@ extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Latias;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Latios;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_GameboyKid;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_ContestJudge;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_EggSellDelibird;
+// extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_ContestJudge;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_BrendanWatering;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_MayWatering;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_BrendanDecorating;
@@ -387,6 +389,7 @@ extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_DeoxysD;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_DeoxysA;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_DeoxysN;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_SSAnne;
+
 // Begin pokemon event objects
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_PokeBall;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Follower;
@@ -592,6 +595,7 @@ const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM
     [OBJ_EVENT_GFX_LATIAS] =                   &gObjectEventGraphicsInfo_Latias,
     [OBJ_EVENT_GFX_LATIOS] =                   &gObjectEventGraphicsInfo_Latios,
     [OBJ_EVENT_GFX_GAMEBOY_KID] =              &gObjectEventGraphicsInfo_GameboyKid,
+    [OBJ_EVENT_GFX_EGG_SELL_DELIBIRD] =        &gObjectEventGraphicsInfo_EggSellDelibird,
     [OBJ_EVENT_GFX_CONTEST_JUDGE] =            &gObjectEventGraphicsInfo_ContestJudge,
     [OBJ_EVENT_GFX_BRENDAN_WATERING] =         &gObjectEventGraphicsInfo_BrendanWatering,
     [OBJ_EVENT_GFX_MAY_WATERING] =             &gObjectEventGraphicsInfo_MayWatering,
@@ -645,7 +649,7 @@ const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM
     [OBJ_EVENT_GFX_OW_MON] =                   &gObjectEventGraphicsInfo_Follower,
     [OBJ_EVENT_GFX_LIGHT_SPRITE] =             &gObjectEventGraphicsInfo_BallLight,
     [OBJ_EVENT_GFX_APRICORN_TREE] =            &gObjectEventGraphicsInfo_ApricornTree,
-#if IS_FRLG
+
     [OBJ_EVENT_GFX_RED_NORMAL] =               &gObjectEventGraphicsInfo_RedNormal,
     [OBJ_EVENT_GFX_RED_BIKE] =                 &gObjectEventGraphicsInfo_RedBike,
     [OBJ_EVENT_GFX_RED_SURF] =                 &gObjectEventGraphicsInfo_RedSurf,
@@ -790,7 +794,6 @@ const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM
     [OBJ_EVENT_GFX_DEOXYS_A]                 = &gObjectEventGraphicsInfo_DeoxysA,
     [OBJ_EVENT_GFX_DEOXYS_N]                 = &gObjectEventGraphicsInfo_DeoxysN,
     [OBJ_EVENT_GFX_SS_ANNE]                  = &gObjectEventGraphicsInfo_SSAnne,
-#endif // IS_FRLG
 };
 
 const struct ObjectEventGraphicsInfo *const gMauvilleOldManGraphicsInfoPointers[] = {

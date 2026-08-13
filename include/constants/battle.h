@@ -611,7 +611,8 @@ enum __attribute__((packed)) MoveEffect
     MOVE_EFFECT_BEAT_UP_MESSAGE, // Handles the message printing for gen2,3 and 4
 
     // 追加の技効果
-    MOVE_EFFECT_BLEED, // 出血状態異常付与
+    MOVE_EFFECT_BLEED,   // 出血状態異常付与
+    MOVE_EFFECT_ATTRACT, // メロメロ状態異常付与
     NUM_MOVE_EFFECTS
 };
 

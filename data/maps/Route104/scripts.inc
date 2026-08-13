@@ -327,7 +327,7 @@ Route104_EventScript_Boy2::
 	faceplayer
 	goto_if_set FLAG_RECEIVED_TM_BULLET_SEED, Route104_EventScript_ReceivedBulletSeed
 	msgbox Route104_Text_LikeFillingMouthWithSeedsTakeThis, MSGBOX_DEFAULT
-	giveitem ITEM_TM_BULLET_SEED
+	giveitem ITEM_TM09
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	setflag FLAG_RECEIVED_TM_BULLET_SEED
 	release
@@ -990,26 +990,41 @@ Route104_EventScript_Mia::
 	end
 
 Route104_EventScript_Darian::
-	trainerbattle_single TRAINER_DARIAN, Route104_Text_DarianIntro, Route104_Text_DarianDefeat
+	trainerbattle_single TRAINER_DARIAN, Route104_Text_DarianIntro, Route104_Text_DarianDefeat, Route104_EventScript_DarianDefeated
 	msgbox Route104_Text_DarianPostBattle, MSGBOX_AUTOCLOSE
 	end
 
+Route104_EventScript_DarianDefeated::
+	setvar VAR_LEVEL_CAP, 20
+	msgbox Route104_Text_DarianPostBattle, MSGBOX_DEFAULT
+	release
+	end
+
 Route104_Text_BrineyLivesInSeasideCottage:
-	.string "That seaside cottage is where\n"
-	.string "MR. BRINEY lives.\p"
-	.string "He was once a mighty sailor who never\n"
-	.string "feared the sea, however stormy.$"
+	.string "Making it here means you've beaten\n"
+	.string "that self-proclaimed Guardian Boy!\p"
+	.string "That means your Pokémon's level\n"
+	.string "cap is now raised to 16!\p"
+	.string "Defeating these Guardians will\n"
+	.string "keep unlocking higher level caps.\p"
+	.string "Good luck! Priority moves seem\n"
+	.string "crucial for the next trial.$"
 
 Route104_Text_WhatsItLikeAtBottomOfSea:
-	.string "The sea, huh?\p"
-	.string "I wonder what it's like at the bottom\n"
-	.string "of the sea?$"
+	.string "Attract works 50 percent of the\n"
+	.string "time even between the same sex!\p"
+	.string "First, same-sex mating happens\n"
+	.string "in nature among animals.\p"
+	.string "Second, it's a move effect, like\n"
+	.string "magic, so it makes complete sense!\p"
+	.string "I feel official games lack\n"
+	.string "consideration for such details.$"
 
 Route104_Text_ThrowBallAtWeakenedPokemon:
-	.string "If you're going to throw a POKé BALL,\n"
-	.string "weaken the wild POKéMON first.\p"
-	.string "It will be easier to catch if it's been\n"
-	.string "poisoned, burned, or lulled to sleep.$"
+	.string "Lots of POKéMON drop special\n"
+	.string "stylish POKé BALLS!\p"
+	.string "They aren't sold in shops, so\n"
+	.string "you'll have to rely on drops!$"
 
 Route104_Text_OnlyThrowBallAtWildPokemon:
 	.string "You're a thief if you try to steal\n"
@@ -1017,12 +1032,11 @@ Route104_Text_OnlyThrowBallAtWildPokemon:
 	.string "You should throw POKé BALLS only at\n"
 	.string "wild POKéMON.$"
 
+OldaleTown_Text_ImNotATrainer:
 Route104_Text_ImNotATrainer:
-	.string "Oh, no, I'm not a TRAINER.\p"
-	.string "But that's right, if TRAINERS lock eyes,\n"
-	.string "it's a challenge to battle.\p"
-	.string "If you don't want to battle, stay out\n"
-	.string "of their sight.$"
+	.string "Exploring new areas is so fun!\n"
+	.string "The maps were redesigned so you\p"
+	.string "can run straight and smoothly!$"
 
 Route104_Text_LikeFillingMouthWithSeedsTakeThis:
 	.string "I like filling my mouth with seeds,\n"

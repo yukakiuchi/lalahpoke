@@ -120,6 +120,56 @@ const struct SpriteTemplate gWaterBubbleProjectileSpriteTemplate =
     .callback = AnimWaterBubbleProjectile,
 };
 
+const struct SpriteTemplate gYellowWaterBubbleProjectileSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUBBLE,
+    .paletteTag = ANIM_TAG_ORANGE_LIGHT_WALL,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gAnims_WaterBubbleProjectile,
+    .affineAnims = sAffineAnims_WaterBubbleProjectile,
+    .callback = AnimWaterBubbleProjectile,
+};
+
+const struct SpriteTemplate gBugNewWaterBubbleProjectileSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_NEW_BUBBLE,
+    .paletteTag = ANIM_TAG_LEAF,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gAnims_WaterBubbleProjectile,
+    .affineAnims = sAffineAnims_WaterBubbleProjectile,
+    .callback = AnimWaterBubbleProjectile,
+};
+
+const struct SpriteTemplate gGreenWaterBubbleProjectileSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUBBLE,
+    .paletteTag = ANIM_TAG_GREEN_LIGHT_WALL,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gAnims_WaterBubbleProjectile,
+    .affineAnims = sAffineAnims_WaterBubbleProjectile,
+    .callback = AnimWaterBubbleProjectile,
+};
+
+const struct SpriteTemplate gPinkWaterBubbleProjectileSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUBBLE,
+    .paletteTag = ANIM_TAG_RED_LIGHT_WALL,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gAnims_WaterBubbleProjectile,
+    .affineAnims = sAffineAnims_WaterBubbleProjectile,
+    .callback = AnimWaterBubbleProjectile,
+};
+
+const struct SpriteTemplate gSkyWaterBubbleProjectileSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUBBLE,
+    .paletteTag = ANIM_TAG_DRAGON_ASCENT_FOE,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gAnims_WaterBubbleProjectile,
+    .affineAnims = sAffineAnims_WaterBubbleProjectile,
+    .callback = AnimWaterBubbleProjectile,
+};
+
 static const union AnimCmd sAnim_AuroraBeamRing_0[] =
 {
     ANIMCMD_FRAME(0, 1),
@@ -327,6 +377,15 @@ const struct SpriteTemplate gWaterGunProjectileSpriteTemplate =
 {
     .tileTag = ANIM_TAG_SMALL_BUBBLES,
     .paletteTag = ANIM_TAG_SMALL_BUBBLES,
+    .oam = &gOamData_AffineOff_ObjBlend_16x16,
+    .anims = gAnims_WaterBubble,
+    .callback = AnimThrowProjectile,
+};
+
+const struct SpriteTemplate gGreenNewWaterGunProjectileSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_NEW_SMALL_BUBBLE,
+    .paletteTag = ANIM_TAG_LEAF,
     .oam = &gOamData_AffineOff_ObjBlend_16x16,
     .anims = gAnims_WaterBubble,
     .callback = AnimThrowProjectile,
@@ -1022,6 +1081,9 @@ void AnimTask_CreateSurfWave(u8 taskId)
         break;
     case ANIM_SURF_PAL_SLUDGE_WAVE:
         LoadPalette(gBattleAnimBgPalette_SludgeWave, BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
+        break;
+    case ANIM_SURF_PAL_ELECTRIC_WATER:
+        LoadPalette(gBattleAnimSpritePal_ElectricWaterPal, BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
         break;
     }
 

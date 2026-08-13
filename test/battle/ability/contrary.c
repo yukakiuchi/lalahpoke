@@ -126,7 +126,7 @@ SINGLE_BATTLE_TEST("Contrary lowers a stat after using a move which would normal
     PARAMETRIZE { ability = ABILITY_CONTRARY; }
     PARAMETRIZE { ability = ABILITY_TANGLED_FEET; }
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_SWORDS_DANCE) == EFFECT_ATTACK_UP_2);
+        ASSUME(GetMoveEffect(MOVE_SWORDS_DANCE) == EFFECT_ATTACK_UP_3);
         PLAYER(SPECIES_WOBBUFFET) { Defense(102); }
         OPPONENT(SPECIES_SPINDA) { Ability(ability); Attack(100); }
     } WHEN {
@@ -272,7 +272,7 @@ AI_SINGLE_BATTLE_TEST("AI sees Contrary-effected moves correctly in MoveEffectIn
 SINGLE_BATTLE_TEST("Contrary does not invert stat changes that have been Baton-passed")
 {
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_SWORDS_DANCE) == EFFECT_ATTACK_UP_2);
+        ASSUME(GetMoveEffect(MOVE_SWORDS_DANCE) == EFFECT_ATTACK_UP_3);
         ASSUME(GetMoveEffect(MOVE_BATON_PASS) == EFFECT_BATON_PASS);
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET);

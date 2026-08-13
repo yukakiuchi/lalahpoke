@@ -1185,6 +1185,10 @@ static u32 GetRelearnerLevelUpMoves(struct BoxPokemon *mon, u16 *moves)
             if (learnset[i].level > level)
                 break;
 
+             // ▼【追加】レベル1（および0）の技を除外する
+            if (learnset[i].level <= 1)
+                continue;
+
             if (BoxMonKnowsMove(mon, learnset[i].move))
                 continue;
 
@@ -1344,6 +1348,10 @@ static bool32 HasRelearnerLevelUpMoves(struct BoxPokemon *boxMon)
         {
             if (learnset[i].level > level)
                 break;
+
+            // ▼【追加】レベル1（および0）の技を除外する
+            if (learnset[i].level <= 1)
+                continue;
 
             if (!BoxMonKnowsMove(boxMon, learnset[i].move))
                 return TRUE;

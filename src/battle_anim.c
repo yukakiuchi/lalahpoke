@@ -266,6 +266,9 @@ static const u8* const sBattleAnims_General[NUM_B_ANIMS_GENERAL] =
     [B_ANIM_SILPH_SCOPED]           = gBattleAnimGeneral_SilphScoped,
     [B_ANIM_ROCK_THROW]             = gBattleAnimGeneral_SafariRockThrow,
     [B_ANIM_SAFARI_REACTION]        = gBattleAnimGeneral_SafariReaction,
+    [B_ANIM_AURORER_BARRIER]        = gBattleAnimGeneral_AuroraBarrier,
+    [B_ANIM_LEECH_SEED_PARASITIZED] = gBattleAnimGeneral_Parasitized,
+    [B_ANIM_POWDER_EXPLOSION]       = gBattleAnimGeneral_PowderExplosion,
 };
 
 static const u8* const sBattleAnims_Special[NUM_B_ANIMS_SPECIAL] =
@@ -372,6 +375,7 @@ void LaunchBattleAnimation(u32 animType, u32 animId)
         case B_ANIM_SEA_OF_FIRE:
         case B_ANIM_SWAMP:
         case B_ANIM_TERA_CHARGE:
+        case B_ANIM_LEECH_SEED_PARASITIZED:
             sAnimHideHpBoxes = TRUE;
             break;
         default:

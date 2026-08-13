@@ -238,6 +238,7 @@ bool32 IsHazardClearingMove(enum Move move);
 bool32 IsSubstituteEffect(enum BattleMoveEffects effect);
 bool32 IsSelfSacrificeEffect(enum Move move);
 u32 GetAIExplosionChanceFromHP(u32 hpPercent);
+u32 GetAIEffectGroupFromMove(enum BattlerId battler, enum Move move);
 
 // status checks
 bool32 AI_CanBeConfused(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, enum Ability ability);
@@ -334,6 +335,14 @@ bool32 CanMoveBeBouncedBack(enum BattlerId battler, enum Move move);
 
 // Switching and item helpers
 bool32 AiExpectsToFaintPlayer(enum BattlerId battler);
+
+// 新しく作った特性や脅威に対する条件確認
+bool32 IsDeathSongThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
+bool32 ShouldTauntToPreventDangers(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
+bool32 CanApplySecondaryDamage(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData);
+bool32 IsNewAbilityThreat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
+bool32 CanAiSurviveWithSash(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
+bool32 CanSafelyApplyLeechSeed(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData);
 
 // These are for the purpose of not doubling up on moves during double battles.
 // Used in GetAIEffectGroup for move effects and GetAIEffectGroupFromMove for additional effects

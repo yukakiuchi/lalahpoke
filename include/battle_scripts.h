@@ -533,6 +533,12 @@ extern const u8 BattleScript_MoveEffectBleedContinue[];          // 出血ター
 extern const u8 BattleScript_BleedCannotBeHealed[];              //「出血によって回復できない」ということを表示させる処理
 extern const u8 BattleScript_WishButBleedCannotBeHealed[];       // ねがいごとで「出血によって回復できない」ということを表示させる処理
 extern const u8 BattleScript_AbsorbNoEffect[];                   // 出血時、ドレイン技は回復ができないというメッセージを表示させる
+extern const u8 BattleScript_MoveEffectAttract[];                // 攻撃した時に一定の確率で相手をメロメロにする機能を追加。
+
+// 特性追加
+extern const u8 BattleScript_BattlerAbilityAuroraBarrier[];       // Switch inでひかりのかべとリフレクターを貼る、ターン更新可能
+extern const u8 BattleScript_LeechSeedTurnKO[];                   // 寄生が成功した時のスクリプト
+extern const u8 BattleScript_WindPowerActivatedByTailWind[];      // 追い風が毎ターンwind_powerの特性を電気チャージさせる処理
 
 // zmoves
 extern const u8 BattleScript_ZMoveActivateDamaging[];
@@ -611,6 +617,7 @@ extern const u8 BattleScript_EffectMist[];
 extern const u8 BattleScript_EffectFocusEnergy[];
 extern const u8 BattleScript_EffectConfuse[];
 extern const u8 BattleScript_EffectAttackUp2[];
+extern const u8 BattleScript_EffectAttackUp3[];
 extern const u8 BattleScript_EffectDefenseUp2[];
 extern const u8 BattleScript_EffectSpeedUp2[];
 extern const u8 BattleScript_EffectSpecialAttackUp2[];

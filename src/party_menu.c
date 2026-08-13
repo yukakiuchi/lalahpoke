@@ -80,6 +80,8 @@
 #include "constants/party_menu.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "constants/sound.h" // 効果音のファンファーレで使う
+
 
 enum {
     MENU_SUMMARY,
@@ -508,6 +510,8 @@ static void Task_FirstBattleEnterParty_StartPrintMsg2(u8 taskId);
 static void Task_FirstBattleEnterParty_RunPrinterMsg2(u8 taskId);
 static void Task_FirstBattleEnterParty_FadeNormal(u8 taskId);
 static void Task_FirstBattleEnterParty_WaitFadeNormal(u8 taskId);
+static void TryUpdateMonPokeball(struct Pokemon *mon, u32 itemId);
+static bool8 TryReturnOriginalHeldBallToBag(struct Pokemon *mon);
 
 static const u8 sText_askText[] = _("Would you like to change {STR_VAR_1}'s\nability to {STR_VAR_2}?");
 static const u8 sText_doneText[] = _("{STR_VAR_1}'s ability became\n{STR_VAR_2}!{PAUSE_UNTIL_PRESS}");
@@ -2031,7 +2035,13 @@ static void GiveItemToMon(struct Pokemon *mon, enum Item item)
     }
     itemBytes[0] = item;
     itemBytes[1] = item >> 8;
-    SetMonData(mon, MON_DATA_HELD_ITEM, itemBytes);
+    if (GetItemPocket(item) == POCKET_POKE_BALLS)
+    {
+        TryUpdateMonPokeball(mon, item);
+    } else
+    {
+        SetMonData(mon, MON_DATA_HELD_ITEM, itemBytes);
+    }
     TryItemHoldFormChange(&gPlayerParty[gPartyMenu.slotId], gPartyMenu.slotId);
 }
 
@@ -8374,3 +8384,45 @@ static void Task_FirstBattleEnterParty_WaitFadeNormal(u8 taskId)
         gTasks[taskId].func = Task_HandleChooseMonInput;
     }
 }
+
+/**
+ * ポケモンにボールを持たせたら自動でそのボールをポケモン本体の持ってるボールと入れ替える処理
+ * ポケモンに持たせたアイテムがボール系か判定し、
+ * ボールであればそのポケモンの格納ボール情報を更新する
+ * * @param mon 変更対象のポケモン構造体へのポインタ
+ * @param itemId 使用したアイテムID
+ */
+static void TryUpdateMonPokeball(struct Pokemon *mon, u32 itemId)
+{
+    // 関数経由で安全にボールIDを取得
+    u32 ballId = ItemIdToBallId(itemId);
+    enum Item originalBall = GetMonData(mon, MON_DATA_POKEBALL);
+    GetMonNickname(mon, gStringVar1);  // ピカチューは
+    CopyItemName(originalBall, gStringVar2); // モンスターボールを返したという風にメッセージを表示させたいから
+
+    if (TryReturnOriginalHeldBallToBag(mon))
+    {
+        u16 species = GetMonData(mon, MON_DATA_SPECIES); // 鳴き声再生に使う
+
+        PlaySE(SE_BALL_OPEN);
+        PlayCry_Normal(species, 0);
+        StringExpandPlaceholders(gStringVar4, gText_ChangedMonHeldBall);
+        SetMonData(mon, MON_DATA_POKEBALL, &ballId);
+    } else
+    {
+        PlaySE(SE_FAILURE); // なぜか鳴らない誰かが修正するのを待とう。とりあえず処理だけ書いておく
+        StringExpandPlaceholders(gStringVar4, gText_BagFullCouldNotReturnBall);
+    }
+}
+
+/**
+ * ポケモンが保持してるボールをバッグに戻す処理
+ * 戻せたかどうかを返す
+ * @param itemId 選択したポケモンのデータを参照するため
+ */
+static bool8 TryReturnOriginalHeldBallToBag(struct Pokemon *mon)
+{
+    enum Item item = GetMonData(mon, MON_DATA_POKEBALL);
+    return AddBagItem(item, 1);
+}
+

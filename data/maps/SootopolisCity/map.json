@@ -12,7 +12,7 @@
   "allow_running": true,
   "show_map_name": true,
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
-  "connections": [],
+  "connections": null,
   "object_events": [
     {
       "local_id": "LOCALID_SOOTOPOLIS_EXPERT",
@@ -45,8 +45,8 @@
     {
       "local_id": "LOCALID_KIRI",
       "graphics_id": "OBJ_EVENT_GFX_GIRL_2",
-      "x": 9,
-      "y": 43,
+      "x": 15,
+      "y": 44,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_WANDER_LEFT_AND_RIGHT",
       "movement_range_x": 1,
@@ -264,6 +264,19 @@
       "trainer_sight_or_berry_tree_id": "0",
       "script": "SootopolisCity_EventScript_Wallace",
       "flag": "FLAG_HIDE_SOOTOPOLIS_CITY_WALLACE"
+    },
+    {
+      "graphics_id": "OBJ_EVENT_GFX_EGG_SELL_DELIBIRD",
+      "x": 7,
+      "y": 40,
+      "elevation": 0,
+      "movement_type": "MOVEMENT_TYPE_FACE_LEFT",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "EventScript_DelibirdShop_Outside",
+      "flag": "FLAG_HIDE_DELIBIRD_OUTSIDE_NPC"
     }
   ],
   "warp_events": [

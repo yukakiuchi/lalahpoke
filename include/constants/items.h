@@ -821,21 +821,6 @@ enum __attribute__((packed)) Item
     ITEM_HM07 = 688,
     ITEM_HM08 = 689,
 
-
-    /* Expands to:
-     *   ITEM_TM_FOCUS_PUNCH = ITEM_TM01,
-     *   ...
-     *   ITEM_HM_CUT = ITM_HM01,
-     *   ... */
-    #define ENUM_TM(n, id) CAT(ITEM_TM_, id) = CAT(ITEM_TM, n),
-    #define ENUM_HM(n, id) CAT(ITEM_HM_, id) = CAT(ITEM_HM, n),
-    #define TO_TMHM_NUMS(a, ...) (__VA_ARGS__)
-    RECURSIVELY(R_ZIP(ENUM_TM, TO_TMHM_NUMS NUMBERS_256, (FOREACH_TM(APPEND_COMMA))))
-    RECURSIVELY(R_ZIP(ENUM_HM, TO_TMHM_NUMS NUMBERS_256, (FOREACH_HM(APPEND_COMMA))))
-    #undef ENUM_TM
-    #undef ENUM_HM
-    #undef TO_TMHM_NUMS
-
     // Charms
     ITEM_OVAL_CHARM = 690,
     ITEM_SHINY_CHARM = 691,
@@ -1051,6 +1036,72 @@ enum __attribute__((packed)) Item
     ITEM_TATSUGIRINITE = 872,
     ITEM_GLIMMORANITE = 873,
 
+    // 追加のTM
+    ITEM_TM101 = 874,
+    ITEM_TM102 = 875,
+    ITEM_TM103 = 876,
+    ITEM_TM104 = 877,
+    ITEM_TM105 = 878,
+    ITEM_TM106 = 879,
+    ITEM_TM107 = 880,
+    ITEM_TM108 = 881,
+    ITEM_TM109 = 882,
+    ITEM_TM110 = 883,
+    ITEM_TM111 = 884,
+    ITEM_TM112 = 885,
+    ITEM_TM113 = 886,
+    ITEM_TM114 = 887,
+    ITEM_TM115 = 888,
+    ITEM_TM116 = 889,
+    ITEM_TM117 = 890,
+    ITEM_TM118 = 891,
+    ITEM_TM119 = 892,
+    ITEM_TM120 = 893,
+    ITEM_TM121 = 894,
+    ITEM_TM122 = 895,
+    ITEM_TM123 = 896,
+    ITEM_TM124 = 897,
+    ITEM_TM125 = 898,
+    ITEM_TM126 = 899,
+    ITEM_TM127 = 900,
+    ITEM_TM128 = 901,
+    ITEM_TM129 = 902,
+    ITEM_TM130 = 903,
+    ITEM_TM131 = 904,
+    ITEM_TM132 = 905,
+    ITEM_TM133 = 906,
+    ITEM_TM134 = 907,
+    ITEM_TM135 = 908,
+    ITEM_TM136 = 909,
+    ITEM_TM137 = 910,
+    ITEM_TM138 = 911,
+    ITEM_TM139 = 912,
+    ITEM_TM140 = 913,
+    ITEM_TM141 = 914,
+    ITEM_TM142 = 915,
+    ITEM_TM143 = 916,
+    ITEM_TM144 = 917,
+    ITEM_TM145 = 918,
+    ITEM_TM146 = 919,
+    ITEM_TM147 = 920,
+    ITEM_TM148 = 921,
+    ITEM_TM149 = 922,
+
+    /* Expands to:
+     *   ITEM_TM01 = ITEM_TM01,
+     *   ...
+     *   ITEM_HM_CUT = ITM_HM01,
+     *   ... */
+    #define ENUM_TM(n, id) CAT(ITEM_TM_, id) = CAT(ITEM_TM, n),
+    #define ENUM_HM(n, id) CAT(ITEM_HM_, id) = CAT(ITEM_HM, n),
+    #define TO_TMHM_NUMS(a, ...) (__VA_ARGS__)
+    RECURSIVELY(R_ZIP(ENUM_TM, TO_TMHM_NUMS NUMBERS_256, (FOREACH_TM(APPEND_COMMA))))
+    RECURSIVELY(R_ZIP(ENUM_HM, TO_TMHM_NUMS NUMBERS_256, (FOREACH_HM(APPEND_COMMA))))
+    #undef ENUM_TM
+    #undef ENUM_HM
+    #undef TO_TMHM_NUMS
+
+    ITEM_TM150 = 923,
     ITEMS_COUNT,
     ITEM_FIELD_ARROW = ITEMS_COUNT,
 };

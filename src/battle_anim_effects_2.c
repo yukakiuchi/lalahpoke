@@ -245,6 +245,30 @@ const struct SpriteTemplate gSonicBoomSpriteTemplate =
     .callback = AnimSonicBoomProjectile,
 };
 
+const struct SpriteTemplate gYellowSonicBoomSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_AIR_WAVE,
+    .paletteTag = ANIM_TAG_MILK_BOTTLE,
+    .oam = &gOamData_AffineDouble_ObjBlend_32x16,
+    .callback = AnimSonicBoomProjectile,
+};
+
+const struct SpriteTemplate gDarkSonicBoomSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_AIR_WAVE,
+    .paletteTag = ANIM_TAG_PURPLE_FLAME,
+    .oam = &gOamData_AffineDouble_ObjBlend_32x16,
+    .callback = AnimSonicBoomProjectile,
+};
+
+const struct SpriteTemplate gPoisonShurikenSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_AIR_WAVE,
+    .paletteTag = ANIM_TAG_HOOPA_RING,
+    .oam = &gOamData_AffineDouble_ObjBlend_32x16,
+    .callback = AnimSonicBoomProjectile,
+};
+
 const struct SpriteTemplate gAirWaveProjectileSpriteTemplate =
 {
     .tileTag = ANIM_TAG_AIR_WAVE,
@@ -855,6 +879,14 @@ const struct SpriteTemplate gRedHeartBurstSpriteTemplate =
     .callback = AnimParticleBurst,
 };
 
+const struct SpriteTemplate gNewYellowStarBurstSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_NEW_GREEN_STAR,
+    .paletteTag = ANIM_TAG_FANG_ATTACK,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .callback = AnimParticleBurst,
+};
+
 const struct SpriteTemplate gRedHeartRisingSpriteTemplate =
 {
     .tileTag = ANIM_TAG_RED_HEART,
@@ -1048,6 +1080,69 @@ const struct SpriteTemplate gFurySwipesSpriteTemplate =
 {
     .tileTag = ANIM_TAG_SWIPE,
     .paletteTag = ANIM_TAG_SWIPE,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gBubbleFurySwipesSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SWIPE,
+    .paletteTag = ANIM_TAG_SLASH_2,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gDarkFurySwipesSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SWIPE,
+    .paletteTag = ANIM_TAG_PURPLE_GENERAL_PAL,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gBugFurySwipesSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SWIPE,
+    .paletteTag = ANIM_TAG_BUG_PAL,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gStaticFurySwipesSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SWIPE,
+    .paletteTag = ANIM_TAG_YELLOW_SCRATCH_PAL,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gWineWhipSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_VINE_2,
+    .paletteTag = ANIM_TAG_HORN_LEECH,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gRainbowFuryStarsSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARKLE_4,
+    .paletteTag = ANIM_TAG_UNKNOWN,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = sAnims_FurySwipes,
+    .callback = AnimFurySwipes,
+};
+
+const struct SpriteTemplate gPinkFuryStarsSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARKLE_4,
+    .paletteTag = ANIM_TAG_PINK_PAL,
     .oam = &gOamData_AffineOff_ObjNormal_32x32,
     .anims = sAnims_FurySwipes,
     .callback = AnimFurySwipes,
@@ -1413,6 +1508,15 @@ static void AnimSwordsDanceBlade_Step(struct Sprite *sprite)
     StoreSpriteCallbackInData6(sprite, DestroyAnimSprite);
 }
 
+// ★追加: 滞在時間（sprite->data[5]）を待ってから消去する関数
+static void AnimSonicBoom_WaitThenDestroy(struct Sprite *sprite)
+{
+    if (sprite->data[5]-- <= 0)
+    {
+        DestroyAnimSprite(sprite);
+    }
+}
+
 // Moves a projectile towards the target mon. The sprite is rotated to be pointing
 // in the same direction it's moving.
 // arg 0: initial x pixel offset
@@ -1420,6 +1524,7 @@ static void AnimSwordsDanceBlade_Step(struct Sprite *sprite)
 // arg 2: target x pixel offset
 // arg 3: target y pixel offset
 // arg 4: duration
+// arg 5: stay duration (optional) ★追加
 void AnimSonicBoomProjectile(struct Sprite *sprite)
 {
     s16 targetXPos;
@@ -1450,7 +1555,17 @@ void AnimSonicBoomProjectile(struct Sprite *sprite)
     sprite->data[2] = targetXPos;
     sprite->data[4] = targetYPos;
     sprite->callback = StartAnimLinearTranslation;
-    StoreSpriteCallbackInData6(sprite, DestroyAnimSprite);
+
+    // ★変更: arg 5 に値が入っているか判定
+    if (gBattleAnimArgs[5] != 0)
+    {
+        sprite->data[5] = gBattleAnimArgs[5]; // 滞在フレーム数を保持
+        StoreSpriteCallbackInData6(sprite, AnimSonicBoom_WaitThenDestroy);
+    }
+    else
+    {
+        StoreSpriteCallbackInData6(sprite, DestroyAnimSprite); // 従来通りの即消去
+    }
 }
 
 static void AnimAirWaveProjectile_Step2(struct Sprite *sprite)

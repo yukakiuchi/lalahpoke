@@ -25,6 +25,7 @@ enum __attribute__((packed)) Type
     TYPE_DARK = 18,
     TYPE_FAIRY = 19,
     TYPE_STELLAR = 20,
+    TYPE_RAINBOW = 21,
     NUMBER_OF_MON_TYPES
 };
 
@@ -101,7 +102,8 @@ enum __attribute__((packed)) Stat
 #define MAX_STAT_STAGE    12
 
 // Shiny odds
-// 色違い確率調整
+// 色違い率調整
+// 色違いの確率 色違い確率 1%
 #define SHINY_ODDS 655 // Actual probability is SHINY_ODDS/65536
 
 // Ribbon IDs used by TV and Pokénav

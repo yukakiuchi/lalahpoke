@@ -86,12 +86,32 @@ const union AffineAnimCmd *const gAffineAnims_ShadowBall[] =
     sAffineAnim_ShadowBall,
 };
 
+static const union AffineAnimCmd sAffineAnim_MoonBall[] =
+{
+    AFFINEANIMCMD_FRAME(0x0, 0x0, 50, 1),
+    AFFINEANIMCMD_JUMP(0),
+};
+
+const union AffineAnimCmd *const gAffineAnims_MoonBall[] =
+{
+    sAffineAnim_MoonBall,
+};
+
 const struct SpriteTemplate gShadowBallSpriteTemplate =
 {
     .tileTag = ANIM_TAG_SHADOW_BALL,
     .paletteTag = ANIM_TAG_SHADOW_BALL,
     .oam = &gOamData_AffineNormal_ObjNormal_32x32,
     .affineAnims = gAffineAnims_ShadowBall,
+    .callback = AnimShadowBall,
+};
+
+const struct SpriteTemplate gMoonBallSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_MOON_BALL,
+    .paletteTag = ANIM_TAG_MOON_BALL,
+    .oam = &gOamData_AffineNormal_ObjNormal_32x32,
+    .affineAnims = gAffineAnims_MoonBall,
     .callback = AnimShadowBall,
 };
 

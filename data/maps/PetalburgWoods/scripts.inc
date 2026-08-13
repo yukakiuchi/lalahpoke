@@ -26,7 +26,12 @@ PetalburgWoods_EventScript_DevonResearcherLeft::
 	applymovement LOCALID_PETALBURG_WOODS_GRUNT, PetalburgWoods_Movement_AquaApproachPlayer
 	waitmovement 0
 	msgbox PetalburgWoods_Text_NoOneCrossesTeamAqua, MSGBOX_DEFAULT
+	closemessage
+	applymovement LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, Common_Movement_WalkInPlaceFasterUp
+	waitmovement 0
+	msgbox PetalburgWoods_Text_FogAdvice, MSGBOX_DEFAULT
 	trainerbattle_no_intro TRAINER_GRUNT_PETALBURG_WOODS, PetalburgWoods_Text_YoureKiddingMe
+	setvar VAR_LEVEL_CAP, 25
 	applymovement LOCALID_PETALBURG_WOODS_GRUNT, PetalburgWoods_Movement_AquaBackOff
 	waitmovement 0
 	call PetalburgWoods_EventScript_DevonResearcherPostBattle
@@ -62,7 +67,12 @@ PetalburgWoods_EventScript_DevonResearcherRight::
 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterUp
 	waitmovement 0
 	msgbox PetalburgWoods_Text_NoOneCrossesTeamAqua, MSGBOX_DEFAULT
+	closemessage
+	applymovement LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, Common_Movement_WalkInPlaceFasterUp
+	waitmovement 0
+	msgbox PetalburgWoods_Text_FogAdvice, MSGBOX_DEFAULT
 	trainerbattle_no_intro TRAINER_GRUNT_PETALBURG_WOODS, PetalburgWoods_Text_YoureKiddingMe
+	setvar VAR_LEVEL_CAP, 25
 	applymovement LOCALID_PETALBURG_WOODS_GRUNT, PetalburgWoods_Movement_AquaBackOff
 	waitmovement 0
 	call PetalburgWoods_EventScript_DevonResearcherPostBattle
@@ -316,69 +326,67 @@ PetalburgWoods_EventScript_JamesRematch::
 	end
 
 PetalburgWoods_Text_NotAOneToBeFound:
-	.string "Hmmm…\n"
+	.string "Devon Researcher: Hmmm…\n"
 	.string "Not a one to be found…$"
 
 PetalburgWoods_Text_HaveYouSeenShroomish:
-	.string "Hello, have you seen any POKéMON\n"
-	.string "called SHROOMISH around here?\p"
-	.string "I really love that POKéMON.$"
+	.string "Devon Researcher: Hello, have you\n"
+	.string "seen any POKéMON called SHROOMISH?\p"
+	.string "Devon Researcher: I really love\n"
+	.string "that POKéMON.$"
 
 PetalburgWoods_Text_IWasGoingToAmbushYou:
-	.string "I was going to ambush you, but you\n"
-	.string "had to dawdle in PETALBURG WOODS\l"
-	.string "forever, didn't you?\p"
-	.string "I got sick of waiting, so here I am!$"
+	.string "Team Aqua: I was going to ambush\n"
+	.string "you, but you dawdled forever!\p"
+	.string "Team Aqua: I got sick of waiting,\n"
+	.string "so here I am!$"
 
 PetalburgWoods_Text_HandOverThosePapers:
-	.string "You! DEVON RESEARCHER!\p"
+	.string "Team Aqua: You! DEVON RESEARCHER!\n"
 	.string "Hand over those papers!$"
 
 PetalburgWoods_Text_YouHaveToHelpMe:
-	.string "Aiyeeeh!\p"
-	.string "You're a POKéMON TRAINER, aren't you?\n"
-	.string "You've got to help me, please!$"
+	.string "Devon Researcher: Aiyeeeh!\p"
+	.string "Devon Researcher: You're a POKéMON\n"
+	.string "TRAINER! You've got to help me!$"
 
 PetalburgWoods_Text_NoOneCrossesTeamAqua:
-	.string "Hunh? What do you think you're doing?\n"
+	.string "Team Aqua: Hunh? What are you doing?\n"
 	.string "What, you're going to protect him?\p"
-	.string "No one who crosses TEAM AQUA\n"
-	.string "gets any mercy, not even a kid!\p"
-	.string "Come on and battle me!$"
+	.string "Team Aqua: No one who crosses TEAM\n"
+	.string "AQUA gets mercy, not even a kid!\p"
+	.string "Team Aqua: Come on and battle me!$"
 
 PetalburgWoods_Text_YoureKiddingMe:
-	.string "You're kidding me! You're tough!$"
+	.string "Team Aqua: You're kidding me!\n"
+	.string "You're tough!$"
 
 PetalburgWoods_Text_YouveGotSomeNerve:
-	.string "Grrr… You've got some nerve\n"
-	.string "meddling with TEAM AQUA!\l"
-	.string "Come on and battle me again!\p"
-	.string "I wish I could say that, but I'm out of\n"
-	.string "POKéMON…\p"
-	.string "And, hey, we of TEAM AQUA are also\n"
+	.string "Team Aqua: Grrr… You've got nerve\n"
+	.string "meddling with TEAM AQUA!\p"
+	.string "Team Aqua: We of TEAM AQUA are also\n"
 	.string "after something in RUSTBORO.\p"
-	.string "I'll let you go today!$"
+	.string "Team Aqua: I'll let you go today!$"
 
 PetalburgWoods_Text_ThatWasAwfullyClose:
-	.string "Whew…\n"
+	.string "Devon Researcher: Whew…\n"
 	.string "That was awfully close!\p"
-	.string "Thanks to you, he didn't rob me of\n"
-	.string "these important papers.\p"
-	.string "I know, I'll give you a GREAT BALL as\n"
-	.string "my thanks!$"
+	.string "Devon Researcher: Thanks to you,\n"
+	.string "he didn't rob these papers.\p"
+	.string "Devon Researcher: Take this GREAT\n"
+	.string "BALL as my thanks!$"
 
 PetalburgWoods_Text_TeamAquaAfterSomethingInRustboro:
-	.string "Didn't that TEAM AQUA thug say\n"
-	.string "they were after something in\l"
-	.string "RUSTBORO, too?$"
+	.string "Devon Researcher: Didn't that thug\n"
+	.string "say they want something in RUSTBORO?$"
 
 PetalburgWoods_Text_ICantBeWastingTime:
-	.string "Uh-oh! It's a crisis!\n"
+	.string "Devon Researcher: Uh-oh! It's a crisis!\n"
 	.string "I can't be wasting time!$"
 
 PetalburgWoods_Text_YoureLoadedWithItems:
-	.string "You're loaded with items.\n"
-	.string "I can't give you this GREAT BALL.$"
+	.string "Devon Researcher: You're loaded with\n"
+	.string "items. I can't give you this BALL.$"
 
 PetalburgWoods_Text_GoBugPokemonTeam:
 	.string "I caught a whole bunch of POKéMON!\p"
@@ -471,3 +479,15 @@ PetalburgWoods_Text_TrainerTipsPP:
 	.string "If a POKéMON runs out of PP, it must be\n"
 	.string "taken to a POKéMON CENTER.$"
 
+PetalburgWoods_Text_FogAdvice:
+	.string "Devon Researcher: Wait! Before the\n"
+	.string "battle! (whispering...)\p"
+	.string "The fog will be thick,\n"
+	.string "and BUG & DARK-types have an edge!\p"
+	.string "BUG POKéMON here adapted over\n"
+	.string "generations of evolution.\p"
+	.string "DARK-types also handle low\n"
+	.string "visibility very well.\p"
+	.string "Accuracy is key in this battle!\n"
+	.string "Try getting the DEFOG TM dropped\l"
+	.string "by Wighthing! Give it a try!$"

@@ -340,8 +340,14 @@ OldaleTown_Movement_ReturnToOriginalPosition:
 	step_end
 
 OldaleTown_Text_SavingMyProgress:
-	.string "I want to take a rest, so I'm saving my\n"
-	.string "progress.$"
+	.string "For the first rival battle, give\n"
+	.string "your partner the BrightPowder\p"
+	.string "from your PC, and teach it Sing\n"
+	.string "from a TM dropped by wild Swablu!\p"
+	.string "That makes the battle super easy!\n"
+	.string "Gimmicks are key in this world.\p"
+	.string "If you can't win, talk to people.\n"
+	.string "There's always a hint somewhere!$"
 
 OldaleTown_Text_IWorkAtPokemonMart:
 	.string "Hi!\n"
@@ -352,14 +358,14 @@ OldaleTown_Text_ThisIsAPokemonMart:
 	.string "This is a POKéMON MART.\n"
 	.string "Just look for our blue roof.\p"
 	.string "We sell a variety of goods including\n"
-	.string "POKé BALLS for catching POKéMON.\p"
+	.string "POKé BALLS and TM.\p"
 	.string "Here, I'd like you to have this as\n"
 	.string "a promotional item.$"
 
 OldaleTown_Text_PotionExplanation:
-	.string "A POTION can be used anytime, so it's\n"
-	.string "even more useful than a POKéMON CENTER\l"
-	.string "in certain situations.$"
+	.string "A POTION can be only used in wild battles,\n"
+	.string "so it's even more useful than a\l"
+	.string "POKéMON CENTER in certain situations.$"
 
 OldaleTown_Text_WaitDontComeInHere:
 	.string "Aaaaah! Wait!\n"

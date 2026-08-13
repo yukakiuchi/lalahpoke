@@ -172,6 +172,57 @@ const struct SpriteTemplate gWaterBubbleSpriteTemplate =
     .callback = AnimBubbleEffect,
 };
 
+const struct SpriteTemplate gYellowWaterBubbleSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SMALL_BUBBLES,
+    .paletteTag = ANIM_TAG_ORANGE_LIGHT_WALL,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gAnims_WaterBubble,
+    .affineAnims = gAffineAnims_Bubble,
+    .callback = AnimBubbleEffect,
+};
+
+const struct SpriteTemplate gGreenWaterBubbleSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SMALL_BUBBLES,
+    .paletteTag = ANIM_TAG_GREEN_LIGHT_WALL,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gAnims_WaterBubble,
+    .affineAnims = gAffineAnims_Bubble,
+    .callback = AnimBubbleEffect,
+};
+
+const struct SpriteTemplate gPinkWaterBubbleSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SMALL_BUBBLES,
+    .paletteTag = ANIM_TAG_RED_LIGHT_WALL,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gAnims_WaterBubble,
+    .affineAnims = gAffineAnims_Bubble,
+    .callback = AnimBubbleEffect,
+};
+
+const struct SpriteTemplate gSkyWaterBubbleSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SMALL_BUBBLES,
+    .paletteTag = ANIM_TAG_DRAGON_ASCENT_FOE,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gAnims_WaterBubble,
+    .affineAnims = gAffineAnims_Bubble,
+    .callback = AnimBubbleEffect,
+};
+
+const struct SpriteTemplate gBugNewWaterBubbleSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_NEW_SMALL_BUBBLE,
+    .paletteTag = ANIM_TAG_LEAF,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .anims = gAnims_WaterBubble,
+    .affineAnims = gAffineAnims_Bubble,
+    .callback = AnimBubbleEffect,
+};
+
+
 const struct SpriteTemplate gGreenPoisonDrip =
 {
     .tileTag = ANIM_TAG_GREEN_POISON_BUBBLE,

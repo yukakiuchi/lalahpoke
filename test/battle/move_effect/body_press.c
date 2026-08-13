@@ -56,7 +56,7 @@ SINGLE_BATTLE_TEST("Body Press's damage depends on the user's Defense and not At
     PARAMETRIZE { move = MOVE_CELEBRATE; } // Nothing, stats are default
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_IRON_DEFENSE) == EFFECT_DEFENSE_UP_2);
-        ASSUME(GetMoveEffect(MOVE_SWORDS_DANCE) == EFFECT_ATTACK_UP_2);
+        ASSUME(GetMoveEffect(MOVE_SWORDS_DANCE) == EFFECT_ATTACK_UP_3);
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET) { Attack(150); Defense(150); }
     } WHEN {

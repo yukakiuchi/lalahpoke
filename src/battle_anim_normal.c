@@ -212,6 +212,24 @@ const struct SpriteTemplate gBasicHitSplatSpriteTemplate =
     .callback = AnimHitSplatBasic,
 };
 
+const struct SpriteTemplate gBasicIceColorHitSplatSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_IMPACT,
+    .paletteTag = ANIM_TAG_ANGEL,
+    .oam = &gOamData_AffineNormal_ObjBlend_32x32,
+    .affineAnims = gAffineAnims_HitSplat,
+    .callback = AnimHitSplatBasic,
+};
+
+const struct SpriteTemplate gBasicRedHeartHitSplatSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_MAGENTA_HEART,
+    .paletteTag = ANIM_TAG_MAGENTA_HEART,
+    .oam = &gOamData_AffineNormal_ObjBlend_16x16,
+    .affineAnims = gAffineAnims_HitSplat,
+    .callback = AnimHitSplatBasic,
+};
+
 const struct SpriteTemplate gHandleInvertHitSplatSpriteTemplate =
 {
     .tileTag = ANIM_TAG_IMPACT,
@@ -234,6 +252,15 @@ const struct SpriteTemplate gRandomPosHitSplatSpriteTemplate =
 {
     .tileTag = ANIM_TAG_IMPACT,
     .paletteTag = ANIM_TAG_IMPACT,
+    .oam = &gOamData_AffineNormal_ObjBlend_32x32,
+    .affineAnims = gAffineAnims_HitSplat,
+    .callback = SpriteCB_RandomCentredHits,
+};
+
+const struct SpriteTemplate gRandomSlapSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_HUMANOID_HAND,
+    .paletteTag = ANIM_TAG_HUMANOID_HAND,
     .oam = &gOamData_AffineNormal_ObjBlend_32x32,
     .affineAnims = gAffineAnims_HitSplat,
     .callback = SpriteCB_RandomCentredHits,
@@ -272,6 +299,24 @@ const struct SpriteTemplate gPersistHitSplatSpriteTemplate =
     .oam = &gOamData_AffineNormal_ObjBlend_32x32,
     .affineAnims = gAffineAnims_HitSplat,
     .callback = AnimHitSplatPersistent,
+};
+
+const struct SpriteTemplate gPersistPurpleHandSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_PURPLE_HAND_OUTLINE,
+    .paletteTag = ANIM_TAG_PURPLE_HAND_OUTLINE,
+    .oam = &gOamData_AffineNormal_ObjBlend_32x32,
+    .affineAnims = gAffineAnims_HitSplat,
+    .callback = AnimHitSplatPersistent,
+};
+
+const struct SpriteTemplate gPinkRandomPosHitSplatSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_IMPACT,
+    .paletteTag = ANIM_TAG_CLAPPING,
+    .oam = &gOamData_AffineNormal_ObjBlend_32x32,
+    .affineAnims = gAffineAnims_HitSplat,
+    .callback = SpriteCB_RandomCentredHits,
 };
 
 static void AnimMovePowerSwapGuardSwapWait(struct Sprite *sprite)

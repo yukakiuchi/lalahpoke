@@ -220,11 +220,15 @@ static u32 HandleRegionMapInput(struct Pokenav_RegionMapMenu *state)
         state->callback = GetExitRegionMapMenuId;
         return POKENAV_MAP_FUNC_EXIT;
     case MAP_INPUT_R_BUTTON:
-        return POKENAV_MAP_FUNC_FLY; // 条件をチェックせず強制そらをとべるようにする
-        if (regionMap->mapSecType == MAPSECTYPE_CITY_CANFLY
-            && FlagGet(OW_FLAG_POKE_RIDER)
-            && FilterFlyDestination(regionMap) != WARP_ID_NONE
-            && Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType) == TRUE)
+        // ポケナビから空を飛べるようにする処理ここをコメントアウトして下の処理のコメントアウトを外す
+        if (regionMap->mapSecType == MAPSECTYPE_CITY_CANFLY && FlagGet(OW_FLAG_POKE_RIDER)
+        && Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType) == TRUE)
+
+        // return POKENAV_MAP_FUNC_FLY; // 条件をチェックせず強制そらをとべるようにする
+        // if (regionMap->mapSecType == MAPSECTYPE_CITY_CANFLY
+        //     && FlagGet(OW_FLAG_POKE_RIDER)
+        //     && FilterFlyDestination(regionMap) != WARP_ID_NONE
+        //     && Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType) == TRUE)
             return POKENAV_MAP_FUNC_FLY;
     }
 
@@ -776,11 +780,12 @@ void UpdateRegionMapHelpBarText(void)
 {
     struct RegionMap* regionMap = GetSubstructPtr(POKENAV_SUBSTRUCT_REGION_MAP);
 
-    if (IsRegionMapZoomed())
-        PrintHelpBarText(HELPBAR_MAP_ZOOMED_IN_CANFLY);
-    else
-        PrintHelpBarText(HELPBAR_MAP_ZOOMED_OUT_CANFLY);
-    return;
+    // 自分好みに変えてるだけ
+    // if (IsRegionMapZoomed())
+    //     PrintHelpBarText(HELPBAR_MAP_ZOOMED_IN_CANFLY);
+    // else
+    //     PrintHelpBarText(HELPBAR_MAP_ZOOMED_OUT_CANFLY);
+    // return;
     // 下記が既存の処理だけどチェックは通さないようにここでreturnで止めておく
 
     if (regionMap->mapSecType == MAPSECTYPE_CITY_CANFLY && FlagGet(OW_FLAG_POKE_RIDER)

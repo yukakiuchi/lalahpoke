@@ -2,7 +2,7 @@ EventScript_UseSurf::
 	lockall
 	msgbox gText_WantToUseSurf, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, EventScript_ReleaseUseSurf
-	goto_if_unset FLAG_BADGE01_GET, EventScript_NoBadge05
+	goto_if_unset FLAG_BADGE05_GET, EventScript_NoBadge05 @ HM不要なみのりの利用条件
 	setvar 0x8007, 1 @臨時変数にフラグとして代入 フィールド上からかどうか(パーティメニューのなみのりからではない)
 	dofieldeffect FLDEFF_USE_SURF
 

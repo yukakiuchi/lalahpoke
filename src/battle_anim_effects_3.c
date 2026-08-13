@@ -114,6 +114,7 @@ static void AnimTask_TeeterDanceMovement_Step(u8);
 static void AnimTask_SlackOffSquish_Step(u8);
 static void AnimTask_TeraCrystalShatter(struct Sprite *);
 static void AnimTask_TeraCrystalShatter_Step(struct Sprite *);
+static void AnimRandomSpikes(struct Sprite *);
 
 const union AnimCmd gScratchAnimCmds[] =
 {
@@ -134,6 +135,69 @@ const struct SpriteTemplate gScratchSpriteTemplate =
 {
     .tileTag = ANIM_TAG_SCRATCH,
     .paletteTag = ANIM_TAG_SCRATCH,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gScratchAnimTable,
+    .callback = AnimSpriteOnMonPos,
+};
+
+const struct SpriteTemplate gRainbowCuttingStarsSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARKLE_4,
+    .paletteTag = ANIM_TAG_SPARKLE_4,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gScratchAnimTable,
+    .callback = AnimSpriteOnMonPos,
+};
+
+const struct SpriteTemplate gPinkCuttingStarsSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SPARKLE_4,
+    .paletteTag = ANIM_TAG_PINK_PAL,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = gScratchAnimTable,
+    .callback = AnimSpriteOnMonPos,
+};
+
+const struct SpriteTemplate gStaticScratchSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SCRATCH_3,
+    .paletteTag = ANIM_TAG_FLOWER,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gScratchAnimTable,
+    .callback = AnimSpriteOnMonPos,
+};
+
+const struct SpriteTemplate gBubbleScratchSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SCRATCH_3,
+    .paletteTag = ANIM_TAG_MIST_CLOUD,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gScratchAnimTable,
+    .callback = AnimSpriteOnMonPos,
+};
+
+const struct SpriteTemplate gFireScratchSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SCRATCH_3,
+    .paletteTag = ANIM_TAG_CROSS_IMPACT,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gScratchAnimTable,
+    .callback = AnimSpriteOnMonPos,
+};
+
+const struct SpriteTemplate gDarkScratchSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SCRATCH_3,
+    .paletteTag = ANIM_TAG_DARK_SAND_PAL,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gScratchAnimTable,
+    .callback = AnimSpriteOnMonPos,
+};
+
+const struct SpriteTemplate gBugScratchSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_SCRATCH_3,
+    .paletteTag = ANIM_TAG_HORN_LEECH,
     .oam = &gOamData_AffineOff_ObjBlend_32x32,
     .anims = gScratchAnimTable,
     .callback = AnimSpriteOnMonPos,
@@ -229,6 +293,14 @@ const struct SpriteTemplate gSpikesSpriteTemplate =
     .paletteTag = ANIM_TAG_SPIKES,
     .oam = &gOamData_AffineOff_ObjNormal_16x16,
     .callback = AnimSpikes,
+};
+
+const struct SpriteTemplate gBugWebsSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_WEB,
+    .paletteTag = ANIM_TAG_WEB,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .callback = AnimRandomSpikes,
 };
 
 const struct SpriteTemplate gToxicSpikesSpriteTemplate =
@@ -577,6 +649,78 @@ const struct SpriteTemplate gGreenStarSpriteTemplate =
 {
     .tileTag = ANIM_TAG_GREEN_STAR,
     .paletteTag = ANIM_TAG_GREEN_STAR,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gGreenStarAnimTable,
+    .callback = AnimGreenStar,
+};
+
+const struct SpriteTemplate gBlueStarSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GREEN_STAR,
+    .paletteTag = ANIM_TAG_ANGEL,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gGreenStarAnimTable,
+    .callback = AnimGreenStar,
+};
+
+const struct SpriteTemplate gPinkStarSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GREEN_STAR,
+    .paletteTag = ANIM_TAG_CLAPPING,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gGreenStarAnimTable,
+    .callback = AnimGreenStar,
+};
+
+const struct SpriteTemplate gPurpleStarSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GREEN_STAR,
+    .paletteTag = ANIM_TAG_POISON_COLUMN,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gGreenStarAnimTable,
+    .callback = AnimGreenStar,
+};
+
+const struct SpriteTemplate gGrrenButterflyComingUpSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gGreenStarAnimTable,
+    .callback = AnimGreenStar,
+};
+
+const struct SpriteTemplate gPinkButterflyComingUpSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_PINK_CLOUD,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gGreenStarAnimTable,
+    .callback = AnimGreenStar,
+};
+
+const struct SpriteTemplate gBlueButterflyComingUpSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_SLASH_2,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gGreenStarAnimTable,
+    .callback = AnimGreenStar,
+};
+
+const struct SpriteTemplate gYellowButterflyComingUpSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_AMNESIA,
+    .oam = &gOamData_AffineOff_ObjNormal_16x16,
+    .anims = gGreenStarAnimTable,
+    .callback = AnimGreenStar,
+};
+
+const struct SpriteTemplate gPurpleButterflyComingUpSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_BUTTERFLY_MIXED,
+    .paletteTag = ANIM_TAG_SMALL_FEATHER,
     .oam = &gOamData_AffineOff_ObjNormal_16x16,
     .anims = gGreenStarAnimTable,
     .callback = AnimGreenStar,
@@ -1518,6 +1662,31 @@ static void AnimSpikes(struct Sprite *sprite)
     InitAnimArcTranslation(sprite);
     sprite->callback = AnimSpikes_Step1;
 }
+
+static void AnimRandomSpikes(struct Sprite *sprite)
+{
+    s16 x, y;
+    s16 randX, randY; // ランダムなオフセット用の変数を追加
+
+    InitSpritePosToAnimAttacker(sprite, TRUE);
+    SetAverageBattlerPositions(gBattleAnimTarget, FALSE, &x, &y);
+
+    if (!IsOnPlayerSide(gBattleAnimAttacker))
+        gBattleAnimArgs[2] = -gBattleAnimArgs[2];
+
+    // 64x64の範囲（中心から -32 ～ +31 ピクセル）のランダムオフセットを計算
+    randX = (Random2() % 42) - 21;
+    randY = (Random2() % 42) - 21;
+
+    sprite->data[0] = gBattleAnimArgs[4];
+    sprite->data[2] = x + gBattleAnimArgs[2] + randX; // X座標の目的地に加算
+    sprite->data[4] = y + gBattleAnimArgs[3] + randY; // Y座標の目的地に加算
+    sprite->data[5] = -50;
+
+    InitAnimArcTranslation(sprite);
+    sprite->callback = AnimSpikes_Step1;
+}
+
 
 static void AnimSpikes_Step1(struct Sprite *sprite)
 {
@@ -2646,21 +2815,19 @@ void AnimTask_MorningSunLightBeam(u8 taskId)
 static void AnimGreenStar(struct Sprite *sprite)
 {
     s16 xOffset;
+    s16 yOffset;
     u8 spriteId1;
     u8 spriteId2;
 
-    xOffset = Random2();
-    xOffset &= 0x3F;
-    if (xOffset > 31)
-        xOffset = 32 - xOffset;
-
+    xOffset = (Random2() % 57) - 28;
+    yOffset = 16 + (Random2() % 21);
     sprite->x = GetBattlerSpriteCoord(gBattleAnimAttacker, BATTLER_COORD_X) + xOffset;
-    sprite->y = GetBattlerSpriteCoord(gBattleAnimAttacker, BATTLER_COORD_Y) + 32;
+    sprite->y = GetBattlerSpriteCoord(gBattleAnimAttacker, BATTLER_COORD_Y) + yOffset;
     sprite->data[1] = gBattleAnimArgs[0];
     sprite->data[2] = gBattleAnimArgs[1];
 
-    spriteId1 = CreateSprite(&gGreenStarSpriteTemplate, sprite->x, sprite->y, sprite->subpriority + 1);
-    spriteId2 = CreateSprite(&gGreenStarSpriteTemplate, sprite->x, sprite->y, sprite->subpriority + 1);
+    spriteId1 = CreateSprite(sprite->template, sprite->x, sprite->y, sprite->subpriority + 1);
+    spriteId2 = CreateSprite(sprite->template, sprite->x, sprite->y, sprite->subpriority + 1);
     StartSpriteAnim(&gSprites[spriteId1], 1);
     StartSpriteAnim(&gSprites[spriteId2], 2);
 

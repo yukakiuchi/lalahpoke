@@ -41,6 +41,71 @@ const struct SpriteTemplate gEllipticalGustCenteredSpriteTemplate =
     .callback = AnimEllipticalGustCentered,
 };
 
+const struct SpriteTemplate gEllipticalGreenGustSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GUST,
+    .paletteTag = ANIM_TAG_RAZOR_LEAF,
+    .oam = &gOamData_AffineOff_ObjNormal_32x64,
+    .callback = AnimEllipticalGust,
+};
+
+const struct SpriteTemplate gEllipticalPinkGustSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GUST,
+    .paletteTag = ANIM_TAG_PINK_GLOVE,
+    .oam = &gOamData_AffineOff_ObjNormal_32x64,
+    .callback = AnimEllipticalGust,
+};
+
+const struct SpriteTemplate gEllipticalIcyGustSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GUST,
+    .paletteTag = ANIM_TAG_ANGEL,
+    .oam = &gOamData_AffineOff_ObjNormal_32x64,
+    .callback = AnimEllipticalGust,
+};
+
+const struct SpriteTemplate gEllipticalThunderGustSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GUST,
+    .paletteTag = ANIM_TAG_ORANGE_LIGHT_WALL,
+    .oam = &gOamData_AffineOff_ObjNormal_32x64,
+    .callback = AnimEllipticalGust,
+};
+
+const struct SpriteTemplate gEllipticalDarkGustSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GUST,
+    .paletteTag = ANIM_TAG_DARK_GUST_PAL,
+    .oam = &gOamData_AffineOff_ObjNormal_32x64,
+    .callback = AnimEllipticalGust,
+};
+
+const struct SpriteTemplate gEllipticalRedGustSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GUST,
+    .paletteTag = ANIM_TAG_RED_HEART,
+    .oam = &gOamData_AffineOff_ObjNormal_32x64,
+    .callback = AnimEllipticalGust,
+};
+
+const struct SpriteTemplate gEllipticalBlueGustSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GUST,
+    .paletteTag = ANIM_TAG_STEEL_BEAM,
+    .oam = &gOamData_AffineOff_ObjNormal_32x64,
+    .callback = AnimEllipticalGust,
+};
+
+
+const struct SpriteTemplate gEllipticalRainbowGustSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_GUST,
+    .paletteTag = ANIM_TAG_STRAIGHT_BEAM,
+    .oam = &gOamData_AffineOff_ObjNormal_32x64,
+    .callback = AnimEllipticalGust,
+};
+
 const struct SpriteTemplate gEllipticalGustSpriteTemplate =
 {
     .tileTag = ANIM_TAG_GUST,
@@ -360,9 +425,20 @@ static void AnimEllipticalGust_Step(struct Sprite *sprite)
 // Animates the palette on the gust tornado to make it look like its spinning
 void AnimTask_AnimateGustTornadoPalette(u8 taskId)
 {
+    u16 paletteTag;
     gTasks[taskId].data[0] = gBattleAnimArgs[1];
     gTasks[taskId].data[1] = gBattleAnimArgs[0];
-    gTasks[taskId].data[2] = IndexOfSpritePaletteTag(ANIM_TAG_GUST);
+
+    if (gBattleAnimArgs[2] != 0)
+    {
+        paletteTag = gBattleAnimArgs[2]; // 新しい闇の風などのタグ
+    }
+    else
+    {
+        paletteTag = ANIM_TAG_GUST;      // 既存の技のためのデフォルトタグ
+    }
+
+    gTasks[taskId].data[2] = IndexOfSpritePaletteTag(paletteTag);
     gTasks[taskId].func = AnimTask_AnimateGustTornadoPalette_Step;
 }
 

@@ -65,7 +65,7 @@ EventScript_RockSmash::
 	lockall
 	msgbox Text_WantToSmash, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, EventScript_CancelSmash
-	goto_if_set FLAG_BADGE01_GET, EventScript_SmashRock
+	goto_if_set FLAG_BADGE03_GET, EventScript_SmashRock
 	msgbox Text_NoBadge03, MSGBOX_DEFAULT
     releaseall
     end

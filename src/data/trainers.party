@@ -222,6 +222,7 @@ Taillow
 Level: 26
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+/* 森の戦闘*/
 === TRAINER_GRUNT_PETALBURG_WOODS ===
 Name: GRUNT
 Class: Team Aqua
@@ -229,11 +230,85 @@ Pic: Aqua Grunt M
 Gender: Male
 Music: Aqua
 Double Battle: No
-AI: Check Bad Move
+AI: AI_FLAG_SMART_TRAINER
 
-Poochyena
-Level: 9
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+SPECIES_BISHARP @ Focus Sash
+Level: 20
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 SpD / 252 Spe
+Ball: DIVE
+- MOVE_DOUBLE_TEAM
+- MOVE_SHARPEN
+- MOVE_POISON_SHURIKEN
+- MOVE_CEASELESS_EDGE
+
+SPECIES_CENTISKORCH @ Focus Sash
+Level: 20
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 HP / 252 SpD
+Ball: DIVE
+Shiny: Yes
+- MOVE_SLACK_OFF
+- MOVE_FIRE_SPIN
+- MOVE_TOXIC
+
+SPECIES_BEEDRILL @ LOADED_DICE
+Level: 20
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 HP / 252 Spe
+Ball: DIVE
+- MOVE_DOUBLE_TEAM
+- MOVE_ICICLE_SPEAR
+- MOVE_PIN_MISSILE
+- MOVE_LIGHT_SCREEN
+
+SPECIES_GRAVELER @ Sitrus Berry
+Level: 20
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 110 HP / 252 Def / 142 SpD
+Ball: DIVE
+- MOVE_JET_PUNCH
+- MOVE_BELLY_DRUM
+- MOVE_DRAIN_PUNCH
+
+=== TRAINER_JUDOGARDIAN ===
+Name: JUDOGARD
+Class: Black Belt
+Pic: Black Belt
+Gender: Male
+Music: Intense
+Double Battle: No
+AI: AI_FLAG_SMART_TRAINER
+
+SPECIES_SCYTHER @ Focus Sash
+Level: 25
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 120 HP / 252 Atk / 136 Def
+Ball: SAFARI
+Shiny: Yes
+- MOVE_SHARPEN
+- MOVE_FALCON_SLASH
+- MOVE_TAUNT
+
+SPECIES_MONFERNO @ Kings Rock
+Level: 25
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 Atk / 252 Spe
+Ball: DIVE
+- MOVE_SLACK_OFF
+- MOVE_BUBBLE_FURY_SWIPES
+- MOVE_TAUNT
+- MOVE_ATTRACT
+
+SPECIES_THWACKEY @ PROTECTIVE PADS
+Level: 25
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 120 HP / 252 Atk / 136 Def
+Ball: FAST
+- MOVE_STATIC_FURY_SWIPES
+- MOVE_SMELLING_SALTS
+- MOVE_SNATCH
+- MOVE_DRAIN_PUNCH
 
 === TRAINER_MARCEL ===
 Name: MARCEL
@@ -2119,13 +2194,15 @@ Class: Lady
 Pic: Lady
 Gender: Female
 Music: Female
-Items: Full Restore
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer / Force Setup First Turn
 
-Zigzagoon @ Nugget
-Level: 7
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+SPECIES_TINKATON @ Focus Sash
+Level: 1
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 HP / 252 Spe
+- Sonic Boom
+
 
 === TRAINER_DAPHNE ===
 Name: DAPHNE
@@ -4790,37 +4867,71 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 
 === TRAINER_ROXANNE_1 ===
 Name: ROXANNE
-Class: Leader
+Class: Elite Four
 Pic: Leader Roxanne
 Gender: Female
 Music: Female
-Items: Potion / Potion
 Double Battle: No
-AI: Basic Trainer
+AI: AI_FLAG_SMART_TRAINER
 
-Geodude
-Level: 12
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
-- Tackle
-- Defense Curl
-- Rock Throw
-- Rock Tomb
+SPECIES_GARDEVOIR @ Kings Rock
+Level: 30
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 Atk / 252 Spe
+Ball: Dusk
+- MOVE_PERISH_SONG
+- MOVE_MOONLIGHT
+- MOVE_TAUNT
+- MOVE_SHADOW_SNEAK
 
-Geodude
-Level: 12
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
-- Tackle
-- Defense Curl
-- Rock Throw
-- Rock Tomb
+SPECIES_STARMIE @ Focus Sash
+Level: 30
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 120 HP / 252 Atk / 136 Def
+Ball: Dusk
+- MOVE_MOONLIGHT
+- MOVE_WATER_SHURIKEN
+- MOVE_SAFEGUARD
+- MOVE_MOONBLAST
 
-Nosepass @ Oran Berry
-Level: 15
-IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
-- Block
-- Harden
-- Tackle
-- Rock Tomb
+SPECIES_DRIFBLIM @ Focus Sash
+Level: 30
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 HP / 252 Def
+Ball: Dusk
+Shiny: Yes
+- MOVE_MOONLIGHT
+- MOVE_MIDNIGHT_STORM
+- MOVE_SHADOW_SNEAK
+
+SPECIES_PIDGEOT @ ROCKY_HELMET
+Level: 30
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 120 HP / 252 Atk / 136 Def
+Ball: Dusk
+- MOVE_MOONLIGHT
+- MOVE_RAINBOW_FLY
+- MOVE_SHADOW_SNEAK
+
+SPECIES_SHIINOTIC @ Focus Sash
+Level: 30
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 HP / 252 SpD
+Ball: Dusk
+- MOVE_SAPPY_SEED
+- MOVE_SPORE
+- MOVE_SHADOW_SNEAK
+- MOVE_MINIMIZE
+
+SPECIES_CHANSEY @ POWER_HERB
+Level: 30
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 HP / 252 Def
+Ball: Dusk
+Shiny: Yes
+- MOVE_GEOMANCY
+- MOVE_STORED_POWER
+- MOVE_MIND_READER
 
 === TRAINER_BRAWLY_1 ===
 Name: BRAWLY
@@ -5133,8 +5244,8 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Ralts
-Level: 9
+SPECIES_DUOSION
+Level: 25
 IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
 
 === TRAINER_TED ===
@@ -5252,8 +5363,8 @@ Music: Girl
 Double Battle: No
 AI: Check Bad Move
 
-Shroomish
-Level: 9
+SPECIES_ALTARIA
+Level: 25
 IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
 
 === TRAINER_GEORGIA ===
@@ -5947,11 +6058,34 @@ Pic: Youngster
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: AI_FLAG_SMART_TRAINER
 
-Poochyena
-Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+SPECIES_SWABLU @ Life Orb
+Level: 12
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 HP / 252 Spe
+Shiny: Yes
+- MOVE_SAFEGUARD
+- MOVE_FLAP
+- MOVE_RAINY_BREEZE
+- MOVE_MEADOW_BREEZE
+
+SPECIES_PIKACHU @ ITEM_LIGHT_BALL
+Level: 12
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 HP / 252 Spe
+- MOVE_NUZZLE
+- MOVE_BUG_FURY_SWIPES
+- MOVE_SLACK_OFF
+- MOVE_BELLY_DRUM
+
+SPECIES_GEODUDE @ ITEM_SITRUS_BERRY
+Level: 12
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 HP / 252 Def
+- MOVE_BELLY_DRUM
+- MOVE_JET_PUNCH
+- MOVE_DRAIN_PUNCH
 
 === TRAINER_BILLY ===
 Name: BILLY
@@ -5962,12 +6096,12 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Zigzagoon
-Level: 5
+SPECIES_STARYU
+Level: 16
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Seedot
-Level: 7
+SPECIES_TINKATINK
+Level: 16
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_JOSH ===
@@ -5979,8 +6113,8 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Geodude
-Level: 10
+SPECIES_SNORLAX
+Level: 30
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Tackle
 
@@ -5993,13 +6127,9 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Geodude
-Level: 8
+SPECIES_PELIPPER
+Level: 30
 IVs: 13 HP / 13 Atk / 13 Def / 13 SpA / 13 SpD / 13 Spe
-
-Geodude
-Level: 8
-IVs: 14 HP / 14 Atk / 14 Def / 14 SpA / 14 SpD / 14 Spe
 
 === TRAINER_JOEY ===
 Name: JOEY
@@ -6010,8 +6140,8 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Machop
-Level: 9
+SPECIES_KAKUNA
+Level: 25
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_BEN ===
@@ -6215,12 +6345,12 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Zigzagoon
-Level: 4
+SPECIES_FROAKIE @ ITEM_LUM_BERRY
+Level: 12
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Taillow
-Level: 3
+SPECIES_HOPPIP @ ITEM_LUM_BERRY
+Level: 12
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_TIMMY ===
@@ -9501,7 +9631,7 @@ IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
 - Psychic
 - Future Sight
 
-=== TRAINER_BRENDAN_ROUTE_103_MUDKIP ===
+=== TRAINER_BRENDAN_ROUTE_103_TORCHIC ===
 Name: BRENDAN
 Class: Rival
 Pic: Brendan
@@ -9611,18 +9741,35 @@ Combusken
 Level: 31
 IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 
-=== TRAINER_BRENDAN_ROUTE_103_TORCHIC ===
+=== TRAINER_BRENDAN_ROUTE_103 ===
 Name: BRENDAN
 Class: Rival
 Pic: Brendan
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Basic Trainer
+AI: AI_FLAG_SMART_TRAINER
 
-Mudkip
-Level: 5
+Torchic
+Level: 7
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Ball: Moon
+- MOVE_SONIC_BOOM
+
+=== TRAINER_MAY_ROUTE_103 ===
+Name: MAY
+Class: Rival
+Pic: May
+Gender: Female
+Music: Female
+Double Battle: No
+AI: AI_FLAG_SMART_TRAINER
+
+Torchic
+Level: 7
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Ball: Moon
+- MOVE_SONIC_BOOM
 
 === TRAINER_BRENDAN_ROUTE_110_TORCHIC ===
 Name: BRENDAN
@@ -9665,19 +9812,6 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 Marshtomp
 Level: 31
 IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
-
-=== TRAINER_MAY_ROUTE_103_MUDKIP ===
-Name: MAY
-Class: Rival
-Pic: May
-Gender: Female
-Music: Female
-Double Battle: No
-AI: Basic Trainer
-
-Treecko
-Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_MAY_ROUTE_110_MUDKIP ===
 Name: MAY
@@ -10560,13 +10694,9 @@ Music: Hiker
 Double Battle: No
 AI: Check Bad Move
 
-Geodude
-Level: 8
+SPECIES_BLISSEY
+Level: 30
 IVs: 14 HP / 14 Atk / 14 Def / 14 SpA / 14 SpD / 14 Spe
-
-Geodude
-Level: 8
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 === TRAINER_BRENDEN ===
 Name: BRENDEN
@@ -11053,12 +11183,12 @@ Music: Female
 Double Battle: No
 AI: Check Bad Move
 
-Zigzagoon
-Level: 4
+SPECIES_PICHU @ Eviolite
+Level: 12
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Shroomish
-Level: 4
+SPECIES_RALTS @ Eviolite
+Level: 12
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_HALEY_1 ===
@@ -11087,8 +11217,8 @@ Music: Female
 Double Battle: No
 AI: Check Bad Move
 
-Marill
-Level: 9
+SPECIES_PIKACHU
+Level: 25
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_VIVI ===
@@ -11257,12 +11387,12 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Wurmple
-Level: 4
+SPECIES_CATERPIE @ ITEM_ROCKY_HELMET
+Level: 12
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Wurmple
-Level: 4
+SPECIES_WEEDLE @ ITEM_ROCKY_HELMET
+Level: 12
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_LYLE ===
@@ -11274,20 +11404,12 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Wurmple
-Level: 3
+SPECIES_FOONGUS
+Level: 20
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Wurmple
-Level: 3
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
-
-Wurmple
-Level: 3
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
-
-Wurmple
-Level: 3
+SPECIES_PIDGEY
+Level: 20
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_JOSE ===
@@ -11299,12 +11421,8 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Wurmple
-Level: 8
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
-
-Nincada
-Level: 8
+SPECIES_SCYTHER
+Level: 25
 IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 
 === TRAINER_DOUG ===
@@ -11363,12 +11481,12 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Nincada
-Level: 6
+SPECIES_PAWNIARD
+Level: 20
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Nincada
-Level: 6
+SPECIES_ACCELGOR
+Level: 20
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_JAMES_2 ===
@@ -11549,8 +11667,8 @@ Music: Hiker
 Double Battle: No
 AI: Check Bad Move
 
-Geodude
-Level: 8
+SPECIES_GRAVELER
+Level: 25
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_ERIC ===
@@ -12941,13 +13059,10 @@ Music: Rich
 Double Battle: No
 AI: Check Bad Move
 
-Zigzagoon @ Nugget
-Level: 8
+SPECIES_DELIBIRD @ Nugget
+Level: 25
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Poochyena
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_SARAH ===
 Name: SARAH
@@ -12959,12 +13074,8 @@ Items: Full Restore
 Double Battle: No
 AI: Check Bad Move
 
-Lotad
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
-
-Zigzagoon @ Nugget
-Level: 8
+SPECIES_JUMPLUFF
+Level: 25
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_DARIAN ===
@@ -12974,11 +13085,25 @@ Pic: Fisherman
 Gender: Male
 Music: Hiker
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer / Force Setup First Turn
 
-Magikarp
-Level: 9
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+SPECIES_WINGULL @ ITEM_SITRUS_BERRY
+Level: 16
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 HP / 252 Spe
+Shiny: Yes
+Ball: DUSK
+- MOVE_TAILWIND
+- MOVE_MIST
+- MOVE_SAFEGUARD
+- MOVE_BOLT_BEAK
+
+SPECIES_KRABBY @ ITEM_FOCUS_SASH
+Level: 16
+IVs: 32 Atk / 32 Def / 32 SpA / 32 SpD / 32 Spe
+EVs: 252 Spe
+Shiny: Yes
+Ball: Dive
 
 === TRAINER_HAILEY ===
 Name: HAILEY
@@ -13859,12 +13984,8 @@ Music: Hiker
 Double Battle: No
 AI: Check Bad Move
 
-Geodude
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
-
-Geodude
-Level: 8
+SPECIES_FROGADIER
+Level: 25
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_JOHNSON ===
@@ -13876,12 +13997,8 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move
 
-Shroomish
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
-
-Lotad
-Level: 8
+SPECIES_CENTISKORCH
+Level: 25
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_MELINA ===

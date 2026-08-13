@@ -169,9 +169,9 @@ static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
             s32 hpFraction      = 0;
             u8 fieldEffectFlags = 0;
             u8 isWaterType      = IS_BATTLER_OF_TYPE(battler, TYPE_WATER);
-            if (ability == ABILITY_RAIN_DISH || ability == ABILITY_DRY_SKIN) hpFraction += 2; // 特性で    　 HP1/8回復
-            if (IS_BATTLER_OF_TYPE(battler, TYPE_GRASS))                     hpFraction += 2; // くさタイプ 　 HP1/8回復
-            if (IS_BATTLER_OF_TYPE(battler, TYPE_FIRE) && !isWaterType)      hpFraction -= 2; // ほのおタイプ　HP1/8ダメージ
+            if (ability == ABILITY_RAIN_DISH || ability == ABILITY_DRY_SKIN)                           hpFraction += 2; // 特性で    　 HP1/8回復
+            if (IS_BATTLER_OF_TYPE(battler, TYPE_GRASS))                                               hpFraction += 2; // くさタイプ 　 HP1/8回復
+            if (IS_BATTLER_OF_TYPE(battler, TYPE_FIRE) && !isWaterType && ability != ABILITY_DRY_SKIN) hpFraction -= 2; // ほのおタイプ　 HP1/8ダメージ
             ApplyFieldEffectsHpUpdate(battler, hpFraction, &fieldEffectFlags);
 
             // ----- 2. 状態異常回復の判定 -----
@@ -233,6 +233,7 @@ static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
         break;
     case BATTLE_WEATHER_SANDSTORM:
         if (ability != ABILITY_SAND_VEIL
+         && ability != ABILITY_SAND_STREAM
          && ability != ABILITY_SAND_FORCE
          && ability != ABILITY_SAND_RUSH
          && ability != ABILITY_OVERCOAT
@@ -288,8 +289,8 @@ static bool32 HandleEndTurnWeatherDamage(enum BattlerId battler)
             }
             ApplyFieldEffectsHpUpdate(battler, hpFraction, &fieldEffectFlags);
 
-            // 全ポケモン20%確率で氷結状態付与 こおりとほのおタイプ以外 こおりタイプかどうかはCanBeFrozenの中でチェックしてる
-            if (!IS_BATTLER_ANY_TYPE(battler, TYPE_FIRE) && CanBeFrozen(battler, battler, ability) && (Random() % 100 < 20))
+            // 全ポケモン10%確率で氷結状態付与 こおりとほのおタイプ以外 こおりタイプかどうかはCanBeFrozenの中でチェックしてる
+            if (!IS_BATTLER_ANY_TYPE(battler, TYPE_FIRE) && CanBeFrozen(battler, battler, ability) && (Random() % 100 < 10))
             {
                 gBattleMons[battler].status1 |= STATUS1_FREEZE;
                 fieldEffectFlags |= B_MS_FIELD_EFFECT_INFLICT_STATUS;
@@ -517,10 +518,10 @@ static bool32 HandleEndTurnFirstEventBlock(enum BattlerId battler)
             if(IS_BATTLER_ANY_TYPE(battler, TYPE_DARK))
                 hpFraction += 2; // あくタイプは毎ターン1/8HP回復
 
-            // 20%の確率でポケモンを眠らせる(あくタイプ・ひこうタイプ以外)
+            // 10%の確率でポケモンを眠らせる(あくタイプ・ひこうタイプ以外)
             if (CanBeSlept(battler, battler, ability, NOT_BLOCKED_BY_SLEEP_CLAUSE)
                 && !IS_BATTLER_ANY_TYPE(battler, TYPE_DARK, TYPE_FLYING)
-                && (Random() % 100 < 20))
+                && (Random() % 100 < 10))
             {
                 // 軽いねむり状態を付与
                 gBattleMons[battler].status1 |= STATUS1_SLEEP_TURN(RandomUniform(RNG_SLEEP_TURNS, 1, 2));
@@ -644,7 +645,7 @@ static bool32 HandleEndTurnAquaRing(enum BattlerId battler)
      && !IsBattlerAtMaxHp(battler)
      && IsBattlerAlive(battler))
     {
-        SetHealAmount(battler, GetDrainedBigRootHp(battler, GetNonDynamaxMaxHP(battler) / 16));
+        SetHealAmount(battler, GetDrainedBigRootHp(battler, GetNonDynamaxMaxHP(battler) / 8));
         BattleScriptExecute(BattleScript_AquaRingHeal);
         effect = TRUE;
     }
@@ -663,7 +664,7 @@ static bool32 HandleEndTurnIngrain(enum BattlerId battler)
      && !IsBattlerAtMaxHp(battler)
      && IsBattlerAlive(battler))
     {
-        SetHealAmount(battler, GetDrainedBigRootHp(battler, GetNonDynamaxMaxHP(battler) / 16));
+        SetHealAmount(battler, GetDrainedBigRootHp(battler, GetNonDynamaxMaxHP(battler) / 8));
         BattleScriptExecute(BattleScript_IngrainTurnHeal);
         effect = TRUE;
     }
@@ -671,46 +672,46 @@ static bool32 HandleEndTurnIngrain(enum BattlerId battler)
     return effect;
 }
 
-static bool32 HandleEndTurnLeechSeed(enum BattlerId battler)
-{
-    bool32 effect = FALSE;
+// static bool32 HandleEndTurnLeechSeed(enum BattlerId battler)
+// {
+//     bool32 effect = FALSE;
 
-    gBattleStruct->eventState.endTurnBattler++;
+//     gBattleStruct->eventState.endTurnBattler++;
 
-    if (gBattleMons[battler].volatiles.leechSeed
-     && IsBattlerAlive(gBattleMons[battler].volatiles.leechSeed - 1)
-     && IsBattlerAlive(battler)
-     && !IsAbilityAndRecord(battler, GetBattlerAbility(battler), ABILITY_MAGIC_GUARD))
-    {
-        gBattlerTarget = gBattleMons[battler].volatiles.leechSeed - 1; // leech seed receiver
-        gBattleScripting.animArg1 = gBattlerTarget;
-        gBattleScripting.animArg2 = gBattlerAttacker;
-        s32 drainAmount = GetNonDynamaxMaxHP(gBattlerAttacker) / 8;
-        s32 healAmount = GetDrainedBigRootHp(gBattlerTarget, drainAmount);
-        if (GetBattlerAbility(battler) == ABILITY_LIQUID_OOZE)
-        {
-            SetPassiveDamageAmount(gBattlerAttacker, drainAmount);
-            SetPassiveDamageAmount(gBattlerTarget, healAmount);
-            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_LEECH_SEED_OOZE;
-            BattleScriptExecute(BattleScript_LeechSeedTurnDrainLiquidOoze);
-        }
-        else if (IsHealDisabledByStatus(gBattlerTarget))
-        {
-            SetPassiveDamageAmount(gBattlerAttacker, drainAmount);
-            BattleScriptExecute(BattleScript_LeechSeedTurnDrainHealBlock);
-        }
-        else
-        {
-            SetPassiveDamageAmount(gBattlerAttacker, drainAmount);
-            SetHealAmount(gBattlerTarget, healAmount);
-            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_LEECH_SEED_DRAIN;
-            BattleScriptExecute(BattleScript_LeechSeedTurnDrainRecovery);
-        }
-        effect = TRUE;
-    }
+//     if (gBattleMons[battler].volatiles.leechSeed
+//      && IsBattlerAlive(gBattleMons[battler].volatiles.leechSeed - 1)
+//      && IsBattlerAlive(battler)
+//      && !IsAbilityAndRecord(battler, GetBattlerAbility(battler), ABILITY_MAGIC_GUARD))
+//     {
+//         gBattlerTarget = gBattleMons[battler].volatiles.leechSeed - 1; // leech seed receiver
+//         gBattleScripting.animArg1 = gBattlerTarget;
+//         gBattleScripting.animArg2 = gBattlerAttacker;
+//         s32 drainAmount = GetNonDynamaxMaxHP(gBattlerAttacker) / 8;
+//         s32 healAmount = GetDrainedBigRootHp(gBattlerTarget, drainAmount);
+//         if (GetBattlerAbility(battler) == ABILITY_LIQUID_OOZE)
+//         {
+//             SetPassiveDamageAmount(gBattlerAttacker, drainAmount);
+//             SetPassiveDamageAmount(gBattlerTarget, healAmount);
+//             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_LEECH_SEED_OOZE;
+//             BattleScriptExecute(BattleScript_LeechSeedTurnDrainLiquidOoze);
+//         }
+//         else if (IsHealDisabledByStatus(gBattlerTarget))
+//         {
+//             SetPassiveDamageAmount(gBattlerAttacker, drainAmount);
+//             BattleScriptExecute(BattleScript_LeechSeedTurnDrainHealBlock);
+//         }
+//         else
+//         {
+//             SetPassiveDamageAmount(gBattlerAttacker, drainAmount);
+//             SetHealAmount(gBattlerTarget, healAmount);
+//             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_LEECH_SEED_DRAIN;
+//             BattleScriptExecute(BattleScript_LeechSeedTurnDrainRecovery);
+//         }
+//         effect = TRUE;
+//     }
 
-    return effect;
-}
+//     return effect;
+// }
 
 static bool32 HandleEndTurnPoison(enum BattlerId battler)
 {
@@ -735,7 +736,7 @@ static bool32 HandleEndTurnPoison(enum BattlerId battler)
         }
         else if (gBattleMons[battler].status1 & STATUS1_TOXIC_POISON)
         {
-            SetPassiveDamageAmount(battler, GetNonDynamaxMaxHP(battler) / 16);
+            SetPassiveDamageAmount(battler, GetNonDynamaxMaxHP(battler) / 8); // どくどくのダメージ1/8からスタート(3ターン経過でほぼHPなくなる計算)
             if ((gBattleMons[battler].status1 & STATUS1_TOXIC_COUNTER) != STATUS1_TOXIC_TURN(15)) // not 16 turns
                 gBattleMons[battler].status1 += STATUS1_TOXIC_TURN(1);
             gBattleStruct->passiveHpUpdate[battler] *= (gBattleMons[battler].status1 & STATUS1_TOXIC_COUNTER) >> 8;
@@ -1082,7 +1083,7 @@ static bool32 HandleEndTurnHealBlock(enum BattlerId battler)
 }
 
 // サブステータスのターン終了時の出血処理
-// 毎ターンHP1/8ダメージ
+// 毎ターンHP1/10ダメージ
 static bool32 HandleEndTurnBleed(enum BattlerId battler)
 {
     bool32 effect = FALSE;
@@ -1093,7 +1094,7 @@ static bool32 HandleEndTurnBleed(enum BattlerId battler)
     {
         if (!IsAbilityAndRecord(battler, ability, ABILITY_MAGIC_GUARD))
         {
-            SetPassiveDamageAmount(battler, GetNonDynamaxMaxHP(battler) / 8);
+            SetPassiveDamageAmount(battler, GetNonDynamaxMaxHP(battler) / 10);
             BattleScriptExecute(BattleScript_BleedTurnDmg);
             effect = TRUE;
         }
@@ -1707,6 +1708,101 @@ static bool32 HandleEndTurnTrainerPartnerSlides(enum BattlerId battler)
         BattleScriptExecute(BattleScript_TrainerPartnerSlideMsgEnd2);
 
     return slide;
+}
+
+static bool32 HandleEndTurnLeechSeed(enum BattlerId battler)
+{
+    bool32 effect = FALSE;
+
+    gBattleStruct->eventState.endTurnBattler++;
+
+    if (gBattleMons[battler].volatiles.leechSeed
+     && IsBattlerAlive(gBattleMons[battler].volatiles.leechSeed - 1)
+     && IsBattlerAlive(battler)
+     && !IsAbilityAndRecord(battler, GetBattlerAbility(battler), ABILITY_MAGIC_GUARD))
+    {
+        // gBattlerTarget は「種の主」（回復する側）
+        gBattlerTarget = gBattleMons[battler].volatiles.leechSeed - 1; 
+        
+        gBattleScripting.animArg1 = gBattlerTarget;
+        gBattleScripting.animArg2 = battler; // (ダメージを受ける被害者側)
+
+        s32 drainAmount = 0;
+        bool32 isParasiteSuccess = FALSE; // 寄生（即死）成功フラグ
+
+        // 1. 基本パラメータの設定
+        bool32 isBugOrWater = IS_BATTLER_ANY_TYPE(battler, TYPE_BUG, TYPE_WATER);
+        
+        // 特性「寄生」を構造体から直接チェック（※自滅テスト防止のため、種の主が被感染者自身ではないことも確認）
+        bool32 hasParasitism = (gBattleMons[gBattlerTarget].ability == ABILITY_PARASITISM && gBattlerTarget != battler);
+
+        // 2. 特性「寄生」を持っている場合のみ、確率で即死判定を行う
+        if (hasParasitism)
+        {
+            u32 successRate = isBugOrWater ? 100 : 80; // 水・虫なら100%、それ以外は80%
+            
+            if ((Random() % 100) < successRate)
+            {
+                isParasiteSuccess = TRUE;
+            }
+        }
+
+        // 3. 吸収（ダメージ）量の決定
+        if (isParasiteSuccess)
+        {
+            // 寄生成功：相手の最大HP分を吸い取る
+            drainAmount = GetNonDynamaxMaxHP(battler); 
+        }
+        else
+        {
+            // 寄生なし、または確率失敗：通常時のやどりぎダメージ（最大HPの 1/8）
+            drainAmount = GetNonDynamaxMaxHP(battler) / 8;
+        }
+
+        if (drainAmount == 0)
+            drainAmount = 1;
+
+        s32 healAmount = GetDrainedBigRootHp(gBattlerTarget, drainAmount);
+
+        // ダメージ量と回復量の事前設定
+        SetPassiveDamageAmount(battler, drainAmount);
+
+        // 4. バトルスクリプトの分岐呼び出し
+        if (isParasiteSuccess)
+        {
+            // 特性による即死（特性ポップアップを表示してKO）
+            gBattlerAbility = gBattlerTarget;      // ポップアップを種の主（自分）に表示
+            gLastUsedAbility = ABILITY_PARASITISM;
+            if (!IsHealDisabledByStatus(gBattlerTarget))
+            {
+                SetHealAmount(gBattlerTarget, healAmount);
+            }
+            BattleScriptExecute(BattleScript_LeechSeedTurnKO);
+        }
+        else if (GetBattlerAbility(battler) == ABILITY_LIQUID_OOZE)
+        {
+            // ヘドロえきの場合
+            SetPassiveDamageAmount(gBattlerTarget, healAmount); // ヘドロえき反動ダメージ
+            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_LEECH_SEED_OOZE;
+            BattleScriptExecute(BattleScript_LeechSeedTurnDrainLiquidOoze);
+        }
+        else if (IsHealDisabledByStatus(gBattlerTarget))
+        {
+            // かいふくふうじ等の場合
+            BattleScriptExecute(BattleScript_LeechSeedTurnDrainHealBlock);
+        }
+        else
+        {
+            // 通常のやどりぎ処理（通常のやどりぎメッセージ＆1/8回復）
+            SetHealAmount(gBattlerTarget, healAmount);
+            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_LEECH_SEED_DRAIN;
+            BattleScriptExecute(BattleScript_LeechSeedTurnDrainRecovery);
+        }
+
+        effect = TRUE;
+    }
+
+    return effect;
 }
 
 /*

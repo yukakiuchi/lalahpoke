@@ -38,16 +38,23 @@ OldaleTown_PokemonCenter_1F_EventScript_WirelessClubAvailable::
 	end
 
 OldaleTown_PokemonCenter_1F_Text_TrainersCanUsePC:
-	.string "That PC in the corner there is\n"
-	.string "for any POKéMON TRAINER to use.\p"
-	.string "Naturally, that means you're welcome\n"
-	.string "to use it, too.$"
+	.string "Rainbow-type moves deal super-\n"
+	.string "effective damage to all types.\p"
+	.string "In return, it also takes super-\n"
+	.string "effective damage from all types!\p"
+	.string "It's a very unique type, but\n"
+	.string "dealing 4x damage to almost any\p"
+	.string "opponent is a huge advantage!$"
 
 OldaleTown_PokemonCenter_1F_Text_PokemonCentersAreGreat:
-	.string "POKéMON CENTERS are great!\p"
-	.string "You can use their services as much\n"
-	.string "as you like, and it's all for free.\l"
-	.string "You never have to worry!$"
+	.string "Type matchups are a bit different\n"
+	.string "here than in the original games.\p"
+	.string "Fairly speaking, each type has\n"
+	.string "only 2 strengths and 2 weaknesses.\p"
+	.string "Only Normal, Rainbow, Fairy, and\n"
+	.string "Dark are a little special, though.\p"
+	.string "For details, check the docs or\n"
+	.string "ask the developer!$"
 
 OldaleTown_PokemonCenter_1F_Text_WirelessClubNotAvailable:
 	.string "The POKéMON WIRELESS CLUB on\n"
@@ -56,7 +63,14 @@ OldaleTown_PokemonCenter_1F_Text_WirelessClubNotAvailable:
 	.string "adjustments.$"
 
 OldaleTown_PokemonCenter_1F_Text_TradedInWirelessClub:
-	.string "The POKéMON WIRELESS CLUB on\n"
-	.string "the second floor was built recently.\p"
-	.string "I traded POKéMON right away.$"
-
+	.string "Oh, you have a Normal-type\n"
+	.string "POKéMON!\p"
+	.string "In this world, Normal types take\n"
+	.string "half damage from all attacks,\p"
+	.string "except for Rainbow-type ones!\p"
+	.string "It's a divine protection to shield\n"
+	.string "fragile starter POKéMON.\p"
+	.string "You'll find more Normal types\n"
+	.string "later for specific reasons.\p"
+	.string "It might be interesting to keep\n"
+	.string "that in mind on your journey!$"

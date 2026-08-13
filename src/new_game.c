@@ -50,6 +50,8 @@
 #include "constants/items.h"
 #include "difficulty.h"
 #include "follower_npc.h"
+#include "delibirdShop_C.h"
+#include "caps.h"
 
 extern const u8 EventScript_ResetAllMapFlags[];
 extern const u8 EventScript_ResetAllMapFlagsFrlg[];
@@ -224,6 +226,7 @@ void NewGameInitData(void)
     ClearRankingHallRecords();
     InitMatchCallCounters();
     ClearMysteryGift();
+    ClearDelibirdEgg();
     WipeTrainerNameRecords();
     ResetTrainerHillResults();
     ResetTrainerTowerResults();
@@ -232,6 +235,7 @@ void NewGameInitData(void)
     ResetItemFlags();
     ResetDexNav();
     ClearFollowerNPCData();
+    InitLevelCap(); // 新しいゲーム始める時 NEW GAMEの時は最初からレベル制限をする
 }
 
 static void ResetMiniGamesRecords(void)

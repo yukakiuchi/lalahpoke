@@ -884,6 +884,18 @@ static const struct SpriteFrameImage sPicTable_GameboyKid[] = {
     overworld_frame(gObjectEventPic_GameboyKid, 2, 4, 2),
 };
 
+static const struct SpriteFrameImage sPicTable_EggSellDelibird[] = {
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 0),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 1),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 2),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 0),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 0),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 1),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 1),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 2),
+    overworld_frame(gObjectEventPic_EggSellDelibird, 2, 4, 2),
+};
+
 static const struct SpriteFrameImage sPicTable_ContestJudge[] = {
     overworld_ascending_frames(gObjectEventPic_ContestJudge, 2, 4),
 };
@@ -1360,8 +1372,6 @@ static const struct SpriteFrameImage sPicTable_RubySapphireMay[] = {
 static const struct SpriteFrameImage sPicTable_ApricornTree[] = {
     overworld_frame(gObjectEventPic_ApricornTree, 2, 2, 0),
 };
-
-#if IS_FRLG
 
 static const struct SpriteFrameImage sPicTable_RedNormal[] = {
     overworld_frame(gObjectEventPic_RedNormal, 2, 4, 0),
@@ -3027,5 +3037,3 @@ static const struct SpriteFrameImage sPicTable_MomFrlg[] = {
     overworld_frame(gObjectEventPic_MomFrlg, 2, 4, 2),
     overworld_frame(gObjectEventPic_MomFrlg, 2, 4, 2),
 };
-
-#endif // IS_FRLG

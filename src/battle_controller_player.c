@@ -1732,10 +1732,11 @@ static void MoveSelectionDisplayMoveType(enum BattlerId battler)
     }
     else if (effect == EFFECT_IVY_CUDGEL)
     {
-        if (speciesId == SPECIES_OGERPON_WELLSPRING || speciesId == SPECIES_OGERPON_WELLSPRING_TERA
-         || speciesId == SPECIES_OGERPON_HEARTHFLAME || speciesId == SPECIES_OGERPON_HEARTHFLAME_TERA
-         || speciesId == SPECIES_OGERPON_CORNERSTONE || speciesId == SPECIES_OGERPON_CORNERSTONE_TERA)
-            type = GetSpeciesType(speciesId, 1);
+        // if (speciesId == SPECIES_OGERPON_WELLSPRING || speciesId == SPECIES_OGERPON_WELLSPRING_TERA
+        //  || speciesId == SPECIES_OGERPON_HEARTHFLAME || speciesId == SPECIES_OGERPON_HEARTHFLAME_TERA
+        //  || speciesId == SPECIES_OGERPON_CORNERSTONE || speciesId == SPECIES_OGERPON_CORNERSTONE_TERA)
+            // type = GetSpeciesType(speciesId, 1);
+        type = TYPE_WATER;
     }
     else if (GetMoveCategory(move) == DAMAGE_CATEGORY_STATUS
              && (GetActiveGimmick(battler) == GIMMICK_DYNAMAX || IsGimmickSelected(battler, GIMMICK_DYNAMAX)))

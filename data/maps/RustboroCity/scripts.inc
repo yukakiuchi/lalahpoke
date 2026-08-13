@@ -839,18 +839,13 @@ RustboroCity_EventScript_MayEncounter::
 	setvar VAR_RUSTBORO_CITY_STATE, 8
 	setvar VAR_ROUTE104_STATE, 2
 	setvar VAR_0x8008, 0
-	msgbox RustboroCity_Text_MayPassedBrineyWantToBattle, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, YES, RustboroCity_EventScript_BattleMay
-	msgbox RustboroCity_Text_MayOhHaventRaisedPokemonEnough, MSGBOX_DEFAULT
+	msgbox RustboroCity_Text_MayPassedBrineyWantToBattle, MSGBOX_DEFAULT
 	call RustboroCity_EventScript_RestoreBgm
 	releaseall
 	end
 
 RustboroCity_EventScript_MayAskToBattle::
-	setvar VAR_0x8008, 1
-	msgbox RustboroCity_Text_MayWantToBattle, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, YES, RustboroCity_EventScript_BattleMay
-	msgbox RustboroCity_Text_MayOhHaventRaisedPokemonEnough, MSGBOX_DEFAULT
+	msgbox RustboroCity_Text_MayDemoEnd, MSGBOX_DEFAULT
 	releaseall
 	end
 
@@ -906,17 +901,13 @@ RustboroCity_EventScript_BrendanEncounter::
 	setflag FLAG_ENABLE_RIVAL_MATCH_CALL
 	setvar VAR_RUSTBORO_CITY_STATE, 8
 	setvar VAR_ROUTE104_STATE, 2
-	msgbox RustboroCity_Text_BrendanPassedBrineyWantToBattle, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, YES, RustboroCity_EventScript_BattleBrendan
-	msgbox RustboroCity_Text_BrendanNoConfidenceInPokemon, MSGBOX_DEFAULT
+	msgbox RustboroCity_Text_BrendanPassedBrineyWantToBattle, MSGBOX_DEFAULT
 	call RustboroCity_EventScript_RestoreBgm
 	releaseall
 	end
 
 RustboroCity_EventScript_BrendanAskToBattle::
-	msgbox RustboroCity_Text_BrendanWantToBattle, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, YES, RustboroCity_EventScript_BattleBrendan
-	msgbox RustboroCity_Text_BrendanNoConfidenceInPokemon, MSGBOX_DEFAULT
+	msgbox RustboroCity_Text_BrendanDemoEnd, MSGBOX_DEFAULT
 	releaseall
 	end
 
@@ -1013,10 +1004,12 @@ RustboroCity_EventScript_Boy1::
 	end
 
 RustboroCity_Text_WeShortenItToDevon:
-	.string "The DEVON CORPORATION…\n"
-	.string "We all just shorten it to DEVON.\p"
-	.string "That company makes all sorts of\n"
-	.string "convenient products.$"
+	.string "There are still so many new\n"
+	.string "mechanics left unexplained,\p"
+	.string "but the list goes on forever!\n"
+	.string "Whenever you wonder 'How does\p"
+	.string "this work?', feel free to ask\n"
+	.string "the developer directly!$"
 
 RustboroCity_Text_SneakyLookingManWentAroundCorner:
 	.string "Hm? A sneaky-looking man?\p"
@@ -1031,9 +1024,14 @@ RustboroCity_Text_HaveYouChallengedGym:
 	.string "realize what is required of them.$"
 
 RustboroCity_Text_HeyThatsRustborosGymBadge:
-	.string "Hey, that's RUSTBORO's GYM BADGE!\p"
-	.string "Out of all the POKéMON GYM BADGES,\n"
-	.string "RUSTBORO's is the coolest, I'd say.$"
+	.string "Originally, a feature called the\n"
+	.string "Delibird Shop was planned.\p"
+	.string "It was going to sell random Eggs\n"
+	.string "of late-game POKéMON early on!\p"
+	.string "Since not all POKéMON data is\n"
+	.string "ready, it doesn't work right now.\p"
+	.string "What a waste, right? You could\n"
+	.string "even start with all 3 starters!$"
 
 RustboroCity_Text_YoureNewAroundHere:
 	.string "Oh? Who might you be?\n"
@@ -1042,11 +1040,14 @@ RustboroCity_Text_YoureNewAroundHere:
 	.string "POKéMON TRAINER'S SCHOOL?$"
 
 RustboroCity_Text_GymLeaderIsntEasyWithFire:
-	.string "I challenged the GYM LEADER, but…\p"
-	.string "It's not going to be easy winning with\n"
-	.string "my FIRE-type POKéMON…\p"
-	.string "FIRE-type POKéMON don't match up\n"
-	.string "well against ROCK-type POKéMON…$"
+	.string "This game has so many minor\n"
+	.string "changes! Whether they were all\p"
+	.string "necessary, I'm not really sure.\n"
+	.string "Still, it's different from the\p"
+	.string "official games and pretty fun!\n"
+	.string "With infinite time, it could have\p"
+	.string "had even cooler mechanics...\n"
+	.string "Solo development has limits!$"
 
 RustboroCity_Text_MrBrineyWalksInTheTunnel:
 	.string "The old sailor MR. BRINEY lives in\n"
@@ -1063,23 +1064,33 @@ RustboroCity_Text_MrBrineyLovesPeeko:
 	.string "that PEEKO.$"
 
 RustboroCity_Text_WowYouHavePokemon:
-	.string "Wow, you have POKéMON with you, too.\p"
-	.string "When I get bigger, I'm going to go\n"
-	.string "places with POKéMON, too.$"
+	.string "In rain, Grass types recover HP,\n"
+	.string "and accuracy against Water types\p"
+	.string "drops by 20 percent, for example.\n"
+	.string "Weather and field effects now give\p"
+	.string "far more buffs and drawbacks!$"
 
 RustboroCity_Text_CatchRarePokemonIfIGoToSchool:
-	.string "POKéMON TRAINER'S SCHOOL!\p"
-	.string "If I go to this school, will I be able\n"
-	.string "to catch rare POKéMON easily?$"
+	.string "You can learn all about field\n"
+	.string "effects at the POKéMON SCHOOL!\p"
+	.string "They change battles quite a lot,\n"
+	.string "so why not go check it out?$"
 
 RustboroCity_Text_PokemonCanChangeLookFromExp:
-	.string "If a POKéMON gains experience in\n"
-	.string "battles, it can sometimes change in\l"
-	.string "the way it looks.$"
+	.string "Using a Shiny Candy turns your\n"
+	.string "POKéMON into a Shiny!\p"
+	.string "Now you won't have to give up\n"
+	.string "your favorite if it isn't Shiny!\p"
+	.string "Mega Goomy drops Shiny Candies\n"
+	.string "as a rare item in the cave ahead!$"
 
 RustboroCity_Text_PokemonChangeShape:
-	.string "A POKéMON changes shape?\n"
-	.string "If one did that, I would be shocked!$"
+	.string "Giving a POKé BALL to a POKéMON\n"
+	.string "swaps the ball it's currently in!\p"
+	.string "Why didn't official games ever\n"
+	.string "add such a useful feature?\p"
+	.string "Maybe the concept didn't even\n"
+	.string "exist back in those days?$"
 
 RustboroCity_Text_TradePokemonGrowFast:
 	.string "A POKéMON you get in a trade from\n"
@@ -1138,14 +1149,15 @@ RustboroCity_Text_RegisteredMay:
 	.string "in the POKéNAV.$"
 
 RustboroCity_Text_MayPassedBrineyWantToBattle:
-	.string "MAY: Oh, by the way, I passed\n"
-	.string "MR. BRINEY in PETALBURG WOODS.\p"
-	.string "I guess he's on his way home to his\n"
-	.string "cottage by the sea.\p"
-	.string "How's your POKéDEX coming along,\n"
-	.string "{PLAYER}{KUN}? Mine's looking pretty decent!\p"
-	.string "So…\n"
-	.string "How about a little battle?$"
+	.string "MAY: I still have some things to do,\n"
+	.string "so I'll be staying here for a bit.\p"
+	.string "Let me challenge you to a battle\n"
+	.string "next time we meet!$"
+
+RustboroCity_Text_MayDemoEnd:
+	.string "This is as far as the story goes in\n"
+	.string "this demo version.\p"
+	.string "I hope you enjoyed playing!$"
 
 RustboroCity_Text_MayOhHaventRaisedPokemonEnough:
 	.string "MAY: Oh, what's the matter?\p"
@@ -1185,15 +1197,15 @@ RustboroCity_Text_RegisteredBrendan:
 	.string "in the POKéNAV.$"
 
 RustboroCity_Text_BrendanPassedBrineyWantToBattle:
-	.string "BRENDAN: By the way, {PLAYER}, I walked\n"
-	.string "by MR. BRINEY in PETALBURG WOODS.\p"
-	.string "I bet he was on his way home to his\n"
-	.string "cottage by the sea.\p"
-	.string "{PLAYER}, how's your POKéDEX?\n"
-	.string "Have you filled in any pages yet?\p"
-	.string "Mine rules.\p"
-	.string "Want to have a battle to test how\n"
-	.string "far you've progressed?$"
+	.string "BRENDAN: I still have some things to do,\n"
+	.string "so I'll be staying here for a bit.\p"
+	.string "Let me challenge you to a battle\n"
+	.string "next time we meet!$"
+
+RustboroCity_Text_BrendanDemoEnd:
+	.string "This is as far as the story goes in\n"
+	.string "this demo version.\p"
+	.string "I hope you enjoyed playing!$"
 
 RustboroCity_Text_BrendanNoConfidenceInPokemon:
 	.string "BRENDAN: What's the matter? Don't have\n"

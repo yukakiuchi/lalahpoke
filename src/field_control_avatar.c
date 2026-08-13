@@ -42,6 +42,8 @@
 #include "constants/metatile_behaviors.h"
 #include "constants/songs.h"
 #include "constants/trainer_hill.h"
+#include "delibirdShop_C.h"
+#include "random.h" // Random()を使うため
 
 static EWRAM_DATA u8 sWildEncounterImmunitySteps = 0;
 static EWRAM_DATA u16 sPrevMetatileBehavior = 0;
@@ -82,6 +84,7 @@ static void SetMsgSignPostAndVarFacing(enum Direction playerDirection);
 static void SetUpWalkIntoSignScript(const u8 *script, enum Direction playerDirection);
 static u32 GetFacingSignpostType(u16 metatileBehvaior, enum Direction direction);
 static const u8 *GetSignpostScriptAtMapPosition(struct MapPosition *position);
+static void UpdateDelibirdRandomEggStepCounter(void); // ここ追加
 
 void FieldClearPlayerInput(struct FieldInput *input)
 {
@@ -749,6 +752,7 @@ static bool8 TryStartStepCountScript(u16 metatileBehavior)
     UpdateFriendshipStepCounter();
     UpdateFarawayIslandStepCounter();
     UpdateFollowerStepCounter();
+    UpdateDelibirdRandomEggStepCounter();
 
     if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_FORCED_MOVE) && !MetatileBehavior_IsForcedMovementTile(metatileBehavior))
     {
@@ -1404,4 +1408,37 @@ void HandleBoulderActivateVictoryRoadSwitch(u16 x, u16 y)
             }
         }
     }
+}
+
+void UpdateDelibirdRandomEggStepCounter(void)
+{
+    // デリバードショップ機能非活性
+    FlagSet(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
+
+    // // 判定：特定のフラグが立っているか（TRUEならセットされている）
+    // bool8 isDelibirdHidden = FlagGet(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
+
+    // gSaveBlock1Ptr->delibirdEgg.stepCounter++;
+
+    // if (isDelibirdHidden) 
+    // {
+    //     // フラグがセットされている（デリバードが非表示）時の処理
+    //     if (gSaveBlock1Ptr->delibirdEgg.stepCounter >= DELIBIRDSHOP_OUTSIDE_ENCOUNT_STEPS && (Random() % 100 < 10))
+    //     {
+    //         gSaveBlock1Ptr->delibirdEgg.stepCounter = 0;
+    //         // 非表示フラグを解除して出現させる（＝クリアする）
+    //         FlagClear(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
+    //         VarSet(VAR_DELIBIRD_EGG_PURCHASE_COUNT, 0);
+    //     }
+    // }
+    // else
+    // {
+    //     // フラグがセットされていない（デリバードが表示中）時の処理
+    //     if (gSaveBlock1Ptr->delibirdEgg.stepCounter >= DELIBIRDSHOP_OUTSIDE_DISSAPEAR_STEPS 
+    //         && (Random() % 100 < 40))
+    //     {
+    //         // 非表示フラグをセットして消す
+    //         FlagSet(FLAG_HIDE_DELIBIRD_OUTSIDE_NPC);
+    //     }
+    // }
 }

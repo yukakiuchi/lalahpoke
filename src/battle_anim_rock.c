@@ -56,6 +56,33 @@ const struct SpriteTemplate gFallingRockSpriteTemplate =
     .callback = AnimFallingRock,
 };
 
+const struct SpriteTemplate gFallingWoodsSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_WOOD_HAMMER,
+    .paletteTag = ANIM_TAG_WOOD_HAMMER,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = gAnims_FlyingRock,
+    .callback = AnimFallingRock,
+};
+
+const struct SpriteTemplate gFallingIceRocksSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_ROCKS,
+    .paletteTag = ANIM_TAG_SPHERE_TO_CUBE,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = gAnims_FlyingRock,
+    .callback = AnimFallingRock,
+};
+
+const struct SpriteTemplate gFallingMagmaRocksSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_ROCKS,
+    .paletteTag = ANIM_TAG_SPARKLE_2,
+    .oam = &gOamData_AffineOff_ObjNormal_32x32,
+    .anims = gAnims_FlyingRock,
+    .callback = AnimFallingRock,
+};
+
 const struct SpriteTemplate gRockFragmentSpriteTemplate =
 {
     .tileTag = ANIM_TAG_ROCKS,
@@ -109,6 +136,22 @@ const struct SpriteTemplate gFlyingSandCrescentSpriteTemplate =
 {
     .tileTag = ANIM_TAG_FLYING_DIRT,
     .paletteTag = ANIM_TAG_FLYING_DIRT,
+    .oam = &gOamData_AffineOff_ObjNormal_32x16,
+    .callback = AnimFlyingSandCrescent,
+};
+
+const struct SpriteTemplate gFlyingRedSandCrescentSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_FLYING_DIRT,
+    .paletteTag = ANIM_TAG_CLAW_SLASH,
+    .oam = &gOamData_AffineOff_ObjNormal_32x16,
+    .callback = AnimFlyingSandCrescent,
+};
+
+const struct SpriteTemplate gFlyingPurpleSandCrescentSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_FLYING_DIRT,
+    .paletteTag = ANIM_TAG_DARK_SAND_PAL,
     .oam = &gOamData_AffineOff_ObjNormal_32x16,
     .callback = AnimFlyingSandCrescent,
 };
@@ -474,6 +517,7 @@ static void AnimParticleInVortex_Step(struct Sprite *sprite)
 #define tBlend          data[11]
 #define tFullAlphaTimer data[11] // not a typo; this data field is used for multiple purposes
 #define tState          data[12]
+#define tMaxTimer       data[13]
 
 void AnimTask_LoadSandstormBackground(u8 taskId)
 {
@@ -497,7 +541,56 @@ void AnimTask_LoadSandstormBackground(u8 taskId)
     GetBattleAnimBg1Data(&animBg);
     AnimLoadCompressedBgGfx(animBg.bgId, gBattleAnimBgImage_Sandstorm, animBg.tilesOffset);
     AnimLoadCompressedBgTilemapHandleContest(&animBg, gBattleAnimBgTilemap_Sandstorm, FALSE);
-    LoadPalette(gBattleAnimSpritePal_FlyingDirt, BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
+
+    // ★ パレットの分岐処理（安全装置付き）
+    // gBattleAnimArgs[1] が設定されていればそれを使い、なければ0（デフォルト）とする
+    u16 paletteMode = (gBattleAnimArgs[1] != 0) ? gBattleAnimArgs[1] : 0;
+
+    if (paletteMode == 1)
+    {
+        // Gloom Breeze用（新しく作った夜・紫パレット）
+        LoadPalette(gBattleAnimSpritePal_PurpleBackgroundPal, BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
+    }
+    else
+    {
+        // 0 または指定がない場合は、通常の砂嵐（茶色パレット）
+        LoadPalette(gBattleAnimSpritePal_FlyingDirt, BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
+    }
+
+    if (gBattleAnimArgs[0] && !IsOnPlayerSide(gBattleAnimAttacker))
+        var0 = 1;
+
+    // 表示する時間の設定機能を追加
+    // 引数がある場合はそれを使う。ない場合はデフォルト値を使う
+    gTasks[taskId].tMaxTimer = gBattleAnimArgs[2] ? gBattleAnimArgs[2] : 131;
+
+    gTasks[taskId].data[0] = var0;
+    gTasks[taskId].func = AnimTask_LoadSandstormBackground_Step;
+}
+
+void AnimTask_LoadRedSandstormBackground(u8 taskId)
+{
+    int var0;
+    struct BattleAnimBgData animBg;
+
+    var0 = 0;
+    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 0);
+
+    if (!IsContest())
+        SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 1);
+
+    gBattle_BG1_X = 0;
+    gBattle_BG1_Y = 0;
+    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
+    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
+
+    GetBattleAnimBg1Data(&animBg);
+    AnimLoadCompressedBgGfx(animBg.bgId, gBattleAnimBgImage_Sandstorm, animBg.tilesOffset);
+    AnimLoadCompressedBgTilemapHandleContest(&animBg, gBattleAnimBgTilemap_Sandstorm, FALSE);
+    LoadPalette(gBattleAnimSpritePal_RedParticles, BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
 
     if (gBattleAnimArgs[0] && !IsOnPlayerSide(gBattleAnimAttacker))
         var0 = 1;
@@ -533,7 +626,7 @@ static void AnimTask_LoadSandstormBackground_Step(u8 taskId)
         }
         break;
     case 1:
-        if (++gTasks[taskId].tFullAlphaTimer == 101)
+        if (++gTasks[taskId].tFullAlphaTimer == gTasks[taskId].tMaxTimer)
         {
             gTasks[taskId].tBlend = 7;
             gTasks[taskId].tState++;

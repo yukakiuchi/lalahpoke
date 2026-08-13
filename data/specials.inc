@@ -640,3 +640,9 @@ gSpecials::
 	def_special UpdateTrainerCardPhotoIcons
 	def_special StickerManGetBragFlags
 	def_special CheckAddCoins
+	def_special HasEmptySlotsInBoxes
+	def_special CheckMoneyFromVar
+	def_special RemoveMoneyFromVar
+	def_special GiveDelibirdEggFromVar
+  def_special UpdateMoneyBox
+  def_special AddPurchaseCount

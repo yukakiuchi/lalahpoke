@@ -1113,7 +1113,11 @@ static bool32 SelectMatchCallTrainer(void)
     if (GetRematchTrainerLocation(matchCallId) == gMapHeader.regionMapSectionId && !TrainerIsEligibleForRematch(matchCallId))
         return FALSE;
 
-    return TRUE;
+    // マッチコールの要件以外電話しない
+    if (TrainerIsEligibleForRematch(matchCallId))
+        return TRUE; 
+    else
+        return FALSE;
 }
 
 // Ignores registrable non-trainer NPCs, and special trainers like Wally and the gym leaders.
@@ -1157,6 +1161,7 @@ static u32 GetActiveMatchCallTrainerId(u32 activeMatchCallId)
 */
 bool32 TryStartMatchCall(void)
 {
+    return FALSE; // マッチコール = 電話かけてこないようにする
     if (FlagGet(FLAG_HAS_MATCH_CALL)
         && UpdateMatchCallStepCounter()
         && UpdateMatchCallMinutesCounter()
